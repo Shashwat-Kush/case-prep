@@ -22,7 +22,7 @@ Depends: T-001.
 Accept: invalid config fails fast with a readable message; keys never appear in logs; all tunables from 04_ENGINEERING_RULES §7 present with defaults.
 Tests: valid config parses; missing required key fails; malformed yaml fails with filename in message.
 
-**T-003 · Provider smoke script** `[ ]`
+**T-003 · Provider smoke script** `[x]`
 Goal: verify Groq chat, Nvidia chat, Groq Whisper, and Piper end to end (Phase 0 exit).
 Files: `scripts/smoke.py`.
 Depends: T-002; Phase 0 steps 2-3 done manually.
