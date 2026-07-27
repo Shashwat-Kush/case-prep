@@ -96,7 +96,7 @@ Depends: T-016. Docs: 01_PRD Module A; 07_PROMPTS §2 (coach).
 Accept: coaching block content used verbatim as ground truth; reveal happens only after a user attempt; standard mode unaffected.
 Tests: guided sequence per phase; a case without a coaching block refuses guided mode with a clear message.
 
-**T-019 · Terminal chat REPL** `[ ]`
+**T-019 · Terminal chat REPL** `[x]`
 Goal: run lesson and guided/standard case flows end to end, typed, streaming.
 Files: `app/cli.py`.
 Depends: T-013, T-014, T-016, T-017, T-018.
