@@ -22,17 +22,38 @@ class CaseComplete(Exception):
     """Raised when advance() is called at the final phase."""
 
 
+class CoachError(Exception):
+    """Coach-step misuse: not in guided mode, no coaching this phase, or a
+    reveal requested before the candidate has attempted (T-018)."""
+
+
 class CaseFlow:
-    def __init__(self, case: Case, *, transcript_window_turns: int = 12):
+    def __init__(
+        self,
+        case: Case,
+        *,
+        mode: str = "standard",
+        transcript_window_turns: int = 12,
+    ):
         if not case.phases:
             raise ValueError(f"case {case.meta.id!r} has no phases")
+        if mode == "guided" and not any(p.coaching for p in case.phases):
+            raise ValueError(
+                f"case {case.meta.id!r} has no coaching blocks; guided mode unavailable"
+            )
         self._case = case
+        self._mode = mode
         self._i = 0
         self._window = transcript_window_turns
         self._transcript: list[Message] = []
         self._exhibit_ids = {e.id for e in case.exhibits}
         self._unlocked: set[str] = set()
+        self._attempted = False
         self._auto_unlock()
+
+    @property
+    def mode(self) -> str:
+        return self._mode
 
     @property
     def case(self) -> Case:
@@ -60,6 +81,7 @@ class CaseFlow:
         if self.is_terminal:
             raise CaseComplete(f"case {self._case.meta.id!r} is at its final phase")
         self._i += 1
+        self._attempted = False  # a fresh attempt is required in each phase
         self._auto_unlock()
         return self.current_phase
 
@@ -82,7 +104,42 @@ class CaseFlow:
     # --- transcript ----------------------------------------------------------
 
     def record_turn(self, role: str, content: str) -> None:
+        if role == "user":
+            self._attempted = True  # the candidate's turn is their attempt
         self._transcript.append({"role": role, "content": content})
+
+    # --- guided coach step (T-018) -------------------------------------------
+
+    @property
+    def has_coaching(self) -> bool:
+        return self.current_phase.coaching is not None
+
+    @property
+    def attempted(self) -> bool:
+        return self._attempted
+
+    def coach_explain(self) -> str:
+        """What a strong candidate does this phase — verbatim from the file."""
+        coaching = self._coaching()
+        return coaching.explain
+
+    def coach_reveal(self) -> str:
+        """The model approach for this phase — verbatim, only after an attempt."""
+        coaching = self._coaching()
+        if not self._attempted:
+            raise CoachError(
+                f"cannot reveal the model approach for {self.phase_name!r} "
+                "before the candidate has attempted"
+            )
+        return coaching.model_approach_for_phase
+
+    def _coaching(self):
+        if self._mode != "guided":
+            raise CoachError(f"coach steps require guided mode, in {self._mode!r}")
+        coaching = self.current_phase.coaching
+        if coaching is None:
+            raise CoachError(f"phase {self.phase_name!r} has no coaching block")
+        return coaching
 
     def transcript_window(self) -> list[Message]:
         return self._transcript[-self._window :] if self._window > 0 else []
@@ -103,6 +160,7 @@ class CaseFlow:
         ids = sorted(self._unlocked)
         window = self.transcript_window()
         if persona == "coach":
+            reveal = self._attempted if self._mode == "guided" else True
             return build_coach_context(
                 self._case,
                 phase_name=self.phase_name,
@@ -110,6 +168,7 @@ class CaseFlow:
                 transcript=window,
                 stage_facts=facts,
                 math_verdicts=math_verdicts,
+                reveal_model_approach=reveal,
             )
         if persona == "interviewer":
             return build_interviewer_context(

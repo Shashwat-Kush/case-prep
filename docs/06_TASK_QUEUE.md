@@ -89,7 +89,7 @@ Depends: T-010, T-015.
 Accept: quiz graded deterministically where options exist, via rubric prompt where free-form; coverage result object emitted at completion.
 Tests: quiz grading on fixture lesson; flow order; completion emits concepts_taught.
 
-**T-018 · Guided mode (coach integration)** `[ ]`
+**T-018 · Guided mode (coach integration)** `[x]`
 Goal: coach step (explain → user attempt → model approach reveal) at each case phase boundary.
 Files: `app/engine/case_flow.py` (extend), `app/llm/templates/coach.md`.
 Depends: T-016. Docs: 01_PRD Module A; 07_PROMPTS §2 (coach).

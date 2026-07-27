@@ -60,11 +60,17 @@ def interviewer_slice(
 
 
 def coach_slice(
-    case: Case, *, phase_name: str, unlocked_exhibit_ids: Sequence[str] = ()
+    case: Case,
+    *,
+    phase_name: str,
+    unlocked_exhibit_ids: Sequence[str] = (),
+    reveal_model_approach: bool = True,
 ) -> str:
     """Coach-visible content: adds the current phase's coaching block and
     unlocked-exhibit ground truth. Still no full model_answer (revealed only at
-    the case-file reveal point, §4)."""
+    the case-file reveal point, §4). When reveal_model_approach is False the
+    phase's model approach is withheld from the context entirely, so the guided
+    explain->attempt->reveal order is enforced by construction (T-018)."""
     phase = _phase(case, phase_name)
     parts = [f"Case prompt: {case.prompt}"]
     if case.facts:
@@ -73,10 +79,16 @@ def coach_slice(
     parts.append(f"Interviewer instructions: {phase.interviewer_instructions}")
     if phase.coaching:
         parts.append(f"What a strong candidate does: {phase.coaching.explain}")
-        parts.append(
-            "Model approach (reveal only after an attempt): "
-            f"{phase.coaching.model_approach_for_phase}"
-        )
+        if reveal_model_approach:
+            parts.append(
+                "Model approach to reveal now: "
+                f"{phase.coaching.model_approach_for_phase}"
+            )
+        else:
+            parts.append(
+                "Do not reveal the model approach yet; "
+                "invite the candidate to attempt first."
+            )
     unlocked = set(unlocked_exhibit_ids)
     for e in case.exhibits:
         if e.id in unlocked:
@@ -150,10 +162,14 @@ def build_coach_context(
     transcript: Sequence[Message] = (),
     stage_facts: str = "",
     math_verdicts: str = "",
+    reveal_model_approach: bool = True,
 ) -> list[Message]:
     system = render("coach")
     content = coach_slice(
-        case, phase_name=phase_name, unlocked_exhibit_ids=unlocked_exhibit_ids
+        case,
+        phase_name=phase_name,
+        unlocked_exhibit_ids=unlocked_exhibit_ids,
+        reveal_model_approach=reveal_model_approach,
     )
     return _assemble(
         system,
