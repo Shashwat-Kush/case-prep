@@ -55,6 +55,9 @@ class FakeEngine:
     def status(self):
         return {"provider": "groq", "primary": "groq", "ratelimit": {"x": "5"}}
 
+    def transcribe(self, audio):
+        return {"transcript": None, "degraded": True}
+
 
 @pytest.fixture
 def client():

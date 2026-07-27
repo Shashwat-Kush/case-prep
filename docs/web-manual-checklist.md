@@ -63,8 +63,9 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 
 - [ ] Holding 🎤 turns it red and records; the browser asks for mic permission
       the first time. Releasing uploads the clip.
-- [ ] With no STT yet, a released clip posts a "audio received" note; typing a
-      response still works exactly as before (degrade-to-typed).
+- [ ] A released clip is transcribed (T-051) and drops into the input for you to
+      review/edit before sending; on STT failure a "couldn't transcribe — type"
+      note shows and typing still works exactly as before (degrade-to-typed).
 - [ ] Denying mic permission shows a prompt to type instead, without breaking the
       session.
 

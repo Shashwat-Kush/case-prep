@@ -270,14 +270,35 @@ def test_review_links_scorecard_quotes_to_transcript_turns():
             assert e["quote"] in text_by_id[e["turn_id"]]
 
 
-def test_audio_endpoint_accepts_upload():
-    # Push-to-talk (T-050): the raw blob reaches the backend; transcription is
-    # stubbed until T-051, so the response degrades to typed (transcript None).
+def test_audio_endpoint_accepts_upload_and_degrades_without_stt():
+    # Push-to-talk (T-050): the raw blob reaches the backend. With STT unwired the
+    # response degrades to typed (transcript None) per 04 §5 Degrade.
     client, _ = _client()
     sid = _start(client, "case-cement-profitability")["session_id"]
     r = client.post(f"/api/session/{sid}/audio", content=b"\x1a\x45\xdf\xa3fakewebm")
     assert r.status_code == 200
-    assert r.json() == {"bytes": 12, "transcript": None}
+    assert r.json() == {"bytes": 12, "transcript": None, "degraded": True}
+
+
+def test_audio_endpoint_returns_transcript_when_stt_wired():
+    from app.providers.stt_client import Transcription
+
+    store = Store(":memory:")
+    engine = LiveEngine(
+        load_config(),
+        _library(),
+        store,
+        _fake_chat(),
+        transcribe=lambda audio: Transcription(True, "revenue is falling", 12.0),
+    )
+    client = TestClient(create_app(engine))
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    r = client.post(f"/api/session/{sid}/audio", content=b"blob")
+    assert r.json() == {
+        "bytes": 4,
+        "transcript": "revenue is falling",
+        "degraded": False,
+    }
 
 
 def test_audio_endpoint_rejects_empty_upload():

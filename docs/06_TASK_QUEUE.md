@@ -241,7 +241,7 @@ Depends: T-041.
 Accept: hold-to-record UX; audio reaches backend; typed input remains available.
 Tests: manual checklist + endpoint accepts audio fixture.
 
-**T-051 · STT client (Groq Whisper)** `[ ]`
+**T-051 · STT client (Groq Whisper)** `[x]`
 Goal: transcription via provider router's STT arm; degrade-to-typed on failure.
 Files: `app/providers/stt_client.py`, router wiring.
 Depends: T-028, T-050.

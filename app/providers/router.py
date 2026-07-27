@@ -22,8 +22,9 @@ from collections.abc import Callable
 
 import httpx
 
-from app.config import Config, ProviderConfig
+from app.config import Config, ProviderConfig, SttConfig
 from app.providers.llm_client import ChatClient, LLMError
+from app.providers.stt_client import SttClient, Transcription
 
 log = logging.getLogger(__name__)
 
@@ -64,6 +65,7 @@ class Router:
         config: Config,
         *,
         client_factory: Callable[[ProviderConfig], ChatClient] = ChatClient,
+        stt_factory: Callable[[SttConfig], SttClient] = SttClient,
         sleep: Callable[[float], None] = time.sleep,
         rand: Callable[[], float] = random.random,
     ):
@@ -71,6 +73,9 @@ class Router:
             raise ValueError("no providers configured")
         self._providers = config.providers
         self._factory = client_factory
+        self._stt_cfg = getattr(config, "stt", None)
+        self._stt_factory = stt_factory
+        self._stt_client: SttClient | None = None
         self._sleep = sleep
         self._rand = rand
         self._offline = bool(getattr(config, "offline", False))
@@ -103,6 +108,19 @@ class Router:
 
     def chat(self, messages: list[dict], **params) -> _RoutedStream:
         return _RoutedStream(lambda routed: self._iterate(messages, params, routed))
+
+    def transcribe(self, audio: bytes, **kw) -> Transcription:
+        """STT arm (T-051). Offline never touches a keyed cloud endpoint; on any
+        failure the Transcription degrades (ok=False) so the session falls back to
+        typed input rather than erroring (04 §5 Degrade)."""
+        if self._stt_cfg is None:
+            return Transcription(False, None, 0.0, "no STT configured")
+        if self._offline and self._stt_cfg.api_key_env is not None:
+            log.warning("offline: skipping cloud STT — degrade to typed")
+            return Transcription(False, None, 0.0, "offline: cloud STT unavailable")
+        if self._stt_client is None:
+            self._stt_client = self._stt_factory(self._stt_cfg)
+        return self._stt_client.transcribe(audio, **kw)
 
     def _classify(self, exc: Exception, record) -> tuple[str, float | None]:
         """Map an exception to (action, wait). action: retry|failover|auth|fatal."""

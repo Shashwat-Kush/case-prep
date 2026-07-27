@@ -392,7 +392,7 @@ async function uploadRecording() {
     $("message").value = out.transcript; // user reviews, edits, then Sends (T-052)
     $("message").focus();
   } else {
-    addTurn("model", "🎤 Audio received — transcription arrives in a later step; type for now.");
+    addTurn("model", "🎤 Couldn't transcribe that — please type your response.");
   }
 }
 

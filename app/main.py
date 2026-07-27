@@ -56,6 +56,7 @@ class Engine(Protocol):
     def start(self, content_id: str, mode: str) -> str: ...
     def get(self, session_id: str) -> WebSession: ...
     def status(self) -> dict: ...
+    def transcribe(self, audio: bytes) -> dict: ...
 
 
 class CreateReq(BaseModel):
@@ -131,15 +132,14 @@ def create_app(engine: Engine) -> FastAPI:
     @app.post("/api/session/{sid}/audio")
     async def audio(sid: str, request: Request) -> dict:
         # Push-to-talk upload (T-050): the browser POSTs the raw MediaRecorder
-        # blob as the body (no multipart dependency). Transcription is stubbed
-        # until the STT client lands (T-051); until then the UI degrades to typed.
-        session = _lookup(engine, sid)
+        # blob as the body (no multipart dependency). The engine transcribes it
+        # (T-051); on any STT failure `transcript` is None so the UI degrades to
+        # typed input rather than erroring (04 §5 Degrade).
+        _lookup(engine, sid)  # 404 for an unknown session
         data = await request.body()
         if not data:
             raise HTTPException(400, "empty audio upload")
-        transcribe = getattr(session, "transcribe", None)
-        text = transcribe(data) if transcribe else None
-        return {"bytes": len(data), "transcript": text}
+        return {"bytes": len(data), **engine.transcribe(data)}
 
     @app.get("/api/session/{sid}/review")
     def review(sid: str) -> dict:
@@ -465,9 +465,12 @@ class LiveGuessSession:
 
 
 class LiveEngine:
-    def __init__(self, config: Config, library, store, chat, *, status=None):
+    def __init__(
+        self, config: Config, library, store, chat, *, status=None, transcribe=None
+    ):
         self._config = config
         self._status = status or (lambda: {"provider": None, "ratelimit": {}})
+        self._transcribe = transcribe  # Callable[[bytes], Transcription] | None
         self._library = library
         self._store = store
         self._chat = chat
@@ -539,6 +542,14 @@ class LiveEngine:
     def status(self) -> dict:
         return self._status()
 
+    def transcribe(self, audio: bytes) -> dict:
+        """Return {transcript, degraded}. transcript is None (degraded) when STT
+        is unwired or the attempt failed — the UI then falls back to typed."""
+        r = self._transcribe(audio) if self._transcribe else None
+        if r is None or not r.ok:
+            return {"transcript": None, "degraded": True}
+        return {"transcript": r.text, "degraded": False}
+
 
 def main() -> None:
     import uvicorn
@@ -549,7 +560,14 @@ def main() -> None:
     library = ContentLoader(Path(".")).library
     store = Store("app.db")
     router = Router(config)
-    engine = LiveEngine(config, library, store, router.chat, status=router.status)
+    engine = LiveEngine(
+        config,
+        library,
+        store,
+        router.chat,
+        status=router.status,
+        transcribe=router.transcribe,
+    )
     uvicorn.run(create_app(engine), host=config.host, port=config.port)  # localhost
 
 
