@@ -121,14 +121,14 @@ Depends: T-020, T-019.
 Accept: a completed terminal case yields a complete ordered transcript in DB incl. provider + latency per assistant turn.
 Tests: scripted case → DB rows match script.
 
-**T-022 · Guesstimate flow (coached)** `[ ]`
+**T-022 · Guesstimate flow (coached)** `[x]`
 Goal: clarify → approach → segmentation → estimation → sanity-check state machine with coach persona.
 Files: `app/engine/guess_flow.py`.
 Depends: T-010, T-015, T-020. Docs: 02_ARCHITECTURE §5; 01_PRD Module J.
 Accept: each step pauses in coached mode; segment estimates captured as structured numbers for T-024.
 Tests: transition table; step data capture.
 
-**T-023 · Math checker: case checkpoints** `[ ]`
+**T-023 · Math checker: case checkpoints** `[x]`
 Goal: parse numbers from user turns; match against checkpoint inputs/expected within tolerance; detect common_errors patterns.
 Files: `app/engine/math_checker.py`.
 Depends: T-010. Docs: ADR-3; REVIEW_REPORT G-4 (number-parsing spec) must be settled first.

@@ -10,7 +10,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, Field, RootModel
+from pydantic import BaseModel, Field, RootModel, model_validator
 
 # --- Id / key patterns (04_ENGINEERING_RULES §3) -----------------------------
 
@@ -95,11 +95,25 @@ class Phase(BaseModel):
     pass_criteria: str | None = None
 
 
+class CommonError(BaseModel):
+    """A known-wrong approach. `note` is required; `value` (optional) is the
+    numeric wrong result so the math checker can recognise it (T-023). Accepts a
+    bare string (note only) or a {value, note} object (docs/decisions.md)."""
+
+    note: str = ""
+    value: float | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_string(cls, data):
+        return {"note": data} if isinstance(data, str) else data
+
+
 class MathCheckpoint(BaseModel):
     inputs: str  # arithmetic expression over literal numbers (docs/decisions.md)
     expected_value: float
     tolerance: float = 0.0
-    common_errors: list[str] = []  # notes on known-wrong approaches
+    common_errors: list[CommonError] = []
 
 
 class Curveball(BaseModel):

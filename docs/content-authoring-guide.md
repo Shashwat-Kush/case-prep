@@ -200,8 +200,9 @@ Key rules:
 - **`phases[].name`** follows the case flow: `opening → clarifying → structuring
   → analysis → math → synthesis` (use the subset the case needs).
 - **`math_checkpoints[].inputs`** is an arithmetic expression over **literal
-  numbers** (see §4). `common_errors[]` are plain note strings naming known-wrong
-  approaches the coach can call out.
+  numbers** (see §4). `common_errors[]` items are plain note strings naming
+  known-wrong approaches — or `{value, note}` objects, where `value` is the
+  numeric wrong result so the math checker can recognise it (T-023).
 - **`exhibits[].unlock_condition`** — use `"phase:<name>"` to gate an exhibit on a
   phase (the phase must exist). Free-text intent conditions are allowed but not
   validated yet (full design is G-1 / T-016).

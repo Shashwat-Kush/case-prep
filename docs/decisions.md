@@ -64,3 +64,27 @@ only ever surface the note text — and seed authors naturally wrote notes-only.
 Keeping the numeric field forced fabricated wrong-answer values with no consumer.
 YAGNI. If a future feature needs to match a candidate's wrong number to a named
 error, reintroduce a structured form then.
+
+## Number parsing spec (G-4, settled for T-023)
+
+The math checker parses numbers from free-text user turns as follows:
+
+- **Integers / decimals:** `80`, `0.2`, `-5`, `12.5`.
+- **Grouping:** commas are stripped before conversion, so both Western
+  (`1,500`, `150,000`) and Indian (`1,50,000`) groupings parse to the same value.
+- **Scale suffixes** (case-insensitive, optional space): `%` (×0.01),
+  `k`/`thousand` (×1e3), `lakh`/`lakhs`/`lac` (×1e5), `million`/`millions`/`mn`
+  (×1e6), `crore`/`crores`/`cr` (×1e7), `billion`/`billions`/`bn` (×1e9).
+  Bare single letters `m`/`b` are intentionally NOT scale suffixes (too many
+  false positives); use `mn`/`bn`.
+- **Currency** (`Rs`, `Rs.`, `INR`, `₹`, `$`) is stripped and ignored.
+- An unknown trailing word after a number is ignored (the number still parses).
+- All numeric tokens in a turn are extracted, in order.
+
+## common_errors is hybrid (revisits the T-013 relaxation, for T-023)
+
+Each `common_errors` item may be a plain note string OR a `{value, note}` object.
+The math checker numerically matches only items that carry a `value`; string-only
+items remain valid content (seed authoring style) but are not numerically
+matched. This keeps the YAGNI relaxation for authors while letting a checkpoint
+opt into known-wrong-value detection.

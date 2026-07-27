@@ -14,7 +14,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from string import Template
 
-from app.engine.content_models import Case, Lesson
+from app.engine.content_models import Case, Guesstimate, Lesson
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
@@ -96,6 +96,41 @@ def coach_slice(
                 f"Exhibit {e.id} ({e.title}): {json.dumps(e.data)} — {e.so_what}"
             )
     return "\n".join(parts)
+
+
+def guess_coach_slice(
+    guess: Guesstimate, *, step: str, segment: str | None = None
+) -> str:
+    """Coach-visible content for a guesstimate step. Guides the approach without
+    dumping segment expected values or the answer range (those are for the math
+    checker, T-024, not for the coach to hand over)."""
+    parts = [f"Guesstimate: {guess.prompt}"]
+    if guess.clarifications:
+        parts.append("Clarifications to give only when asked:")
+        parts += [f"- {c.question_pattern}: {c.answer}" for c in guess.clarifications]
+    parts.append(f"Recommended approach: {guess.approach.recommended}")
+    parts.append(f"Current step: {step}")
+    if segment is not None:
+        parts.append(f"Estimating segment: {segment}")
+    return "\n".join(parts)
+
+
+def build_guess_coach_context(
+    guess: Guesstimate,
+    *,
+    step: str,
+    segment: str | None = None,
+    transcript: Sequence[Message] = (),
+    stage_facts: str = "",
+    math_verdicts: str = "",
+) -> list[Message]:
+    return _assemble(
+        render("coach"),
+        stage_facts=stage_facts,
+        content_slice=guess_coach_slice(guess, step=step, segment=segment),
+        transcript=transcript,
+        math_verdicts=math_verdicts,
+    )
 
 
 def tutor_slice(lesson: Lesson, *, section_index: int) -> str:
