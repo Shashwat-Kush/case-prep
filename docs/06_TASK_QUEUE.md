@@ -8,14 +8,14 @@ Status legend: `[ ]` todo · `[~]` in progress · `[x]` done. Update statuses in
 
 ## Phase 0
 
-**T-001 · Repo scaffold** `[ ]`
+**T-001 · Repo scaffold** `[x]`
 Goal: initialize the repository skeleton and tooling.
 Files: full tree per 02_ARCHITECTURE §8 (empty modules), `.gitignore` (.env, .venv, app.db, __pycache__), `requirements.txt`, `ruff` config, `README.md` stub, `.env.example`.
 Depends: none.
 Accept: fresh clone + venv + `pip install -r requirements.txt` succeeds; `ruff check` clean; git initialized with first commit.
 Tests: none (scaffold); CI-style check is the accept criteria themselves.
 
-**T-002 · Config + secrets loading** `[ ]`
+**T-002 · Config + secrets loading** `[x]`
 Goal: `config.yaml` and `.env` loading with validation.
 Files: `app/config.py`, `config.yaml` (defaults: provider order, models, ports, offline=false, score_visibility, ladder rules placeholder), `.env.example`.
 Depends: T-001.
@@ -33,14 +33,14 @@ Tests: none (network script); unit-test the output formatting only.
 
 ## Phase 1
 
-**T-010 · Content schemas (pydantic)** `[ ]`
+**T-010 · Content schemas (pydantic)** `[x]`
 Goal: executable models for all four content types.
 Files: `app/engine/content_models.py`.
 Depends: T-001. Docs: 03_CONTENT_SPEC §2.
 Accept: models cover every field incl. optional ones; ids validated against naming rules (04 §3); mode/persona enums centralized here.
 Tests: each schema accepts a minimal valid fixture and rejects fixtures missing required fields; id pattern enforcement.
 
-**T-011 · Content validator core** `[ ]`
+**T-011 · Content validator core** `[x]`
 Goal: shared validation logic (schema + math recomputation + reference checks).
 Files: `app/engine/validation.py`, test fixtures under `tests/fixtures/content/`.
 Depends: T-010. Docs: 03_CONTENT_SPEC §4.
@@ -262,7 +262,7 @@ Depends: T-040.
 Accept: TTS start under 0.3s target measured; failure shows text only.
 Tests: sentence-splitting; degrade path.
 
-**T-054 · Latency benchmark script** `[ ]`
+**T-054 · Latency benchmark script** `[x]`
 Goal: per-turn STT / first-token / full-response / TTS-start timings per provider, logged with history.
 Files: `scripts/bench_latency.py`.
 Depends: T-051, T-053.
