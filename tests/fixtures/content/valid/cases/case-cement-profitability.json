@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "id": "case-cement-profitability",
+    "title": "Cement maker profitability",
+    "type": "profitability",
+    "industry": "cement",
+    "difficulty": "medium",
+    "est_minutes": 30,
+    "prerequisite_concepts": ["lesson-profitability"],
+    "diagnostic": false
+  },
+  "prompt": "Your client is a cement manufacturer whose profits have fallen. Why?",
+  "clarifying": [
+    {"question_pattern": "which product", "answer": "A single grade of grey cement."}
+  ],
+  "facts": {"revenue": 1500, "cost": 1200},
+  "exhibits": [
+    {
+      "id": "ex-cost-breakdown",
+      "title": "Cost breakdown",
+      "data": {"power": 400, "freight": 500, "other": 300},
+      "unlock_condition": "phase:analysis",
+      "so_what": "Freight is the largest and fastest-growing cost line."
+    }
+  ],
+  "phases": [
+    {"name": "opening", "interviewer_instructions": "Read the prompt, invite structure."},
+    {"name": "structuring", "interviewer_instructions": "Probe the candidate's tree."},
+    {
+      "name": "analysis",
+      "interviewer_instructions": "Reveal the cost exhibit when asked about costs.",
+      "coaching": {
+        "explain": "A strong candidate isolates whether the problem is revenue or cost.",
+        "model_approach_for_phase": "Decompose profit into revenue and cost, then drill into cost lines."
+      },
+      "time_budget": 10,
+      "pass_criteria": "Identifies freight as the driver."
+    },
+    {"name": "synthesis", "interviewer_instructions": "Ask for a recommendation."}
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "(1500 - 1200) / 1500",
+      "expected_value": 0.2,
+      "tolerance": 0.001,
+      "common_errors": [{"value": 0.25, "note": "divided by cost instead of revenue"}]
+    },
+    {
+      "inputs": "400 + 500 + 300",
+      "expected_value": 1200,
+      "tolerance": 0.0,
+      "common_errors": []
+    }
+  ],
+  "curveballs": [
+    {"trigger_phase": "analysis", "injected_fact": "Freight costs jump another 10% next quarter."}
+  ],
+  "model_answer": {
+    "framework": "Profitability tree focused on the cost side.",
+    "key_insights": ["Freight is the dominant and rising cost."],
+    "recommendation": "Renegotiate freight contracts and consider rail.",
+    "walkthrough": "Profit fell because freight rose; revenue was stable."
+  },
+  "rubric": {
+    "structure": {"anchors": {"1": "no structure", "3": "basic tree", "5": "MECE tree tailored to cement"}},
+    "math": {"anchors": {"1": "errors", "3": "correct with help", "5": "fast and accurate"}},
+    "judgment": {"anchors": {"1": "no insight", "3": "some", "5": "prioritizes freight"}},
+    "communication": {"anchors": {"1": "unclear", "3": "clear", "5": "crisp top-down"}},
+    "synthesis": {"anchors": {"1": "none", "3": "restates", "5": "actionable recommendation"}}
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "india_population": {"value": 1.4e9, "unit": "people", "as_of": 2026, "source_note": "estimate"},
+  "delhi_population": {"value": 2.0e7, "unit": "people", "as_of": 2026, "source_note": "estimate"}
+}

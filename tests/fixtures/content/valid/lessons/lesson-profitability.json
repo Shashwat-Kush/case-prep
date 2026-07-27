@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "id": "lesson-profitability",
+    "title": "The profitability tree",
+    "concepts_taught": ["profit-tree", "revenue-cost-decomposition"],
+    "order_hint": 2
+  },
+  "sections": [
+    {
+      "heading": "Profit = Revenue - Cost",
+      "content": "Start every profitability case by splitting profit into revenue and cost.",
+      "worked_example": "If revenue is 1500 and cost is 1200, profit is 300."
+    }
+  ],
+  "when_to_use": "Declining or unexpectedly low profit.",
+  "when_not_to_use": "Market sizing or pure growth questions.",
+  "quiz": [
+    {
+      "question": "Profit equals?",
+      "options": ["Revenue - Cost", "Revenue + Cost"],
+      "answer": "Revenue - Cost",
+      "explanation": "Profit is what remains after costs."
+    }
+  ]
+}

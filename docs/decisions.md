@@ -21,6 +21,36 @@ Standing action item: fix the base install (`pip3.12 install --upgrade pip` from
 shell where it works, or reinstall python.org 3.12) so the README's plain
 `pip install -r requirements.txt` works. Not code-blocking.
 
+## 2026-07-27 · Math-checkpoint recompute form (T-010, resolves an unlisted gap)
+
+03_CONTENT_SPEC §4.2 requires "recompute every case `math_checkpoint` from its
+`inputs`", but §2.1 lists no formula field. Resolution (minimal, no new schema
+field): `inputs` is an **arithmetic expression string over literal numbers**
+(e.g. `"(1500 - 1200) / 1500"`). The validator/math checker safely evaluates it
+(ast, arithmetic only — no names/calls) and compares to `expected_value` within
+`tolerance`. `common_errors[]` are `{value, note}`: known-wrong results matched
+within tolerance to give targeted feedback (T-023). Guesstimate `tree[].derivation`
+follows the same rule but may also reference `benchmark_refs` keys and prior
+segment names (settled at T-011).
+
+## 2026-07-27 · Validator recompute/reference conventions (T-011)
+
+Filling gaps in 03_CONTENT_SPEC §4 checks 3 and 5, minimally:
+
+- **Guesstimate tree (check 3):** each `tree[].derivation` is an arithmetic
+  expression over benchmark-ref keys and *prior* segment names, evaluated safely
+  (ast). A literal `"given"` derivation means the `value` is an input, not
+  recomputed. The **final segment's value is the estimate**; it must fall within
+  `answer_range` [low, high]. Authors write a final node that combines the rest.
+- **Exhibit reference (check 5):** an `unlock_condition` of the form
+  `phase:<name>` must name an existing phase (dangling-exhibit check). Other
+  unlock_condition text is free intent, unchecked here — the full runtime unlock
+  design is G-1, settled at T-016. `curveball.trigger_phase` must also name an
+  existing phase; exhibit ids must be unique within a case.
+- **Lesson reference (check 5):** `case.meta.prerequisite_concepts` entries must
+  be existing lesson **ids** (per §4.5, which overrides the §2.3 note that reads
+  them as concept labels).
+
 ## Provider limits
 
 Phase 0 step 5: record verified Groq/Nvidia free-tier limits here with the date

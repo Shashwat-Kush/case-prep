@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "id": "guess-petrol-pumps-delhi",
+    "title": "Petrol pumps in Delhi",
+    "difficulty": "easy",
+    "est_minutes": 15,
+    "region": "india",
+    "diagnostic": true
+  },
+  "prompt": "Estimate the number of petrol pumps in Delhi.",
+  "clarifications": [
+    {"question_pattern": "only Delhi city", "answer": "Yes, NCT of Delhi only."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "delhi_pop",
+        "benchmark_refs": ["delhi_population"],
+        "derivation": "delhi_population",
+        "value": 2.0e7,
+        "tolerance": 0.0
+      },
+      {
+        "segment": "cars",
+        "benchmark_refs": [],
+        "derivation": "delhi_pop * 0.1",
+        "value": 2.0e6,
+        "tolerance": 1.0
+      },
+      {
+        "segment": "pumps",
+        "benchmark_refs": [],
+        "derivation": "cars / 4000",
+        "value": 500,
+        "tolerance": 1.0
+      }
+    ]
+  },
+  "answer_range": {"low": 400, "high": 800},
+  "common_traps": ["Forgetting that many households share one car."],
+  "rubric": {
+    "approach": {"anchors": {"1": "no method", "3": "picks one", "5": "justifies top-down"}},
+    "segmentation": {"anchors": {"1": "none", "3": "coarse", "5": "clean segments"}},
+    "arithmetic": {"anchors": {"1": "wrong", "3": "slow", "5": "fast"}},
+    "sanity_check": {"anchors": {"1": "none", "3": "notices order", "5": "cross-checks"}}
+  }
+}
