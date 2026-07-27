@@ -11,11 +11,41 @@ body {
 h1 {
   font-size: 1.25rem;
 }
+h2 {
+  font-size: 1.05rem;
+}
+h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  margin-bottom: 0.25rem;
+}
 input,
 select,
 button {
   font: inherit;
   padding: 0.4rem 0.6rem;
+}
+button {
+  cursor: pointer;
+}
+button.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  text-decoration: underline;
+}
+.group {
+  margin-bottom: 1rem;
+}
+.row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.25rem 0;
 }
 #composer {
   display: flex;
@@ -25,10 +55,15 @@ button {
 #message {
   flex: 1;
 }
-.phase {
-  font-weight: 600;
-  margin: 0.5rem 0;
-  opacity: 0.8;
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.note {
+  margin: 0.35rem 0;
+  white-space: pre-wrap;
 }
 .turn {
   margin: 0.5rem 0;

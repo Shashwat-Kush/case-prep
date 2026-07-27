@@ -1,6 +1,5 @@
-"""T-040: FastAPI transport contract tests against a fake engine, plus SSE
-stream reassembly. The live engine (LiveEngine) is exercised end to end in
-test_web_live.py; here the engine is a stub so we test the HTTP/SSE contract only.
+"""T-040/T-041: FastAPI transport contract tests against a fake engine, plus SSE
+stream reassembly. The live engine is exercised end to end in test_web_live.py.
 """
 
 import json
@@ -13,26 +12,35 @@ from app.main import create_app
 
 class FakeSession:
     def __init__(self):
-        self._advances = iter(
+        self._steps = iter(
             [
-                {"terminal": False, "phase": "structuring"},
-                {"terminal": True, "model_answer": "MODEL", "feedback": "FB"},
+                {"type": "case", "done": False, "phase": "structuring"},
+                {"type": "case", "done": True, "model_answer": "MODEL"},
             ]
         )
 
-    def opening(self):
-        return {"title": "T", "prompt": "P", "mode": "standard", "phase": "opening"}
+    def state(self):
+        return {"type": "case", "done": False, "phase": "opening", "prompt": "P"}
 
     def reply_tokens(self, text):
         yield from ["Hel", "lo ", "world"]
 
-    def advance(self):
-        return next(self._advances)
+    def act(self, action, value):
+        if action == "advance":
+            return next(self._steps)
+        return {"echoed": action, "value": value}
 
 
 class FakeEngine:
     def __init__(self):
         self._sessions = {}
+
+    def content_list(self):
+        return {
+            "cases": [{"id": "case-x", "title": "X", "modes": ["standard", "guided"]}],
+            "lessons": [{"id": "lesson-y", "title": "Y"}],
+            "guesstimates": [{"id": "guess-z", "title": "Z", "modes": ["coached"]}],
+        }
 
     def start(self, content_id, mode):
         if content_id == "nope":
@@ -51,7 +59,6 @@ def client():
 
 
 def _reassemble(sse_text: str) -> tuple[str, bool]:
-    """Collapse an SSE body into the joined tokens and whether [DONE] arrived."""
     tokens, done = [], False
     for evt in sse_text.split("\n\n"):
         line = next((x for x in evt.splitlines() if x.startswith("data:")), None)
@@ -65,7 +72,14 @@ def _reassemble(sse_text: str) -> tuple[str, bool]:
     return "".join(tokens), done
 
 
-def test_create_session_returns_id_and_opening(client):
+def test_content_list_groups_all_three_types(client):
+    body = client.get("/api/content").json()
+    assert [c["id"] for c in body["cases"]] == ["case-x"]
+    assert body["lessons"][0]["id"] == "lesson-y"
+    assert body["guesstimates"][0]["modes"] == ["coached"]
+
+
+def test_create_session_returns_id_and_state(client):
     r = client.post("/api/session", json={"content_id": "case-x", "mode": "standard"})
     assert r.status_code == 200
     body = r.json()
@@ -83,7 +97,7 @@ def test_message_streams_tokens_and_reassembles(client):
     assert r.status_code == 200
     assert r.headers["content-type"].startswith("text/event-stream")
     text, done = _reassemble(r.text)
-    assert text == "Hello world" and done  # tokens reassembled, stream terminated
+    assert text == "Hello world" and done
 
 
 def test_message_on_unknown_session_is_404(client):
@@ -91,12 +105,12 @@ def test_message_on_unknown_session_is_404(client):
     assert r.status_code == 404
 
 
-def test_advance_walks_phase_then_terminal_with_reveal(client):
+def test_action_advance_walks_to_terminal(client):
     sid = client.post("/api/session", json={"content_id": "c"}).json()["session_id"]
-    first = client.post(f"/api/session/{sid}/advance").json()
-    assert first == {"terminal": False, "phase": "structuring"}
-    end = client.post(f"/api/session/{sid}/advance").json()
-    assert end["terminal"] and end["model_answer"] == "MODEL"
+    first = client.post(f"/api/session/{sid}/action", json={"action": "advance"}).json()
+    assert first["phase"] == "structuring" and not first["done"]
+    end = client.post(f"/api/session/{sid}/action", json={"action": "advance"}).json()
+    assert end["done"] and end["model_answer"] == "MODEL"
 
 
 def test_index_is_served(client):

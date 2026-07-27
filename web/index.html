@@ -9,24 +9,20 @@
   <body>
     <header><h1>CasePrep Local</h1></header>
 
-    <section id="start">
-      <input id="content-id" placeholder="content id (e.g. case-brewbar-diagnostic)" />
-      <select id="mode">
-        <option value="standard">standard</option>
-        <option value="guided">guided</option>
-      </select>
-      <button id="start-btn">Start case</button>
+    <section id="library">
+      <h2>Library</h2>
+      <div id="content-list">Loading…</div>
     </section>
 
-    <main id="case" hidden>
-      <p id="prompt"></p>
-      <div id="phase" class="phase"></div>
+    <main id="session" hidden>
+      <button id="quit-btn" class="link">← library</button>
+      <div id="view"></div>
       <div id="transcript"></div>
       <form id="composer">
         <input id="message" placeholder="your response…" autocomplete="off" />
         <button type="submit">Send</button>
-        <button type="button" id="next-btn">Next phase</button>
       </form>
+      <div id="controls"></div>
     </main>
 
     <script src="/static/app.js"></script>

@@ -188,7 +188,7 @@ Depends: T-019 equivalents via API; G-2 settled.
 Accept: localhost-only bind; a typed case runs over HTTP with streamed tokens.
 Tests: endpoint contract tests with fake engine; stream reassembly.
 
-**T-041 · Chat pane + session controls** `[ ]`
+**T-041 · Chat pane + session controls** `[x]`
 Goal: core conversation UI incl. mode selection and library list from the loader.
 Files: `web/`.
 Depends: T-040.
