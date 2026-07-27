@@ -57,6 +57,7 @@ class LadderConfig(BaseModel):
 class ScoringConfig(BaseModel):
     max_chunk_tokens: int = 3000  # per-call ceiling for chunked scoring (ADR-6)
     min_evidence_quotes: int = 3
+    hint_cost: float = 1.0  # points off every dimension per hint used (T-065)
 
 
 class Config(BaseModel):

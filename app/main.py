@@ -45,6 +45,7 @@ from app.engine.lesson_flow import LessonFlow
 from app.engine.math_checker import check_final, check_segment
 from app.engine.scoring import (
     ScoringError,
+    apply_hint_penalty,
     assemble_feedback,
     persist_scorecard,
     reveal_model_answer,
@@ -323,6 +324,11 @@ class LiveCaseSession:
             except KeyError as e:
                 return {**self.state(), "error": str(e)}
             return self.state()
+        if action == "hint":  # standard/guided only; costs score (T-065)
+            try:
+                return {**self.state(), "hint": self._flow.hint()}
+            except CoachError as e:
+                return {**self.state(), "error": str(e)}
         raise HTTPException(400, f"unknown action: {action}")
 
     def review(self) -> dict:
@@ -385,6 +391,9 @@ class LiveCaseSession:
         except ScoringError:
             card = None
         if card is not None:
+            card = apply_hint_penalty(
+                card, self._flow.hints_used, self._config.scoring.hint_cost
+            )
             persist_scorecard(self._session.store, self._session.session_id, card)
             if self._config.score_visibility:
                 payload["feedback"] = assemble_feedback(self._flow.case, card)
@@ -565,7 +574,9 @@ class LiveEngine:
                 {
                     "id": c.meta.id,
                     "title": c.meta.title,
-                    "modes": ["standard", "guided"],
+                    # cold is always selectable (library never locked, G-10); the
+                    # dashboard only *recommends* it after graduation (T-061).
+                    "modes": ["standard", "guided", "cold"],
                 }
                 for c in sorted(self._library.cases.values(), key=lambda x: x.meta.id)
             ],

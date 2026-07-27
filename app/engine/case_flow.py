@@ -53,6 +53,7 @@ class CaseFlow:
         self._exhibit_ids = {e.id for e in case.exhibits}
         self._unlocked: set[str] = set()
         self._attempted = False
+        self._hints_used = 0
         self._now = now
         self._phase_started = now()
         self._timings: list[dict] = []
@@ -149,6 +150,24 @@ class CaseFlow:
         if role == "user":
             self._attempted = True  # the candidate's turn is their attempt
         self._transcript.append({"role": role, "content": content})
+
+    # --- hints (T-065) -------------------------------------------------------
+    # Standard/guided allow hints at a score cost; cold mode disables them for
+    # pacing pressure. The hint is a nudge from the phase's pass_criteria (not the
+    # model answer), so it never leaks the solution (ADR-1).
+
+    @property
+    def hints_used(self) -> int:
+        return self._hints_used
+
+    def hint(self) -> str:
+        if self._mode == "cold":
+            raise CoachError("hints are disabled in cold mode")
+        self._hints_used += 1
+        return (
+            self.current_phase.pass_criteria
+            or "Structure your approach before diving into the numbers."
+        )
 
     # --- guided coach step (T-018) -------------------------------------------
 

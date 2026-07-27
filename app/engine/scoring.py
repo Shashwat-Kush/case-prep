@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 import time
 from collections.abc import Callable, Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from app.config import Config
 from app.engine.content_models import Case
@@ -56,6 +56,7 @@ class DimensionScore:
 @dataclass(frozen=True)
 class Scorecard:
     scores: list[DimensionScore]
+    hints_used: int = 0
 
     @property
     def average(self) -> float:
@@ -183,6 +184,18 @@ def score_case(
     return Scorecard([results[d] for d in CASE_DIMENSIONS if d in results])
 
 
+def apply_hint_penalty(scorecard: Scorecard, hints_used: int, cost: float) -> Scorecard:
+    """Cost hints against the scorecard (T-065): dock `round(hints_used * cost)`
+    points off every dimension, floored at 1 so a score never drops out of range.
+    The penalty is baked into the persisted scores, so it also lowers the ladder
+    average that governs graduation."""
+    penalty = round(hints_used * cost)
+    if penalty <= 0:
+        return replace(scorecard, hints_used=hints_used)
+    docked = [replace(s, score=max(1, s.score - penalty)) for s in scorecard.scores]
+    return Scorecard(docked, hints_used=hints_used)
+
+
 def persist_scorecard(store, session_id: int, scorecard: Scorecard) -> None:
     for s in scorecard.scores:
         store.add_scorecard(
@@ -231,6 +244,8 @@ def assemble_feedback(case: Case, scorecard: Scorecard) -> str:
     for s in scorecard.scores:
         anchor = _anchor_for(getattr(case.rubric, s.dimension).anchors, s.score)
         lines.append(f"{s.dimension}: {s.score}/5 — {anchor}")
+    if scorecard.hints_used:
+        lines.append(f"({scorecard.hints_used} hint(s) used — scores docked)")
     nxt = study_next(scorecard)
     if nxt:
         lines.append(f"\nWhat to study next: {', '.join(nxt)}")

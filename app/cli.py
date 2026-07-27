@@ -24,6 +24,7 @@ from app.engine.drills import KINDS, run_sprint
 from app.engine.lesson_flow import LessonFlow
 from app.engine.scoring import (
     ScoringError,
+    apply_hint_penalty,
     assemble_feedback,
     persist_scorecard,
     reveal_model_answer,
@@ -132,6 +133,7 @@ def _end_feedback(flow, chat, emit, session, config) -> None:
         except ScoringError:
             card = None
         if card is not None:
+            card = apply_hint_penalty(card, flow.hints_used, config.scoring.hint_cost)
             emit("\n" + assemble_feedback(flow.case, card) + "\n")
             if session is not None:
                 persist_scorecard(session.store, session.session_id, card)

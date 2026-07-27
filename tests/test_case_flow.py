@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from app.engine.case_flow import CaseComplete, CaseFlow
+from app.engine.case_flow import CaseComplete, CaseFlow, CoachError
 from app.engine.content_models import Case
 
 FIXTURE = (
@@ -95,6 +95,22 @@ def test_coach_persona_context():
     blob = _blob(flow.context("coach"))
     assert "A strong candidate isolates whether the problem is revenue or cost." in blob
     assert "Renegotiate freight contracts and consider rail." not in blob
+
+
+def test_hints_counted_in_standard_mode():
+    flow = CaseFlow(_case(), mode="standard")
+    assert flow.hints_used == 0
+    h = flow.hint()
+    assert isinstance(h, str) and h  # a non-empty nudge, not the model answer
+    flow.hint()
+    assert flow.hints_used == 2
+
+
+def test_cold_mode_disables_hints():
+    flow = CaseFlow(_case(), mode="cold")  # cold is a valid mode, never blocked
+    with pytest.raises(CoachError, match="cold mode"):
+        flow.hint()
+    assert flow.hints_used == 0
 
 
 def test_no_phases_rejected():

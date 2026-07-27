@@ -80,6 +80,7 @@ async function act(action, value) {
   });
   const s = await res.json();
   if (s.check) stepCheck(s.check, s.submitted); // coached guesstimate (T-045)
+  if (s.hint) addTurn("model", "💡 Hint: " + s.hint); // T-065; costs score
   render(s);
 }
 
@@ -179,6 +180,7 @@ function renderCase(s, view, controls) {
     button(controls, "📊 " + id, () => viewExhibit(id));
   }
   if (s.mode === "guided") button(controls, "Reveal approach", () => act("reveal"));
+  if (s.mode !== "cold") button(controls, "💡 Hint", () => act("hint")); // costs score
   button(controls, s.last ? "Finish" : "Next phase", () => act("advance"));
 }
 

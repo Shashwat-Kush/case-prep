@@ -47,3 +47,4 @@ ladder:
 scoring:
   max_chunk_tokens: 3000    # per-call token ceiling; scoring splits to stay under it
   min_evidence_quotes: 3
+  hint_cost: 1.0            # points deducted per hint used (T-065)

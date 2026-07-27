@@ -308,14 +308,14 @@ Depends: T-063, T-013.
 Accept: cards sourced live from benchmarks.json; offline-functional.
 Tests: card generation from fixture benchmarks.
 
-**T-065 · Standard + cold modes + hints** `[ ]`
+**T-065 · Standard + cold modes + hints** `[x]`
 Goal: cold mode (no hints, pacing pressure), hints with score cost in standard/cold, wired to graduation.
 Files: `app/engine/case_flow.py` (extend), scoring hook.
 Depends: T-061.
 Accept: hint usage recorded and costed in scorecard; cold mode reachable only via graduation rule (recommendation-level, not a hard lock).
 Tests: hint costing; mode gating recommendation.
 
-**T-066 · check_limits script** `[ ]`
+**T-066 · check_limits script** `[x]`
 Goal: print per-provider remaining headroom from live headers.
 Files: `scripts/check_limits.py`.
 Depends: T-028.

@@ -12,6 +12,7 @@ from app.engine.scoring import (
     DimensionScore,
     Scorecard,
     ScoringError,
+    apply_hint_penalty,
     assemble_feedback,
     build_messages,
     call_tokens,
@@ -133,6 +134,30 @@ def test_reveal_is_case_file_content_verbatim():
     assert ma.walkthrough in reveal
     for insight in ma.key_insights:
         assert insight in reveal
+
+
+def test_hint_penalty_docks_every_dimension_and_floors_at_one():
+    card = Scorecard(
+        [DimensionScore("structure", 4, ["q"]), DimensionScore("math", 1, [])]
+    )
+    docked = apply_hint_penalty(card, hints_used=2, cost=1.0)  # -2 points each
+    assert docked.hints_used == 2
+    by_dim = {s.dimension: s.score for s in docked.scores}
+    assert by_dim["structure"] == 2  # 4 - 2
+    assert by_dim["math"] == 1  # 1 - 2 floored at 1
+
+
+def test_no_hints_leaves_scores_unchanged():
+    card = Scorecard([DimensionScore("structure", 4, ["q"])])
+    same = apply_hint_penalty(card, hints_used=0, cost=1.0)
+    assert same.scores[0].score == 4 and same.hints_used == 0
+
+
+def test_feedback_mentions_hints_used():
+    card = Scorecard(
+        [DimensionScore(d, 3, ["q"]) for d in CASE_DIMENSIONS], hints_used=1
+    )
+    assert "1 hint(s) used" in assemble_feedback(_case(), card)
 
 
 def test_feedback_references_rubric_anchors():
