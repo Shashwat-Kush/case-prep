@@ -107,7 +107,7 @@ Tests: scripted transcript drives a full guided case against a fake LLM client; 
 
 ## Phase 2
 
-**T-020 · SQLite store** `[ ]`
+**T-020 · SQLite store** `[x]`
 Goal: schema + persistence layer for sessions, turns, scorecards, concept_coverage, ladder_state.
 Files: `app/db/store.py`, `app/db/schema.sql`.
 Depends: T-001. Docs: 02_ARCHITECTURE §6.
