@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CasePrep Local</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header><h1>CasePrep Local</h1></header>
+
+    <section id="start">
+      <input id="content-id" placeholder="content id (e.g. case-brewbar-diagnostic)" />
+      <select id="mode">
+        <option value="standard">standard</option>
+        <option value="guided">guided</option>
+      </select>
+      <button id="start-btn">Start case</button>
+    </section>
+
+    <main id="case" hidden>
+      <p id="prompt"></p>
+      <div id="phase" class="phase"></div>
+      <div id="transcript"></div>
+      <form id="composer">
+        <input id="message" placeholder="your response…" autocomplete="off" />
+        <button type="submit">Send</button>
+        <button type="button" id="next-btn">Next phase</button>
+      </form>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

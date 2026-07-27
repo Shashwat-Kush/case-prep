@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+}
+body {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem;
+  line-height: 1.5;
+}
+h1 {
+  font-size: 1.25rem;
+}
+input,
+select,
+button {
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+}
+#composer {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+#message {
+  flex: 1;
+}
+.phase {
+  font-weight: 600;
+  margin: 0.5rem 0;
+  opacity: 0.8;
+}
+.turn {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  white-space: pre-wrap;
+}
+.turn.user {
+  background: rgba(120, 120, 255, 0.15);
+}
+.turn.assistant {
+  background: rgba(120, 120, 120, 0.12);
+}
+.turn.model {
+  background: rgba(80, 200, 120, 0.15);
+}

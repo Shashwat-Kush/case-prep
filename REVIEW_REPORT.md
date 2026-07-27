@@ -20,6 +20,7 @@ Recommendation: phase-scoped whitelist + LLM intent classification returning a c
 
 **G-2 · Frontend stack and streaming transport undecided.** React vs plain HTML/JS; SSE vs WebSocket. The original spec deliberately deferred this.
 Recommendation: plain HTML/JS + SSE for one-user simplicity unless the notes scratchpad and dashboard argue for React. Settle at Phase 3 start. Blocks: T-040.
+**SETTLED (2026-07-28, T-040): plain HTML/JS + SSE.** One-directional token streaming (browser POSTs a turn, server streams the reply) is all the case loop needs; no WebSocket bidirectionality, no build step. Revisit only if the dashboard (T-062) demands a component framework. See docs/decisions.md.
 
 **G-3 · "Recent transcript window" size undefined.** ADR-2 depends on it; token/min math (02_ARCHITECTURE §3) assumes trimming but no number exists.
 Recommendation: config default of last 12 turns or ~2,000 tokens, whichever is smaller; tune during Phase 1. Blocks: T-016 (weakly).

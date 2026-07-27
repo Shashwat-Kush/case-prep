@@ -181,7 +181,7 @@ Tests: router with offline flag selects Ollama; integration smoke documented as 
 
 ## Phase 3
 
-**T-040 · FastAPI app + streaming transport** `[ ]`
+**T-040 · FastAPI app + streaming transport** `[x]`
 Goal: serve frontend; stream turns via the transport chosen in G-2 (SSE or WebSocket).
 Files: `app/main.py`, `web/` scaffold.
 Depends: T-019 equivalents via API; G-2 settled.

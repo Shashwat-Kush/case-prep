@@ -3,6 +3,22 @@
 Implementation-time decisions, verified provider limits, and deviations from the
 handbook (04_ENGINEERING_RULES §10). Newest first.
 
+## 2026-07-28 · G-2 settled: plain HTML/JS + SSE transport (T-040)
+
+Frontend is plain HTML/JS (no framework, no build step); streaming transport is
+**Server-Sent Events** over plain HTTP. The case loop is one-directional (browser
+POSTs a turn → server streams reply tokens), so SSE fits exactly and avoids
+WebSocket bidirectionality. The browser holds only an opaque `session_id`; all
+case state lives server-side in the engine (ADR-2). API: `POST /api/session`
+(create), `POST /api/session/{sid}/message` (SSE token stream), `POST
+/api/session/{sid}/advance` (phase → terminal reveal). `create_app(engine)` takes
+the engine as a seam so route contracts test against a fake. Revisit the framework
+choice only if the dashboard (T-062) needs components.
+
+Side effect: `Store` now opens sqlite with `check_same_thread=False` — FastAPI
+runs sync endpoints in a worker thread, so the single-user connection must cross
+threads. Safe because access is sequential (one user).
+
 ## 2026-07-28 · Router failover: lazy-stream priming + taxonomy mapping (T-028)
 
 The chat stream is lazy — HTTP status and connection errors surface only on the

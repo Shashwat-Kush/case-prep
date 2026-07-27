@@ -5,7 +5,7 @@ The shape of the system and its runtime behavior. Feature intent lives in [01_PR
 ## 1. System overview
 
 ```
-Browser (frontend; framework choice open, see REVIEW_REPORT G-2)
+Browser (frontend: plain HTML/JS + SSE — G-2 settled, T-040)
   |  mic audio (push-to-talk), text, UI events
   v
 FastAPI backend (Python, single process)     <- owns all state (ADR-2)

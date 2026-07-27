@@ -28,7 +28,10 @@ class Store:
         now: Callable[[], datetime] = _utcnow,
     ):
         self._now = now
-        self._conn = sqlite3.connect(str(db_path))
+        # check_same_thread=False: FastAPI runs sync endpoints in a worker thread,
+        # so the connection must outlive its creating thread. Safe here because
+        # this is a single-user app with sequential access (02_ARCHITECTURE §6).
+        self._conn = sqlite3.connect(str(db_path), check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA foreign_keys = ON")
         self._conn.executescript(_SCHEMA.read_text())
