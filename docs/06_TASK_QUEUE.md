@@ -135,7 +135,7 @@ Depends: T-010. Docs: ADR-3; REVIEW_REPORT G-4 (number-parsing spec) must be set
 Accept: parses integers, decimals, Indian and Western groupings, %/lakh/crore/million/billion suffixes per the settled spec; tolerance respected; common_errors matched when close to a known-wrong value.
 Tests: parsing matrix; correct/incorrect/tolerance-edge checkpoints; common-error identification.
 
-**T-024 · Math checker: guesstimate segments** `[ ]`
+**T-024 · Math checker: guesstimate segments** `[x]`
 Goal: verify each segment estimate against tree values and the final answer against answer_range.
 Files: `app/engine/math_checker.py` (extend).
 Depends: T-023, T-022.

@@ -9,9 +9,11 @@ never asked to verify arithmetic; it only communicates these verdicts.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 
-from app.engine.content_models import MathCheckpoint
+from app.engine.content_models import Guesstimate, MathCheckpoint, TreeSegment
+from app.engine.guess_flow import SegmentEstimate
 
 # Scale suffixes -> multiplier. '%' handled as 0.01. Bare m/b excluded on purpose.
 _SCALES = {
@@ -74,3 +76,43 @@ def check_checkpoint(cp: MathCheckpoint, text: str) -> CheckResult:
                 return CheckResult(False, None, ce.note, nums)
 
     return CheckResult(False, None, None, nums)
+
+
+# --- Guesstimate segment checks (T-024) --------------------------------------
+
+
+@dataclass(frozen=True)
+class SegmentCheck:
+    segment: str
+    user_value: float
+    expected: float
+    ok: bool
+
+
+@dataclass(frozen=True)
+class RangeCheck:
+    value: float
+    low: float
+    high: float
+    in_range: bool
+
+
+def check_segment(segment: TreeSegment, user_value: float) -> SegmentCheck:
+    """Judge a user's segment estimate against the tree value. Tolerance is
+    relative (a fraction of the expected value); see docs/decisions.md."""
+    expected = segment.value
+    band = abs(segment.tolerance * expected)
+    ok = abs(user_value - expected) <= band + 1e-9
+    return SegmentCheck(segment.segment, user_value, expected, ok)
+
+
+def check_estimates(
+    guess: Guesstimate, estimates: Sequence[SegmentEstimate]
+) -> list[SegmentCheck]:
+    tree = {s.segment: s for s in guess.approach.tree}
+    return [check_segment(tree[e.segment], e.value) for e in estimates]
+
+
+def check_final(guess: Guesstimate, final_value: float) -> RangeCheck:
+    r = guess.answer_range
+    return RangeCheck(final_value, r.low, r.high, r.low <= final_value <= r.high)

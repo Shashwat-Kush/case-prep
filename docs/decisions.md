@@ -88,3 +88,13 @@ The math checker numerically matches only items that carry a `value`; string-onl
 items remain valid content (seed authoring style) but are not numerically
 matched. This keeps the YAGNI relaxation for authors while letting a checkpoint
 opt into known-wrong-value detection.
+
+## Guesstimate segment tolerance is relative (T-024)
+
+When judging a user's segment estimate against the tree's expected value, the
+segment `tolerance` is treated as a RELATIVE fraction of the expected value
+(band = |tolerance * expected|), because guesstimates are order-of-magnitude:
+tolerance 0 means "state it exactly" (benchmark-pinned segments), 1.0 means
+"within a factor of two". This differs from content validation (T-011), where
+derivations recompute exactly so the absolute check is immaterial in practice.
+The final answer is checked against answer_range [low, high].
