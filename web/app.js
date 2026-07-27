@@ -75,7 +75,20 @@ async function act(action, value) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action, value: value ?? null }),
   });
-  render(await res.json());
+  const s = await res.json();
+  if (s.check) stepCheck(s.check, s.submitted); // coached guesstimate (T-045)
+  render(s);
+}
+
+// Per-step math verdict, kept in the transcript so it survives step re-renders.
+function stepCheck(check, submitted) {
+  const v = submitted ? submitted.value : "";
+  addTurn(
+    "model",
+    check.ok
+      ? `✓ ${check.segment}: ${v} is in the expected ballpark.`
+      : `✗ ${check.segment}: ${v} looks too ${check.direction} — reconsider.`,
+  );
 }
 
 // --- transcript + streaming -------------------------------------------------
@@ -225,6 +238,15 @@ function renderGuess(s, view, controls) {
     $("composer").hidden = true;
     note(view, "Complete. Your estimates:");
     for (const e of s.estimates) note(view, `${e.segment}: ${e.value}`);
+    if (s.final_check) {
+      const f = s.final_check;
+      note(
+        view,
+        f.in_range
+          ? `✓ Final ${f.value} lands in the expected range ${f.low}–${f.high}.`
+          : `✗ Final ${f.value} is outside the expected range ${f.low}–${f.high}.`,
+      );
+    }
     return;
   }
   note(view, "Step: " + s.step);

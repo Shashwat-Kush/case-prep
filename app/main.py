@@ -31,6 +31,7 @@ from app.engine.case_flow import CaseFlow, CoachError
 from app.engine.content_loader import ContentLoader
 from app.engine.guess_flow import GuessComplete, GuessFlow, GuessFlowError
 from app.engine.lesson_flow import LessonFlow
+from app.engine.math_checker import check_final, check_segment
 from app.engine.scoring import (
     ScoringError,
     assemble_feedback,
@@ -347,6 +348,14 @@ class LiveGuessSession:
             s["estimates"] = [
                 {"segment": e.segment, "value": e.value} for e in self._flow.estimates
             ]
+            if self._flow.mode == "coached" and self._flow.estimates:
+                rc = check_final(self._flow.guess, self._flow.estimates[-1].value)
+                s["final_check"] = {
+                    "value": rc.value,
+                    "low": rc.low,
+                    "high": rc.high,
+                    "in_range": rc.in_range,
+                }
         return s
 
     def reply_tokens(self, text: str) -> Iterator[str]:
@@ -366,13 +375,24 @@ class LiveGuessSession:
             return self.state()
         if action == "estimate":
             try:
+                seg = self._flow.current_segment  # capture before submit advances
                 est = self._flow.submit_estimate(float(value or "nan"))
             except (GuessFlowError, TypeError, ValueError) as e:
                 return {**self.state(), "error": str(e)}
-            return {
+            out = {
                 **self.state(),
                 "submitted": {"segment": est.segment, "value": est.value},
             }
+            if self._flow.mode == "coached":  # per-step verification inline (T-045)
+                chk = check_segment(seg, est.value)
+                out["check"] = {
+                    "segment": chk.segment,
+                    "ok": chk.ok,
+                    "direction": None
+                    if chk.ok
+                    else ("high" if est.value > chk.expected else "low"),
+                }
+            return out
         raise HTTPException(400, f"unknown action: {action}")
 
 

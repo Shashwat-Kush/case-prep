@@ -179,3 +179,49 @@ def test_coached_guesstimate_runs_all_steps_to_completion():
     while not state.get("done"):
         state = _act(client, sid, "advance")
     assert state["done"] and state["estimates"]
+
+
+def _to_estimation(client, sid):
+    state = _act(client, sid, "advance")
+    while state["step"] != "estimation":
+        state = _act(client, sid, "advance")
+    return state
+
+
+def test_coached_estimate_returns_inline_verification():
+    # delhi_pop = 20,000,000 with zero tolerance: an exact hit verifies, a value
+    # above it fails with a "high" direction hint (T-045 acceptance).
+    client, _ = _client()
+    sid = _start(client, "guess-petrol-pumps-delhi", mode="coached")["session_id"]
+    _to_estimation(client, sid)
+    ok = _act(client, sid, "estimate", "20000000")
+    assert ok["check"] == {"segment": "delhi_pop", "ok": True, "direction": None}
+
+
+def test_coached_estimate_flags_wrong_step_with_direction():
+    client, _ = _client()
+    sid = _start(client, "guess-petrol-pumps-delhi", mode="coached")["session_id"]
+    _to_estimation(client, sid)
+    bad = _act(client, sid, "estimate", "30000000")
+    assert bad["check"] == {"segment": "delhi_pop", "ok": False, "direction": "high"}
+
+
+def test_timed_guesstimate_has_no_inline_check():
+    client, _ = _client()
+    sid = _start(client, "guess-petrol-pumps-delhi", mode="timed")["session_id"]
+    _to_estimation(client, sid)
+    state = _act(client, sid, "estimate", "30000000")
+    assert "check" not in state
+
+
+def test_coached_completion_reports_final_range_check():
+    client, _ = _client()
+    sid = _start(client, "guess-petrol-pumps-delhi", mode="coached")["session_id"]
+    state = _to_estimation(client, sid)
+    while state["step"] == "estimation":
+        state = _act(client, sid, "estimate", "600")  # last estimate = final answer
+    while not state.get("done"):
+        state = _act(client, sid, "advance")
+    fc = state["final_check"]
+    assert fc["value"] == 600 and fc["low"] == 400 and fc["high"] == 800
+    assert fc["in_range"] is True

@@ -216,7 +216,7 @@ Depends: T-028, T-040.
 Accept: failover visibly updates the indicator.
 Tests: status endpoint reflects router state.
 
-**T-045 · Lesson reader + guesstimate step view** `[ ]`
+**T-045 · Lesson reader + guesstimate step view** `[x]`
 Goal: dedicated UIs for lesson sections/quiz and guesstimate steps with per-step math feedback.
 Files: `web/`.
 Depends: T-041, T-022, T-024.

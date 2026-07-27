@@ -40,8 +40,10 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 
 - [ ] Prompt and step show; "Next step" advances clarify → approach → segmentation.
 - [ ] In estimation, a number input appears per segment; "Submit estimate" advances.
+- [ ] Each submitted estimate shows an inline verdict in the transcript (✓ in the
+      ballpark, or ✗ too high/too low) — coached mode only; timed mode shows none.
 - [ ] After the last segment, remaining steps advance to a completion summary
-      listing every estimate.
+      listing every estimate, plus a final range check (✓/✗ vs. the answer range).
 
 ## Provider status (T-044)
 
