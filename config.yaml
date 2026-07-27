@@ -42,3 +42,8 @@ score_visibility: false     # hidden for first sessions (PRD §5)
 ladder:
   graduation_min_avg: 3.0   # standard 3+/5 unlocks cold (PRD §5, G-10)
   hidden_score_sessions: 3
+
+# Chunked scoring (ADR-6).
+scoring:
+  max_chunk_tokens: 3000    # per-call token ceiling; scoring splits to stay under it
+  min_evidence_quotes: 3

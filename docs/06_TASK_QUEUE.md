@@ -142,7 +142,7 @@ Depends: T-023, T-022.
 Accept: per-step verification feeds coached-mode feedback; final range check recorded for scoring.
 Tests: segment-by-segment fixture run incl. one planted wrong step.
 
-**T-025 · Chunked scoring orchestrator** `[ ]`
+**T-025 · Chunked scoring orchestrator** `[x]`
 Goal: 2-3 sequential rubric-group calls over the stored transcript; evidence quotes; provider-headroom aware.
 Files: `app/engine/scoring.py`.
 Depends: T-020, T-014. Docs: ADR-6; 01_PRD Module C.

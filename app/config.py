@@ -54,6 +54,11 @@ class LadderConfig(BaseModel):
     hidden_score_sessions: int = 3
 
 
+class ScoringConfig(BaseModel):
+    max_chunk_tokens: int = 3000  # per-call ceiling for chunked scoring (ADR-6)
+    min_evidence_quotes: int = 3
+
+
 class Config(BaseModel):
     offline: bool = False
     host: str = "127.0.0.1"
@@ -65,6 +70,7 @@ class Config(BaseModel):
     voice: str
     score_visibility: bool = False
     ladder: LadderConfig = LadderConfig()
+    scoring: ScoringConfig = ScoringConfig()
 
     def provider(self, name: str) -> ProviderConfig:
         for p in self.providers:
