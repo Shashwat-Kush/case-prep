@@ -170,7 +170,7 @@ Depends: T-014. Docs: 04_ENGINEERING_RULES §5.
 Accept: taxonomy table implemented exactly; failover recorded in logs and turn rows; offline flag never touches network.
 Tests (mandatory before merge, 04 §11): mocked 429+retry-after → exact wait; retries-exhausted → next provider; auth failure → surface once then failover; offline flag → zero HTTP calls.
 
-**T-029 · Ollama offline profile** `[ ]`
+**T-029 · Ollama offline profile** `[x]`
 Goal: local provider as last-resort/offline target.
 Files: `app/providers/llm_client.py` (base-url reuse), config profile.
 Depends: T-028; Phase 0 step 7.

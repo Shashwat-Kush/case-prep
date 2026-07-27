@@ -220,7 +220,9 @@ def _llm_grader(chat: Chat):
 
 
 def _list_content(library) -> None:
-    print("Usage: python -m app.cli <content-id> [--mode guided|standard]\n")
+    print(
+        "Usage: python -m app.cli <content-id> [--mode guided|standard] [--offline]\n"
+    )
     print("Cases:")
     for cid in sorted(library.cases):
         print(f"  {cid}")
@@ -240,6 +242,8 @@ def main(argv: list[str] | None = None) -> int:
 
     content_id = argv[0]
     mode = argv[argv.index("--mode") + 1] if "--mode" in argv else "standard"
+    if "--offline" in argv:  # the offline profile: route to local Ollama only
+        config = config.model_copy(update={"offline": True})
     window = config.context.transcript_window_turns
 
     chat: Chat = Router(config).chat
