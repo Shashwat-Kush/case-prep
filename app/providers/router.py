@@ -78,10 +78,22 @@ class Router:
         self._max_retries = int(getattr(retry, "max_retries", 2))
         self._backoff_base = float(getattr(retry, "backoff_base_s", 1.0))
         self._auth_surfaced: set[str] = set()
+        self._last_provider: str | None = None
+        self._last_ratelimit: dict[str, str] = {}
 
     @property
     def primary(self) -> ProviderConfig:
         return self._providers[0]
+
+    def status(self) -> dict:
+        """Live routing state for the UI: which provider last served and its
+        remaining headroom (T-044). `provider` is None until the first call."""
+        return {
+            "provider": self._last_provider,
+            "primary": self.primary.name,
+            "offline": self._offline,
+            "ratelimit": dict(self._last_ratelimit),
+        }
 
     def _eligible(self) -> list[ProviderConfig]:
         """Offline uses only local (keyless) providers; cloud is never called."""
@@ -151,6 +163,10 @@ class Router:
                     break  # next provider
                 else:
                     routed.record = stream.record
+                    self._last_provider = p.name
+                    self._last_ratelimit = dict(
+                        getattr(stream.record, "ratelimit", {}) or {}
+                    )
                     log.info("provider %s serving turn", p.name)
                     yield first
                     yield from it

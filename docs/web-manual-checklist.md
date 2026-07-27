@@ -43,6 +43,13 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] After the last segment, remaining steps advance to a completion summary
       listing every estimate.
 
+## Provider status (T-044)
+
+- [ ] The header shows the live provider and remaining request headroom, refreshing
+      periodically and after each turn.
+- [ ] Forcing a failover (e.g. bad primary key) flips the indicator to the fallback
+      provider and highlights it.
+
 ## Cross-cutting
 
 - [ ] Typed input always available where chat applies (composer hidden only in

@@ -54,6 +54,7 @@ class Engine(Protocol):
     def content_list(self) -> dict: ...
     def start(self, content_id: str, mode: str) -> str: ...
     def get(self, session_id: str) -> WebSession: ...
+    def status(self) -> dict: ...
 
 
 class CreateReq(BaseModel):
@@ -86,6 +87,10 @@ def create_app(engine: Engine) -> FastAPI:
     @app.get("/api/content")
     def content() -> dict:
         return engine.content_list()
+
+    @app.get("/api/status")
+    def status() -> dict:
+        return engine.status()
 
     @app.post("/api/session")
     def create_session(req: CreateReq) -> dict:
@@ -375,8 +380,9 @@ class LiveGuessSession:
 
 
 class LiveEngine:
-    def __init__(self, config: Config, library, store, chat):
+    def __init__(self, config: Config, library, store, chat, *, status=None):
         self._config = config
+        self._status = status or (lambda: {"provider": None, "ratelimit": {}})
         self._library = library
         self._store = store
         self._chat = chat
@@ -445,6 +451,9 @@ class LiveEngine:
     def get(self, session_id: str) -> WebSession:
         return self._sessions[session_id]
 
+    def status(self) -> dict:
+        return self._status()
+
 
 def main() -> None:
     import uvicorn
@@ -454,9 +463,9 @@ def main() -> None:
     config = load_config()
     library = ContentLoader(Path(".")).library
     store = Store("app.db")
-    chat = Router(config).chat
-    app = create_app(LiveEngine(config, library, store, chat))
-    uvicorn.run(app, host=config.host, port=config.port)  # localhost-only (04 §8)
+    router = Router(config)
+    engine = LiveEngine(config, library, store, router.chat, status=router.status)
+    uvicorn.run(create_app(engine), host=config.host, port=config.port)  # localhost
 
 
 if __name__ == "__main__":

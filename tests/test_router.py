@@ -139,6 +139,28 @@ def test_offline_uses_only_local_provider_and_never_calls_cloud():
     assert seen == ["ollama"]  # cloud providers never constructed -> zero cloud calls
 
 
+def _ok_with_headroom(request):
+    headers = {**RL, "x-ratelimit-remaining-requests": "42"}
+    return httpx.Response(200, headers=headers, content=SSE)
+
+
+def test_status_reports_no_provider_before_any_call():
+    router, _ = _router({"groq": _ok, "nvidia": _ok, "ollama": _ok})
+    st = router.status()
+    assert st["provider"] is None and st["primary"] == "groq"
+
+
+def test_status_reflects_serving_provider_and_updates_on_failover():
+    router, _ = _router(
+        {"groq": _always(500), "nvidia": _ok_with_headroom, "ollama": _ok}
+    )
+    router.chat(MSGS).text()  # groq exhausts retries, nvidia serves
+    st = router.status()
+    assert st["provider"] == "nvidia"  # indicator follows the failover
+    assert st["primary"] == "groq"
+    assert st["ratelimit"]["x-ratelimit-remaining-requests"] == "42"  # headroom
+
+
 def test_all_providers_failing_raises_router_error():
     router, _ = _router(
         {"groq": _always(500), "nvidia": _always(500), "ollama": _always(500)}

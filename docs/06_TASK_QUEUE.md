@@ -209,7 +209,7 @@ Depends: T-041.
 Accept: overruns recorded on the session and mentioned in feedback.
 Tests: fake-clock overrun capture.
 
-**T-044 · Provider status indicator** `[ ]`
+**T-044 · Provider status indicator** `[x]`
 Goal: show live provider + remaining headroom from captured ratelimit headers.
 Files: `web/`, status endpoint.
 Depends: T-028, T-040.

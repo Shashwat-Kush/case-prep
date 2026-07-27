@@ -110,7 +110,10 @@ async function sendMessage(text) {
       const line = evt.split("\n").find((l) => l.startsWith("data:"));
       if (!line) continue;
       const payload = line.slice(5).trim();
-      if (payload === "[DONE]") return;
+      if (payload === "[DONE]") {
+        refreshStatus(); // a turn may have triggered a failover
+        return;
+      }
       el.textContent += JSON.parse(payload).token;
     }
   }
@@ -271,6 +274,22 @@ function button(parent, label, onClick) {
   parent.append(b);
 }
 
+// --- provider status indicator (T-044) --------------------------------------
+
+async function refreshStatus() {
+  try {
+    const s = await (await fetch("/api/status")).json();
+    const el = $("provider-status");
+    const provider = s.provider || (s.offline ? "offline" : "—");
+    const remaining = (s.ratelimit || {})["x-ratelimit-remaining-requests"];
+    el.textContent =
+      "provider: " + provider + (remaining ? ` · ${remaining} req left` : "");
+    el.classList.toggle("failover", s.provider && s.provider !== s.primary);
+  } catch {
+    /* status is best-effort; ignore transient errors */
+  }
+}
+
 $("quit-btn").addEventListener("click", quit);
 $("composer").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -282,3 +301,5 @@ $("composer").addEventListener("submit", (e) => {
 });
 
 loadLibrary();
+refreshStatus();
+setInterval(refreshStatus, 5000);

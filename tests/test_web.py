@@ -52,6 +52,9 @@ class FakeEngine:
     def get(self, session_id):
         return self._sessions[session_id]  # KeyError -> 404
 
+    def status(self):
+        return {"provider": "groq", "primary": "groq", "ratelimit": {"x": "5"}}
+
 
 @pytest.fixture
 def client():
@@ -116,3 +119,8 @@ def test_action_advance_walks_to_terminal(client):
 def test_index_is_served(client):
     r = client.get("/")
     assert r.status_code == 200 and "CasePrep Local" in r.text
+
+
+def test_status_endpoint_reflects_engine_state(client):
+    body = client.get("/api/status").json()
+    assert body["provider"] == "groq" and body["ratelimit"] == {"x": "5"}
