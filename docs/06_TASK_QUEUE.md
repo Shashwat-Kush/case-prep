@@ -273,7 +273,7 @@ Tests: timing math on fixture logs.
 
 ## Phase 5
 
-**T-060 · Concept coverage map** `[ ]`
+**T-060 · Concept coverage map** `[x]`
 Goal: per-topic record of lessons done and case types attempted per mode.
 Files: `app/engine/progress.py`, DB usage.
 Depends: T-020, T-017.

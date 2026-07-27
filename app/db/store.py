@@ -68,6 +68,10 @@ class Store:
         ).fetchone()
         return dict(row) if row else None
 
+    def list_sessions(self) -> list[dict]:
+        rows = self._conn.execute("SELECT * FROM sessions ORDER BY id").fetchall()
+        return [dict(r) for r in rows]
+
     # --- turns ---------------------------------------------------------------
 
     def add_turn(
