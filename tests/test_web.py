@@ -58,6 +58,9 @@ class FakeEngine:
     def transcribe(self, audio):
         return {"transcript": None, "degraded": True}
 
+    def speak(self, sentence):
+        return None
+
 
 @pytest.fixture
 def client():

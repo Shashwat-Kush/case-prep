@@ -71,15 +71,19 @@ def _scoring_chat(evidence):
     return chat
 
 
-def _reassemble(sse_text: str) -> str:
-    tokens = []
+def _events(sse_text: str) -> list[dict]:
+    out = []
     for evt in sse_text.split("\n\n"):
         line = next((x for x in evt.splitlines() if x.startswith("data:")), None)
         if line:
             payload = line[len("data:") :].strip()
             if payload != "[DONE]":
-                tokens.append(json.loads(payload)["token"])
-    return "".join(tokens)
+                out.append(json.loads(payload))
+    return out
+
+
+def _reassemble(sse_text: str) -> str:
+    return "".join(e["token"] for e in _events(sse_text) if "token" in e)
 
 
 def _start(client, content_id, mode="standard"):
@@ -309,6 +313,50 @@ def test_audio_endpoint_returns_transcript_when_stt_wired():
             "candidates": [150000000.0, 500000000.0],
         }
     ]
+
+
+def test_message_interleaves_spoken_audio_when_requested():
+    import base64
+
+    store = Store(":memory:")
+    engine = LiveEngine(
+        load_config(),
+        _library(),
+        store,
+        _fake_chat(),  # yields "Tell me more." -> one sentence
+        speak=lambda s: b"RIFF" + s.encode(),
+    )
+    client = TestClient(create_app(engine))
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    r = client.post(f"/api/session/{sid}/message", json={"text": "hi", "speak": True})
+    events = _events(r.text)
+    audio = [e["audio"] for e in events if "audio" in e]
+    assert len(audio) == 1  # the one complete sentence was synthesized
+    assert base64.b64decode(audio[0]) == b"RIFF" + b"Tell me more."
+    assert _reassemble(r.text) == "Tell me more."  # text still streams
+
+
+def test_typed_turn_has_no_audio_events():
+    store = Store(":memory:")
+    engine = LiveEngine(
+        load_config(), _library(), store, _fake_chat(), speak=lambda s: b"RIFF"
+    )
+    client = TestClient(create_app(engine))
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    r = client.post(f"/api/session/{sid}/message", json={"text": "hi"})  # speak omitted
+    assert not [e for e in _events(r.text) if "audio" in e]
+
+
+def test_speak_requested_but_tts_degraded_still_streams_text():
+    store = Store(":memory:")
+    engine = LiveEngine(
+        load_config(), _library(), store, _fake_chat(), speak=lambda s: None
+    )
+    client = TestClient(create_app(engine))
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    r = client.post(f"/api/session/{sid}/message", json={"text": "hi", "speak": True})
+    assert not [e for e in _events(r.text) if "audio" in e]
+    assert _reassemble(r.text) == "Tell me more."  # degrade to text only
 
 
 def test_audio_endpoint_rejects_empty_upload():

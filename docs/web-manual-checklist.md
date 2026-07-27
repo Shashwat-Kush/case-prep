@@ -73,6 +73,14 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] Denying mic permission shows a prompt to type instead, without breaking the
       session.
 
+## Spoken replies (T-053)
+
+- [ ] After a voice turn, the reply is spoken aloud — audio starts on the first
+      sentence while later sentences are still streaming as text.
+- [ ] A typed turn is silent (no TTS).
+- [ ] With Piper absent/failing, the reply still streams as text with no audio and
+      no error (degrade). Leaving the session (← library) stops any playback.
+
 ## Cross-cutting
 
 - [ ] Typed input always available where chat applies (composer hidden only in

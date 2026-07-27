@@ -15,8 +15,9 @@ contracts test against a fake; `main()` binds the live engine to localhost only.
 
 from __future__ import annotations
 
+import base64
 import json
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Protocol
 from uuid import uuid4
@@ -42,6 +43,7 @@ from app.engine.scoring import (
 from app.engine.session_manager import SessionManager
 from app.engine.stt_postprocess import clean_transcript, detect_numbers
 from app.providers.router import Router
+from app.speech.tts import PiperTTS, drain_sentences
 
 WEB_DIR = Path(__file__).parent.parent / "web"
 
@@ -58,6 +60,7 @@ class Engine(Protocol):
     def get(self, session_id: str) -> WebSession: ...
     def status(self) -> dict: ...
     def transcribe(self, audio: bytes) -> dict: ...
+    def speak(self, sentence: str) -> bytes | None: ...
 
 
 class CreateReq(BaseModel):
@@ -67,6 +70,7 @@ class CreateReq(BaseModel):
 
 class MessageReq(BaseModel):
     text: str
+    speak: bool = False  # voice turns request spoken audio; typed turns skip TTS
 
 
 class ActionReq(BaseModel):
@@ -77,6 +81,30 @@ class ActionReq(BaseModel):
 def _sse(tokens: Iterator[str]) -> Iterator[str]:
     for tok in tokens:
         yield f"data: {json.dumps({'token': tok})}\n\n"
+    yield "data: [DONE]\n\n"
+
+
+def _audio_event(speak: Callable[[str], bytes | None], sentence: str) -> str | None:
+    wav = speak(sentence)  # None on any TTS failure -> no audio event (degrade)
+    if not wav:
+        return None
+    return f"data: {json.dumps({'audio': base64.b64encode(wav).decode()})}\n\n"
+
+
+def _sse_with_audio(tokens: Iterator[str], speak: Callable[[str], bytes | None]):
+    """Stream text tokens and, as each complete sentence forms, an `audio` event
+    with its synthesized WAV — so playback starts on the first sentence while the
+    rest still streams. TTS failures simply omit the audio (04 §5 Degrade)."""
+    buf = ""
+    for tok in tokens:
+        yield f"data: {json.dumps({'token': tok})}\n\n"
+        buf += tok
+        sentences, buf = drain_sentences(buf)
+        for s in sentences:
+            if (evt := _audio_event(speak, s)) is not None:
+                yield evt
+    if buf.strip() and (evt := _audio_event(speak, buf)) is not None:
+        yield evt
     yield "data: [DONE]\n\n"
 
 
@@ -108,9 +136,9 @@ def create_app(engine: Engine) -> FastAPI:
     @app.post("/api/session/{sid}/message")
     def message(sid: str, req: MessageReq) -> StreamingResponse:
         session = _lookup(engine, sid)
-        return StreamingResponse(
-            _sse(session.reply_tokens(req.text)), media_type="text/event-stream"
-        )
+        tokens = session.reply_tokens(req.text)
+        body = _sse_with_audio(tokens, engine.speak) if req.speak else _sse(tokens)
+        return StreamingResponse(body, media_type="text/event-stream")
 
     @app.post("/api/session/{sid}/action")
     def action(sid: str, req: ActionReq) -> dict:
@@ -467,11 +495,20 @@ class LiveGuessSession:
 
 class LiveEngine:
     def __init__(
-        self, config: Config, library, store, chat, *, status=None, transcribe=None
+        self,
+        config: Config,
+        library,
+        store,
+        chat,
+        *,
+        status=None,
+        transcribe=None,
+        speak=None,
     ):
         self._config = config
         self._status = status or (lambda: {"provider": None, "ratelimit": {}})
         self._transcribe = transcribe  # Callable[[bytes], Transcription] | None
+        self._speak = speak  # Callable[[str], bytes | None] | None
         self._library = library
         self._store = store
         self._chat = chat
@@ -560,6 +597,10 @@ class LiveEngine:
             ],
         }
 
+    def speak(self, sentence: str) -> bytes | None:
+        """Synthesize one sentence to WAV, or None when TTS is unwired/failed."""
+        return self._speak(sentence) if self._speak else None
+
 
 def main() -> None:
     import uvicorn
@@ -570,6 +611,7 @@ def main() -> None:
     library = ContentLoader(Path(".")).library
     store = Store("app.db")
     router = Router(config)
+    tts = PiperTTS(config.voice)
     engine = LiveEngine(
         config,
         library,
@@ -577,6 +619,7 @@ def main() -> None:
         router.chat,
         status=router.status,
         transcribe=router.transcribe,
+        speak=tts.synthesize,
     )
     uvicorn.run(create_app(engine), host=config.host, port=config.port)  # localhost
 

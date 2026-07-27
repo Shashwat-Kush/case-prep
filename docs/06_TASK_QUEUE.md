@@ -255,7 +255,7 @@ Depends: T-051, T-023.
 Accept: unconfirmed numbers never enter checkpoint evaluation; corrections editable inline.
 Tests: cleanup cases (fifteen/fifty class errors, lakh/crore, currency); gating test.
 
-**T-053 · Piper TTS + sentence streaming** `[ ]`
+**T-053 · Piper TTS + sentence streaming** `[x]`
 Goal: synthesize on first complete sentence; stream WAV; text-only degrade.
 Files: `app/speech/tts.py`, `web/` audio playback.
 Depends: T-040.

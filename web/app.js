@@ -5,6 +5,7 @@
 const $ = (id) => document.getElementById(id);
 let sessionId = null;
 let timerId = null;
+let voiceTurn = false; // set when the pending turn came from the mic (T-053)
 
 // --- library ----------------------------------------------------------------
 
@@ -65,6 +66,7 @@ function quit() {
   clearInterval(timerId);
   timerId = null;
   sessionId = null;
+  stopAudio();
   $("number-confirm").hidden = true;
   $("session").hidden = true;
   $("library").hidden = false;
@@ -105,12 +107,14 @@ function addTurn(role, text) {
 
 async function sendMessage(text) {
   $("number-confirm").hidden = true;
+  const speak = voiceTurn; // only voice turns are spoken back (typed skip TTS)
+  voiceTurn = false;
   addTurn("user", text);
   const el = addTurn("assistant", "");
   const res = await fetch(`/api/session/${sessionId}/message`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, speak }),
   });
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
@@ -129,7 +133,9 @@ async function sendMessage(text) {
         refreshStatus(); // a turn may have triggered a failover
         return;
       }
-      el.textContent += JSON.parse(payload).token;
+      const obj = JSON.parse(payload);
+      if (obj.audio) enqueueAudio(obj.audio); // spoken sentence (T-053)
+      else if (obj.token != null) el.textContent += obj.token;
     }
   }
 }
@@ -393,6 +399,7 @@ async function uploadRecording() {
   if (out.transcript) {
     $("message").value = out.transcript; // user reviews, edits, then Sends (T-052)
     $("message").focus();
+    voiceTurn = true; // this reply should be spoken back (T-053)
     showNumberConfirm(out.numbers || []);
   } else {
     addTurn("model", "🎤 Couldn't transcribe that — please type your response.");
@@ -432,6 +439,42 @@ function showNumberConfirm(numbers) {
 function replaceNumber(from, to) {
   const msg = $("message");
   msg.value = msg.value.replace(String(from), String(to));
+}
+
+// --- spoken-reply playback (T-053) ------------------------------------------
+// WAV arrives one sentence at a time; queue so sentences play in order.
+
+let audioQueue = [];
+let audioPlaying = false;
+
+function enqueueAudio(b64) {
+  const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+  audioQueue.push(URL.createObjectURL(new Blob([bytes], { type: "audio/wav" })));
+  if (!audioPlaying) playNextAudio();
+}
+
+function playNextAudio() {
+  const url = audioQueue.shift();
+  if (!url) {
+    audioPlaying = false;
+    return;
+  }
+  audioPlaying = true;
+  const a = new Audio(url);
+  a.onended = a.onerror = () => {
+    URL.revokeObjectURL(url);
+    playNextAudio();
+  };
+  a.play().catch(() => {
+    URL.revokeObjectURL(url);
+    playNextAudio();
+  });
+}
+
+function stopAudio() {
+  audioQueue.forEach(URL.revokeObjectURL);
+  audioQueue = [];
+  audioPlaying = false;
 }
 
 const mic = $("mic");
