@@ -128,8 +128,30 @@ def create_app(engine: Engine) -> FastAPI:
         except PermissionError as e:
             raise HTTPException(403, f"exhibit is locked: {exhibit_id}") from e
 
+    @app.get("/api/session/{sid}/review")
+    def review(sid: str) -> dict:
+        getter = getattr(_lookup(engine, sid), "review", None)
+        if getter is None:
+            raise HTTPException(404, "this session has no review")
+        return getter()
+
     app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
     return app
+
+
+def _link_quotes(turns: list[dict], evidence: str | None) -> list[dict]:
+    """Match each verbatim evidence quote back to the user turn it came from
+    (persist_scorecard stores them ' | '-joined). turn_id is None if unmatched."""
+    out = []
+    for q in (evidence or "").split(" | "):
+        if not q:
+            continue
+        tid = next(
+            (t["id"] for t in turns if t["role"] == "user" and q in (t["text"] or "")),
+            None,
+        )
+        out.append({"quote": q, "turn_id": tid})
+    return out
 
 
 def _lookup(engine: Engine, sid: str) -> WebSession:
@@ -217,6 +239,36 @@ class LiveCaseSession:
                 return {**self.state(), "error": str(e)}
             return self.state()
         raise HTTPException(400, f"unknown action: {action}")
+
+    def review(self) -> dict:
+        """Transcript + scorecard for the review screen (T-046). Each evidence
+        quote is deep-linked to the turn it was lifted from so the UI can jump to
+        it. Reads straight from the store, so it works once the case has ended."""
+        store = self._session.store
+        sid = self._session.session_id
+        turns = store.get_turns(sid)
+        scores = [
+            {
+                "dimension": r["dimension"],
+                "score": r["score"],
+                "evidence": _link_quotes(turns, r["evidence"]),
+            }
+            for r in store.get_scorecards(sid)
+        ]
+        avg = round(sum(s["score"] for s in scores) / len(scores), 2) if scores else 0.0
+        return {
+            "transcript": [
+                {
+                    "id": t["id"],
+                    "role": t["role"],
+                    "text": t["text"],
+                    "phase": t["phase"],
+                }
+                for t in turns
+            ],
+            "scores": scores,
+            "average": avg,
+        }
 
     def exhibit(self, exhibit_id: str) -> dict:
         """An unlocked exhibit's renderable payload. `so_what` (the takeaway) is

@@ -105,6 +105,10 @@ button.link {
 .turn.model {
   background: rgba(80, 200, 120, 0.15);
 }
+.turn.highlight {
+  outline: 2px solid #f5a623;
+  transition: outline 0.2s;
+}
 .exhibit {
   margin: 0.75rem 0;
   padding: 0.5rem 0.75rem;

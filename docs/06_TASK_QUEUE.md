@@ -223,7 +223,7 @@ Depends: T-041, T-022, T-024.
 Accept: coached guesstimate shows per-step verification inline.
 Tests: API-level step feedback contract.
 
-**T-046 · Session review screen** `[ ]`
+**T-046 · Session review screen** `[x]`
 Goal: transcript with inline feedback annotations + scorecard.
 Files: `web/`, review endpoint.
 Depends: T-025, T-040.

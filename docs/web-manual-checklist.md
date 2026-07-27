@@ -45,6 +45,13 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] After the last segment, remaining steps advance to a completion summary
       listing every estimate, plus a final range check (✓/✗ vs. the answer range).
 
+## Session review (T-046)
+
+- [ ] After finishing a case, "Review session" opens a scorecard (per-dimension
+      score + average) above the full transcript.
+- [ ] Each evidence quote is clickable and scrolls to + briefly highlights the
+      transcript turn it was lifted from; unmatched quotes are shown disabled.
+
 ## Provider status (T-044)
 
 - [ ] The header shows the live provider and remaining request headroom, refreshing

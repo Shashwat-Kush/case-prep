@@ -48,6 +48,29 @@ def _client():
     return TestClient(create_app(engine)), store
 
 
+def _scoring_chat(evidence):
+    """Fake chat that answers conversation turns with filler but returns a valid
+    scorecard JSON (all five dims, given evidence quotes) on scoring calls."""
+    payload = json.dumps(
+        {"scores": {d: {"score": 4, "evidence": q} for d, q in evidence.items()}}
+    )
+
+    class Stream:
+        record = SimpleNamespace(provider="groq", latency_ms=1.0, ratelimit={})
+
+        def __init__(self, toks):
+            self._toks = toks
+
+        def __iter__(self):
+            yield from self._toks
+
+    def chat(messages):
+        scoring = any("scoring engine" in m["content"] for m in messages)
+        return Stream([payload] if scoring else ["Tell ", "me ", "more."])
+
+    return chat
+
+
 def _reassemble(sse_text: str) -> str:
     tokens = []
     for evt in sse_text.split("\n\n"):
@@ -212,6 +235,45 @@ def test_timed_guesstimate_has_no_inline_check():
     _to_estimation(client, sid)
     state = _act(client, sid, "estimate", "30000000")
     assert "check" not in state
+
+
+def test_review_links_scorecard_quotes_to_transcript_turns():
+    # Evidence quotes are substrings of real user turns; the review must resolve
+    # each quote to the id of the turn it came from (T-046 acceptance).
+    store = Store(":memory:")
+    evidence = {
+        "structure": ["revenue is falling"],
+        "math": ["costs rose"],
+        "judgment": ["revenue is falling"],
+        "communication": ["costs rose"],
+        "synthesis": ["revenue is falling"],
+    }
+    engine = LiveEngine(load_config(), _library(), store, _scoring_chat(evidence))
+    client = TestClient(create_app(engine))
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    client.post(f"/api/session/{sid}/message", json={"text": "our revenue is falling"})
+    client.post(f"/api/session/{sid}/message", json={"text": "costs rose sharply"})
+    state = {}
+    for _ in range(8):
+        state = _act(client, sid, "advance")
+        if state.get("done"):
+            break
+    assert state["done"]
+
+    review = client.get(f"/api/session/{sid}/review").json()
+    assert review["average"] == 4.0
+    text_by_id = {t["id"]: t["text"] for t in review["transcript"]}
+    by_dim = {s["dimension"]: s for s in review["scores"]}
+    for dim in evidence:
+        for e in by_dim[dim]["evidence"]:
+            assert e["turn_id"] is not None
+            assert e["quote"] in text_by_id[e["turn_id"]]
+
+
+def test_non_case_session_has_no_review():
+    client, _ = _client()
+    sid = _start(client, "lesson-profitability")["session_id"]
+    assert client.get(f"/api/session/{sid}/review").status_code == 404
 
 
 def test_coached_completion_reports_final_range_check():

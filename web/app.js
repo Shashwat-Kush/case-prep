@@ -159,6 +159,7 @@ function renderCase(s, view, controls) {
     }
     addTurn("model", "Model answer\n\n" + s.model_answer);
     if (s.feedback) addTurn("model", s.feedback);
+    button(controls, "Review session", showReview);
     return;
   }
   if (s.prompt) note(view, s.prompt);
@@ -294,6 +295,46 @@ function button(parent, label, onClick) {
   b.textContent = label;
   b.addEventListener("click", onClick);
   parent.append(b);
+  return b;
+}
+
+// --- session review (T-046) -------------------------------------------------
+
+async function showReview() {
+  const r = await (await fetch(`/api/session/${sessionId}/review`)).json();
+  const view = $("view");
+  clearInterval(timerId);
+  timerId = null;
+  view.innerHTML = "";
+  $("transcript").innerHTML = "";
+  $("composer").hidden = true;
+  $("controls").innerHTML = "";
+  note(view, `Scorecard — average ${r.average}/5`);
+  for (const s of r.scores) {
+    const box = document.createElement("div");
+    box.className = "group";
+    box.innerHTML = `<h3>${s.dimension} — ${s.score}/5</h3>`;
+    for (const e of s.evidence) {
+      // Each quote deep-links to the transcript turn it was lifted from.
+      const b = button(box, "“" + e.quote + "”", () => jumpToTurn(e.turn_id));
+      b.className = "link";
+      if (e.turn_id == null) b.disabled = true;
+    }
+    view.append(box);
+  }
+  for (const t of r.transcript) {
+    const el = addTurn(t.role, t.text);
+    el.id = "turn-" + t.id;
+  }
+}
+
+function jumpToTurn(id) {
+  if (id == null) return;
+  const el = document.getElementById("turn-" + id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.add("highlight");
+  setTimeout(() => el.classList.remove("highlight"), 1500);
 }
 
 // --- provider status indicator (T-044) --------------------------------------
