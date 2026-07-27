@@ -114,7 +114,7 @@ Depends: T-001. Docs: 02_ARCHITECTURE §6.
 Accept: content linked by id only; deleting a content file never orphans-crashes reads; turn rows carry role, text, timestamp, phase, provider, latency.
 Tests: round-trips per table; session with missing content id still readable.
 
-**T-021 · Transcript recording** `[ ]`
+**T-021 · Transcript recording** `[x]`
 Goal: every turn persisted through the session manager.
 Files: `app/engine/session_manager.py` (extend), wiring in flows.
 Depends: T-020, T-019.

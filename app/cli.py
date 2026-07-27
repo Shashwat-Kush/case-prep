@@ -1,11 +1,13 @@
-"""Terminal chat REPL (T-019): run a lesson or a guided/standard case end to end,
-typed and streaming, against the provider router.
+"""Terminal chat REPL (T-019, persistence wired in T-021): run a lesson or a
+guided/standard case end to end, typed and streaming, against the provider
+router, recording every turn to the store as it happens.
 
 The LLM and IO are seams so the flows can be driven by a fake in tests:
-`chat(messages) -> Iterable[str]` yields reply tokens; `read()` returns a typed
-line; `emit(text)` writes raw output. main() wires the real router + stdin/stdout.
-End-of-case feedback is a single-call placeholder until the scoring orchestrator
-(T-025).
+`chat(messages) -> stream` yields reply tokens and optionally carries a `.record`
+(provider, latency); `read()` returns a typed line; `emit(text)` writes raw
+output. Passing `session=None` runs a flow without persistence (pure-flow tests).
+main() wires the real router, store, and stdin/stdout. End-of-case feedback is a
+single-call placeholder until the scoring orchestrator (T-025).
 """
 
 from __future__ import annotations
@@ -15,9 +17,11 @@ from collections.abc import Callable, Iterable
 from pathlib import Path
 
 from app.config import load_config
+from app.db.store import Store
 from app.engine.case_flow import CaseComplete, CaseFlow, CoachError
 from app.engine.content_loader import ContentLoader
 from app.engine.lesson_flow import LessonFlow
+from app.engine.session_manager import SessionManager
 from app.llm.templates import Message
 from app.providers.router import Router
 
@@ -26,17 +30,36 @@ Read = Callable[[], str]
 Emit = Callable[[str], None]
 
 
-def stream_reply(chat: Chat, messages: list[Message], emit: Emit) -> str:
-    """Stream a reply token by token, echoing as it arrives; return the full text."""
+def stream_reply(chat: Chat, messages: list[Message], emit: Emit):
+    """Stream a reply token by token, echoing as it arrives. Returns the full
+    text and the stream's telemetry record (or None for a fake without one)."""
+    stream = chat(messages)
     parts: list[str] = []
-    for token in chat(messages):
+    for token in stream:
         emit(token)
         parts.append(token)
     emit("\n")
-    return "".join(parts)
+    return "".join(parts), getattr(stream, "record", None)
 
 
-def run_case(flow: CaseFlow, chat: Chat, read: Read, emit: Emit) -> None:
+def _persist(session, role, text, phase, record=None) -> None:
+    if session is not None:
+        session.record_turn(
+            role,
+            text,
+            phase=phase,
+            provider=getattr(record, "provider", None),
+            latency_ms=getattr(record, "latency_ms", None),
+        )
+
+
+def run_case(
+    flow: CaseFlow,
+    chat: Chat,
+    read: Read,
+    emit: Emit,
+    session: SessionManager | None = None,
+) -> None:
     case = flow.case
     persona = "coach" if flow.mode == "guided" else "interviewer"
     emit(f"Case: {case.meta.title}  [{flow.mode}]\n{case.prompt}\n")
@@ -48,18 +71,16 @@ def run_case(flow: CaseFlow, chat: Chat, read: Read, emit: Emit) -> None:
             emit(f"[Coach] {flow.coach_explain()}\n")
             emit("Attempt this phase, then /reveal, then /next.\n")
 
-        if not _phase_loop(flow, persona, chat, read, emit):
+        if not _phase_loop(flow, persona, chat, read, emit, session):
             return  # user quit
         if flow.is_terminal:
             break
         flow.advance()
 
-    _end_feedback(flow, chat, emit)
+    _end_feedback(flow, chat, emit, session)
 
 
-def _phase_loop(
-    flow: CaseFlow, persona: str, chat: Chat, read: Read, emit: Emit
-) -> bool:
+def _phase_loop(flow, persona, chat, read, emit, session) -> bool:
     """Run one phase's turns. Returns False if the user quit, else True on /next."""
     while True:
         emit("\nyou> ")
@@ -85,11 +106,13 @@ def _phase_loop(
                     emit(f"({e})\n")
             continue
         flow.record_turn("user", line)
-        reply = stream_reply(chat, flow.context(persona), emit)
+        _persist(session, "user", line, flow.phase_name)
+        reply, record = stream_reply(chat, flow.context(persona), emit)
         flow.record_turn("assistant", reply)
+        _persist(session, "assistant", reply, flow.phase_name, record)
 
 
-def _end_feedback(flow: CaseFlow, chat: Chat, emit: Emit) -> None:
+def _end_feedback(flow, chat, emit, session) -> None:
     emit("\n=== End of case — quick feedback ===\n")
     messages: list[Message] = [
         {
@@ -101,17 +124,24 @@ def _end_feedback(flow: CaseFlow, chat: Chat, emit: Emit) -> None:
         },
         *flow.transcript_window(),
     ]
-    stream_reply(chat, messages, emit)
+    reply, record = stream_reply(chat, messages, emit)
+    _persist(session, "assistant", reply, "feedback", record)
 
 
-def run_lesson(flow: LessonFlow, chat: Chat, read: Read, emit: Emit) -> None:
+def run_lesson(
+    flow: LessonFlow,
+    chat: Chat,
+    read: Read,
+    emit: Emit,
+    session: SessionManager | None = None,
+) -> None:
     while flow.stage == "teaching":
         s = flow.current_section
         emit(f"\n## {s.heading}\n{s.content}\n")
         if s.worked_example:
             emit(f"Example: {s.worked_example}\n")
         emit("\n(Ask a question, or /next to continue.)\n")
-        if not _teach_loop(flow, chat, read, emit):
+        if not _teach_loop(flow, chat, read, emit, session):
             return
 
     while flow.stage == "quiz":
@@ -123,6 +153,7 @@ def run_lesson(flow: LessonFlow, chat: Chat, read: Read, emit: Emit) -> None:
         ans = read().strip()
         if ans == "/quit":
             return
+        _persist(session, "user", ans, "quiz")
         correct = flow.answer(ans)
         emit("Correct!\n" if correct else f"Not quite — answer: {q.answer}\n")
         emit(f"{q.explanation}\n")
@@ -134,7 +165,7 @@ def run_lesson(flow: LessonFlow, chat: Chat, read: Read, emit: Emit) -> None:
     )
 
 
-def _teach_loop(flow: LessonFlow, chat: Chat, read: Read, emit: Emit) -> bool:
+def _teach_loop(flow, chat, read, emit, session) -> bool:
     """Q&A within a section. Returns False if the user quit, else True on /next."""
     while True:
         emit("\nyou> ")
@@ -144,9 +175,12 @@ def _teach_loop(flow: LessonFlow, chat: Chat, read: Read, emit: Emit) -> bool:
         if line == "/next":
             flow.advance_section()
             return True
+        phase = flow.current_section.heading
         flow.record_turn("user", line)
-        reply = stream_reply(chat, flow.context(), emit)
+        _persist(session, "user", line, phase)
+        reply, record = stream_reply(chat, flow.context(), emit)
         flow.record_turn("assistant", reply)
+        _persist(session, "assistant", reply, phase, record)
 
 
 def _llm_grader(chat: Chat):
@@ -169,7 +203,8 @@ def _llm_grader(chat: Chat):
                 ),
             },
         ]
-        return "".join(chat(messages)).strip().lower().startswith("y")
+        text, _ = stream_reply(chat, messages, lambda _: None)
+        return text.strip().lower().startswith("y")
 
     return grade
 
@@ -197,8 +232,7 @@ def main(argv: list[str] | None = None) -> int:
     mode = argv[argv.index("--mode") + 1] if "--mode" in argv else "standard"
     window = config.context.transcript_window_turns
 
-    router = Router(config)
-    chat: Chat = router.chat
+    chat: Chat = Router(config).chat
     read: Read = input
 
     def emit(text: str) -> None:
@@ -207,24 +241,35 @@ def main(argv: list[str] | None = None) -> int:
     if content_id in library.cases:
         try:
             flow = CaseFlow(
-                library.cases[content_id],
-                mode=mode,
-                transcript_window_turns=window,
+                library.cases[content_id], mode=mode, transcript_window_turns=window
             )
         except ValueError as e:
             print(e)
             return 1
+        store = Store("app.db")
+        session = SessionManager(
+            store, content_id=content_id, content_type="case", mode=mode
+        )
         try:
-            run_case(flow, chat, read, emit)
+            run_case(flow, chat, read, emit, session)
         except CaseComplete:
             pass
+        finally:
+            session.end()
+            store.close()
     elif content_id in library.lessons:
+        store = Store("app.db")
+        session = SessionManager(store, content_id=content_id, content_type="lesson")
         lesson_flow = LessonFlow(
             library.lessons[content_id],
             transcript_window_turns=window,
             free_form_grader=_llm_grader(chat),
         )
-        run_lesson(lesson_flow, chat, read, emit)
+        try:
+            run_lesson(lesson_flow, chat, read, emit, session)
+        finally:
+            session.end()
+            store.close()
     elif content_id in library.guesstimates:
         print("Guesstimates arrive in Phase 2.")
         return 1
