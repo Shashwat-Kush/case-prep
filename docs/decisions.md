@@ -3,6 +3,31 @@
 Implementation-time decisions, verified provider limits, and deviations from the
 handbook (04_ENGINEERING_RULES §10). Newest first.
 
+## 2026-07-28 · Router failover: lazy-stream priming + taxonomy mapping (T-028)
+
+The chat stream is lazy — HTTP status and connection errors surface only on the
+first token, not at `stream()`. So the router **primes** each provider (pulls one
+token inside its own generator) to classify the outcome before committing, then
+re-yields that token. This keeps streaming intact while making failover
+transparent to callers.
+
+Taxonomy → HTTP mapping (04 §5), decided where the handbook left the status
+codes implicit:
+- **Retryable:** `429` (honor `retry-after` exactly when present, else
+  exponential backoff `base·2^attempt` + jitter; max `retry.max_retries`), `5xx`,
+  and any non-connect `httpx.HTTPError` (timeouts / transient network).
+- **Failover:** `httpx.ConnectError` (connection refused) → next provider with no
+  backoff; also retries-exhausted falls through to the next provider.
+- **Fatal-for-turn:** `401/403` (auth) is surfaced **once per session** (per
+  provider) then fails over; `400` and other 4xx (invalid request) raise
+  `RouterError` with **no** failover — the same request fails everywhere.
+
+**Daily-cap** isn't distinguished from a normal `429` (would require parsing
+provider-specific bodies, YAGNI): it retries then naturally fails over when
+exhausted. **Offline** restricts the chain to keyless (local) providers, so cloud
+is never constructed or called. The router instance is the session, so the
+"surface auth once per session" state lives on it.
+
 ## 2026-07-27 · Environment: broken venv pip workaround
 
 On this machine, `python3.12 -m venv` bundles a pip whose vendored `packaging`

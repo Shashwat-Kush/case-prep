@@ -163,7 +163,7 @@ Depends: T-021, T-022, T-025.
 Accept: score-visibility flag suppresses display but not storage; ladder_state seeded.
 Tests: hidden-score path stores full scorecard; visibility flag flips display.
 
-**T-028 · Failover: Nvidia + backoff** `[ ]`
+**T-028 · Failover: Nvidia + backoff** `[x]`
 Goal: full router behavior: retry-after-honoring backoff, error taxonomy, provider order, offline flag.
 Files: `app/providers/router.py` (extend).
 Depends: T-014. Docs: 04_ENGINEERING_RULES §5.
