@@ -234,7 +234,7 @@ Tests: annotation alignment on fixture session.
 
 ## Phase 4
 
-**T-050 · Push-to-talk capture** `[ ]`
+**T-050 · Push-to-talk capture** `[x]`
 Goal: MediaRecorder capture, upload as audio file.
 Files: `web/`.
 Depends: T-041.

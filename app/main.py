@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Protocol
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -127,6 +127,19 @@ def create_app(engine: Engine) -> FastAPI:
             raise HTTPException(404, f"unknown exhibit: {exhibit_id}") from e
         except PermissionError as e:
             raise HTTPException(403, f"exhibit is locked: {exhibit_id}") from e
+
+    @app.post("/api/session/{sid}/audio")
+    async def audio(sid: str, request: Request) -> dict:
+        # Push-to-talk upload (T-050): the browser POSTs the raw MediaRecorder
+        # blob as the body (no multipart dependency). Transcription is stubbed
+        # until the STT client lands (T-051); until then the UI degrades to typed.
+        session = _lookup(engine, sid)
+        data = await request.body()
+        if not data:
+            raise HTTPException(400, "empty audio upload")
+        transcribe = getattr(session, "transcribe", None)
+        text = transcribe(data) if transcribe else None
+        return {"bytes": len(data), "transcript": text}
 
     @app.get("/api/session/{sid}/review")
     def review(sid: str) -> dict:

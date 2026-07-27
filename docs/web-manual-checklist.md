@@ -59,6 +59,15 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] Forcing a failover (e.g. bad primary key) flips the indicator to the fallback
       provider and highlights it.
 
+## Push-to-talk (T-050)
+
+- [ ] Holding 🎤 turns it red and records; the browser asks for mic permission
+      the first time. Releasing uploads the clip.
+- [ ] With no STT yet, a released clip posts a "audio received" note; typing a
+      response still works exactly as before (degrade-to-typed).
+- [ ] Denying mic permission shows a prompt to type instead, without breaking the
+      session.
+
 ## Cross-cutting
 
 - [ ] Typed input always available where chat applies (composer hidden only in

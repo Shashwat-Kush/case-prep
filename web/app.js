@@ -353,6 +353,57 @@ async function refreshStatus() {
   }
 }
 
+// --- push-to-talk (T-050) ---------------------------------------------------
+// Hold the mic to record; releasing uploads the raw blob. STT lands in T-051, so
+// for now a capture just confirms audio reached the backend; typing still works.
+
+let recorder = null;
+let audioChunks = [];
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    recorder = new MediaRecorder(stream);
+    recorder.addEventListener("dataavailable", (e) => audioChunks.push(e.data));
+    recorder.addEventListener("stop", uploadRecording);
+    recorder.start();
+    $("mic").classList.add("recording");
+  } catch {
+    alert("Microphone unavailable — please type your response.");
+  }
+}
+
+function stopRecording() {
+  $("mic").classList.remove("recording");
+  if (recorder && recorder.state !== "inactive") {
+    recorder.stop();
+    recorder.stream.getTracks().forEach((t) => t.stop());
+  }
+}
+
+async function uploadRecording() {
+  const blob = new Blob(audioChunks, { type: "audio/webm" });
+  if (!blob.size || !sessionId) return;
+  const out = await (
+    await fetch(`/api/session/${sessionId}/audio`, { method: "POST", body: blob })
+  ).json();
+  if (out.transcript) {
+    $("message").value = out.transcript; // user reviews, edits, then Sends (T-052)
+    $("message").focus();
+  } else {
+    addTurn("model", "🎤 Audio received — transcription arrives in a later step; type for now.");
+  }
+}
+
+const mic = $("mic");
+mic.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  startRecording();
+});
+mic.addEventListener("pointerup", stopRecording);
+mic.addEventListener("pointerleave", stopRecording);
+
 $("quit-btn").addEventListener("click", quit);
 $("composer").addEventListener("submit", (e) => {
   e.preventDefault();
