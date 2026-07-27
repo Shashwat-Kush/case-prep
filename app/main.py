@@ -40,6 +40,7 @@ from app.engine.scoring import (
     score_case,
 )
 from app.engine.session_manager import SessionManager
+from app.engine.stt_postprocess import clean_transcript, detect_numbers
 from app.providers.router import Router
 
 WEB_DIR = Path(__file__).parent.parent / "web"
@@ -543,12 +544,21 @@ class LiveEngine:
         return self._status()
 
     def transcribe(self, audio: bytes) -> dict:
-        """Return {transcript, degraded}. transcript is None (degraded) when STT
-        is unwired or the attempt failed — the UI then falls back to typed."""
+        """Return {transcript, degraded, numbers}. transcript is None (degraded)
+        when STT is unwired or failed — the UI then falls back to typed. On
+        success the text is number-cleaned and each stated number is surfaced for
+        confirmation before it may reach the math checker (T-052)."""
         r = self._transcribe(audio) if self._transcribe else None
         if r is None or not r.ok:
-            return {"transcript": None, "degraded": True}
-        return {"transcript": r.text, "degraded": False}
+            return {"transcript": None, "degraded": True, "numbers": []}
+        return {
+            "transcript": clean_transcript(r.text),
+            "degraded": False,
+            "numbers": [
+                {"surface": n.surface, "value": n.value, "candidates": n.candidates}
+                for n in detect_numbers(r.text)
+            ],
+        }
 
 
 def main() -> None:

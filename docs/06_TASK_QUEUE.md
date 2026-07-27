@@ -248,7 +248,7 @@ Depends: T-028, T-050.
 Accept: failure follows Degrade row (04 §5); latency logged.
 Tests: mocked endpoint happy/failure paths.
 
-**T-052 · Transcript cleanup + number confirmation** `[ ]`
+**T-052 · Transcript cleanup + number confirmation** `[x]`
 Goal: number-aware cleanup pass; UI confirm for any stated number before it reaches the math checker.
 Files: `app/engine/stt_postprocess.py`, `web/` confirm UI.
 Depends: T-051, T-023.

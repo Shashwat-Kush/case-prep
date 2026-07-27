@@ -65,6 +65,7 @@ function quit() {
   clearInterval(timerId);
   timerId = null;
   sessionId = null;
+  $("number-confirm").hidden = true;
   $("session").hidden = true;
   $("library").hidden = false;
 }
@@ -103,6 +104,7 @@ function addTurn(role, text) {
 }
 
 async function sendMessage(text) {
+  $("number-confirm").hidden = true;
   addTurn("user", text);
   const el = addTurn("assistant", "");
   const res = await fetch(`/api/session/${sessionId}/message`, {
@@ -391,9 +393,45 @@ async function uploadRecording() {
   if (out.transcript) {
     $("message").value = out.transcript; // user reviews, edits, then Sends (T-052)
     $("message").focus();
+    showNumberConfirm(out.numbers || []);
   } else {
     addTurn("model", "🎤 Couldn't transcribe that — please type your response.");
   }
+}
+
+// Confirm each number I heard before it could reach the math checker (T-052).
+// Spoken numbers (fifteen/fifty…) are error-prone, so they are editable inline.
+function showNumberConfirm(numbers) {
+  const box = $("number-confirm");
+  box.innerHTML = "";
+  box.hidden = numbers.length === 0;
+  if (!numbers.length) return;
+  note(box, "Confirm the numbers I heard (edit or pick the right one):");
+  for (const n of numbers) {
+    const row = document.createElement("div");
+    row.className = "row";
+    const label = document.createElement("span");
+    label.textContent = "“" + n.surface + "” →";
+    const input = document.createElement("input");
+    input.type = "number";
+    input.value = n.value;
+    input.addEventListener("change", () => replaceNumber(n.value, input.value));
+    row.append(label, input);
+    for (const c of n.candidates) {
+      if (c === n.value) continue; // the alternate reading (e.g. fifty vs fifteen)
+      const b = button(row, "maybe " + c, () => {
+        input.value = c;
+        replaceNumber(n.value, c);
+      });
+      b.className = "link";
+    }
+    box.append(row);
+  }
+}
+
+function replaceNumber(from, to) {
+  const msg = $("message");
+  msg.value = msg.value.replace(String(from), String(to));
 }
 
 const mic = $("mic");

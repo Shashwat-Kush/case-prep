@@ -277,7 +277,12 @@ def test_audio_endpoint_accepts_upload_and_degrades_without_stt():
     sid = _start(client, "case-cement-profitability")["session_id"]
     r = client.post(f"/api/session/{sid}/audio", content=b"\x1a\x45\xdf\xa3fakewebm")
     assert r.status_code == 200
-    assert r.json() == {"bytes": 12, "transcript": None, "degraded": True}
+    assert r.json() == {
+        "bytes": 12,
+        "transcript": None,
+        "degraded": True,
+        "numbers": [],
+    }
 
 
 def test_audio_endpoint_returns_transcript_when_stt_wired():
@@ -289,16 +294,21 @@ def test_audio_endpoint_returns_transcript_when_stt_wired():
         _library(),
         store,
         _fake_chat(),
-        transcribe=lambda audio: Transcription(True, "revenue is falling", 12.0),
+        transcribe=lambda audio: Transcription(True, "revenue is fifteen crore", 12.0),
     )
     client = TestClient(create_app(engine))
     sid = _start(client, "case-cement-profitability")["session_id"]
-    r = client.post(f"/api/session/{sid}/audio", content=b"blob")
-    assert r.json() == {
-        "bytes": 4,
-        "transcript": "revenue is falling",
-        "degraded": False,
-    }
+    r = client.post(f"/api/session/{sid}/audio", content=b"blob").json()
+    assert r["degraded"] is False
+    assert r["transcript"] == "revenue is 150000000"  # number-cleaned
+    # the spoken number is surfaced for confirmation with its teen/ty alternate
+    assert r["numbers"] == [
+        {
+            "surface": "fifteen crore",
+            "value": 150000000.0,
+            "candidates": [150000000.0, 500000000.0],
+        }
+    ]
 
 
 def test_audio_endpoint_rejects_empty_upload():

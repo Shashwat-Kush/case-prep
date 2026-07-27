@@ -66,6 +66,10 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] A released clip is transcribed (T-051) and drops into the input for you to
       review/edit before sending; on STT failure a "couldn't transcribe — type"
       note shows and typing still works exactly as before (degrade-to-typed).
+- [ ] Any spoken number is number-cleaned (fifteen → 15, lakh/crore scaled,
+      currency dropped) and listed under the composer for confirmation (T-052);
+      teen/ty homophones (fifteen/fifty) offer the alternate as a one-click fix,
+      and every number is editable before you Send.
 - [ ] Denying mic permission shows a prompt to type instead, without breaking the
       session.
 

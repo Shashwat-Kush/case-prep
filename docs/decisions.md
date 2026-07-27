@@ -139,3 +139,20 @@ tolerance 0 means "state it exactly" (benchmark-pinned segments), 1.0 means
 "within a factor of two". This differs from content validation (T-011), where
 derivations recompute exactly so the absolute check is immaterial in practice.
 The final answer is checked against answer_range [low, high].
+
+## Spoken-number confirmation gate (T-052)
+
+Spoken numbers are unreliable (teen/ty homophones — fifteen/fifty, thirteen/
+thirty — plus lakh/crore mixed with digits), so no number from STT may reach the
+math checker until the user confirms it. `app/engine/stt_postprocess.py`:
+
+- `detect_numbers(text)` parses each stated number — words, digits, Indian scale
+  words, `%`, and `hundred` composition — and, when the phrase contains exactly
+  one teen/ty homophone, offers the swapped reading as a second candidate.
+- `clean_transcript(text)` collapses each number phrase to its primary digit
+  value for display (punctuation between tokens is dropped).
+- `evaluate_confirmed(cp, values)` is the ONLY path from a spoken turn to a
+  checkpoint: it calls `math_checker.check_values` on user-confirmed numbers.
+  `check_checkpoint(cp, text)` (free-text) also routes through `check_values`,
+  keeping one comparison core. Detected-but-unconfirmed numbers are never
+  evaluated, so a misheard number cannot silently fail a checkpoint.

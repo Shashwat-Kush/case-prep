@@ -61,9 +61,9 @@ class CheckResult:
     parsed: list[float]
 
 
-def check_checkpoint(cp: MathCheckpoint, text: str) -> CheckResult:
-    nums = parse_numbers(text)
-
+def check_values(cp: MathCheckpoint, nums: list[float]) -> CheckResult:
+    """Compare already-parsed numbers to a checkpoint. This is the only comparison
+    core; both the free-text path and the confirmed-number gate (T-052) call it."""
     for n in nums:
         if abs(n - cp.expected_value) <= cp.tolerance:
             return CheckResult(True, n, None, nums)
@@ -76,6 +76,10 @@ def check_checkpoint(cp: MathCheckpoint, text: str) -> CheckResult:
                 return CheckResult(False, None, ce.note, nums)
 
     return CheckResult(False, None, None, nums)
+
+
+def check_checkpoint(cp: MathCheckpoint, text: str) -> CheckResult:
+    return check_values(cp, parse_numbers(text))
 
 
 # --- Guesstimate segment checks (T-024) --------------------------------------
