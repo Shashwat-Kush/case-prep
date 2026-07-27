@@ -280,7 +280,7 @@ Depends: T-020, T-017.
 Accept: coverage queryable per concept; feeds T-061.
 Tests: coverage after scripted sessions.
 
-**T-061 · Ladder rules + recommendations** `[ ]`
+**T-061 · Ladder rules + recommendations** `[x]`
 Goal: next-step recommendation from coverage + scores; graduation rule (standard 3+/5 average unlocks cold); config-driven.
 Files: `app/engine/ladder.py`, config keys.
 Depends: T-060, T-025.

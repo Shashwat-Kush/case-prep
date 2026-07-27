@@ -72,7 +72,8 @@ def test_case_attempts_counted_per_mode_with_scores(store: Store):
     assert topic.attempts == {"standard": 2, "guided": 1}
     assert topic.total_attempts == 3
     assert topic.scores == [4, 3, 5]
-    assert topic.avg_score == 4.0
+    assert topic.avg_score() == 4.0
+    assert topic.avg_score("standard") == 4.0  # all three scores are standard-mode
 
 
 def test_missing_content_is_skipped(store: Store):

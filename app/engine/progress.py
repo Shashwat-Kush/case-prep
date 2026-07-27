@@ -30,15 +30,21 @@ class ConceptRecord:
 class TopicRecord:
     topic: str
     attempts: dict[str, int] = field(default_factory=dict)  # mode -> count
-    scores: list[int] = field(default_factory=list)
+    scores_by_mode: dict[str, list[int]] = field(default_factory=dict)
+
+    @property
+    def scores(self) -> list[int]:
+        return [s for lst in self.scores_by_mode.values() for s in lst]
 
     @property
     def total_attempts(self) -> int:
         return sum(self.attempts.values())
 
-    @property
-    def avg_score(self) -> float | None:
-        return sum(self.scores) / len(self.scores) if self.scores else None
+    def avg_score(self, mode: str | None = None) -> float | None:
+        """Mean scorecard score, overall or for one mode (the ladder's graduation
+        rule looks at standard mode only)."""
+        vals = self.scores if mode is None else self.scores_by_mode.get(mode, [])
+        return sum(vals) / len(vals) if vals else None
 
 
 @dataclass(frozen=True)
@@ -69,5 +75,6 @@ def build_coverage(store: Store, library: ContentLibrary) -> Coverage:
             rec = topics.setdefault(content.meta.type, TopicRecord(content.meta.type))
             mode = s["mode"] or "standard"
             rec.attempts[mode] = rec.attempts.get(mode, 0) + 1
-            rec.scores.extend(sc["score"] for sc in store.get_scorecards(s["id"]))
+            scored = [sc["score"] for sc in store.get_scorecards(s["id"])]
+            rec.scores_by_mode.setdefault(mode, []).extend(scored)
     return Coverage(concepts, topics)
