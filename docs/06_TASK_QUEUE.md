@@ -287,21 +287,21 @@ Depends: T-060, T-025.
 Accept: recommendations are explainable strings citing the rule that fired; library never locked.
 Tests: rule table across coverage/score fixtures incl. graduation edge.
 
-**T-062 · Dashboard** `[ ]`
+**T-062 · Dashboard** `[x]`
 Goal: ladder view home screen, score trends per dimension, weakness flags.
 Files: `web/`, aggregate endpoints.
 Depends: T-061, T-046.
 Accept: Phase 5 exit criterion (defensible next step after 5 sessions) demonstrable.
 Tests: aggregation endpoints on fixture history.
 
-**T-063 · Mental math sprints** `[ ]`
+**T-063 · Mental math sprints** `[x]`
 Goal: LLM-free generated drills (percentages, breakevens, growth, big-number division) with timing and results stored.
 Files: `app/engine/drills.py`, CLI + web hooks.
 Depends: T-020.
 Accept: fully functional offline; results feed coverage.
 Tests: generation ranges, grading, storage.
 
-**T-064 · Benchmark flashcards** `[ ]`
+**T-064 · Benchmark flashcards** `[x]`
 Goal: flashcard drill over benchmarks.json, LLM-free.
 Files: `app/engine/drills.py` (extend), `web/`.
 Depends: T-063, T-013.

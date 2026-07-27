@@ -46,6 +46,17 @@ CREATE TABLE IF NOT EXISTS ladder_state (
     updated_at TEXT NOT NULL
 );
 
+-- LLM-free mental-math sprints (T-063). Self-contained: no session link, so
+-- drills work fully offline and independently of case/lesson history.
+CREATE TABLE IF NOT EXISTS drill_results (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind       TEXT NOT NULL,     -- percent | breakeven | growth | division | mixed
+    total      INTEGER NOT NULL,
+    correct    INTEGER NOT NULL,
+    elapsed_ms REAL,
+    created_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_turns_session ON turns(session_id);
 CREATE INDEX IF NOT EXISTS idx_scorecards_session ON scorecards(session_id);
 CREATE INDEX IF NOT EXISTS idx_coverage_session ON concept_coverage(session_id);

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import json
+import random
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Protocol
@@ -30,6 +31,15 @@ from pydantic import BaseModel
 from app.config import Config, load_config
 from app.engine.case_flow import CaseFlow, CoachError
 from app.engine.content_loader import ContentLoader
+from app.engine.dashboard import build_dashboard
+from app.engine.drills import (
+    KINDS,
+    flashcard_drills,
+    generate_sprint,
+    grade,
+    record_sprint,
+    score_sprint,
+)
 from app.engine.guess_flow import GuessComplete, GuessFlow, GuessFlowError
 from app.engine.lesson_flow import LessonFlow
 from app.engine.math_checker import check_final, check_segment
@@ -61,6 +71,10 @@ class Engine(Protocol):
     def status(self) -> dict: ...
     def transcribe(self, audio: bytes) -> dict: ...
     def speak(self, sentence: str) -> bytes | None: ...
+    def dashboard(self) -> dict: ...
+    def drill_start(self, kind: str | None, n: int) -> dict: ...
+    def flashcard_start(self) -> dict: ...
+    def drill_grade(self, drill_id: str, answers: list, elapsed_ms) -> dict: ...
 
 
 class CreateReq(BaseModel):
@@ -76,6 +90,16 @@ class MessageReq(BaseModel):
 class ActionReq(BaseModel):
     action: str
     value: str | None = None
+
+
+class DrillReq(BaseModel):
+    kind: str | None = None  # None -> mixed across all kinds
+    n: int = 5
+
+
+class DrillGradeReq(BaseModel):
+    answers: list[float | None]
+    elapsed_ms: float | None = None
 
 
 def _sse(tokens: Iterator[str]) -> Iterator[str]:
@@ -122,6 +146,25 @@ def create_app(engine: Engine) -> FastAPI:
     @app.get("/api/status")
     def status() -> dict:
         return engine.status()
+
+    @app.get("/api/dashboard")
+    def dashboard() -> dict:
+        return engine.dashboard()
+
+    @app.post("/api/drills")
+    def drill_start(req: DrillReq) -> dict:
+        return engine.drill_start(req.kind, req.n)
+
+    @app.post("/api/flashcards")
+    def flashcard_start() -> dict:
+        return engine.flashcard_start()
+
+    @app.post("/api/drills/{drill_id}")
+    def drill_grade(drill_id: str, req: DrillGradeReq) -> dict:
+        try:
+            return engine.drill_grade(drill_id, req.answers, req.elapsed_ms)
+        except KeyError as e:
+            raise HTTPException(404, f"unknown drill sprint: {drill_id}") from e
 
     @app.post("/api/session")
     def create_session(req: CreateReq) -> dict:
@@ -514,6 +557,7 @@ class LiveEngine:
         self._chat = chat
         self._window = config.context.transcript_window_turns
         self._sessions: dict[str, WebSession] = {}
+        self._drills: dict[str, list] = {}  # drill_id -> generated Drills (T-063)
 
     def content_list(self) -> dict:
         return {
@@ -600,6 +644,42 @@ class LiveEngine:
     def speak(self, sentence: str) -> bytes | None:
         """Synthesize one sentence to WAV, or None when TTS is unwired/failed."""
         return self._speak(sentence) if self._speak else None
+
+    def dashboard(self) -> dict:
+        return build_dashboard(self._store, self._library, self._config)
+
+    def drill_start(self, kind: str | None, n: int) -> dict:
+        kinds = (kind,) if kind else KINDS
+        drills = generate_sprint(n, random.Random(), kinds)
+        return self._store_sprint(drills)
+
+    def flashcard_start(self) -> dict:
+        """Benchmark flashcards (T-064): cards sourced live from benchmarks.json,
+        graded through the same drill pipeline (kind 'flashcard')."""
+        drills = flashcard_drills(self._library.benchmarks, random.Random())
+        return self._store_sprint(drills)
+
+    def _store_sprint(self, drills: list) -> dict:
+        did = uuid4().hex
+        self._drills[did] = drills
+        return {"drill_id": did, "items": [{"prompt": d.prompt} for d in drills]}
+
+    def drill_grade(self, drill_id: str, answers: list, elapsed_ms=None) -> dict:
+        drills = self._drills.pop(drill_id)  # KeyError -> 404 at the route
+        result = score_sprint(drills, answers, elapsed_ms)
+        record_sprint(self._store, result)
+        return {
+            "correct": result.correct,
+            "total": result.total,
+            "items": [
+                {
+                    "prompt": d.prompt,
+                    "expected": d.answer,
+                    "ok": a is not None and grade(d, a),
+                }
+                for d, a in zip(drills, answers, strict=False)
+            ],
+        }
 
 
 def main() -> None:

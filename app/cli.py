@@ -20,6 +20,7 @@ from app.config import Config, load_config
 from app.db.store import Store
 from app.engine.case_flow import CaseComplete, CaseFlow, CoachError
 from app.engine.content_loader import ContentLoader
+from app.engine.drills import KINDS, run_sprint
 from app.engine.lesson_flow import LessonFlow
 from app.engine.scoring import (
     ScoringError,
@@ -238,6 +239,17 @@ def main(argv: list[str] | None = None) -> int:
 
     if not argv:
         _list_content(library)
+        return 0
+
+    if argv[0] == "drills":  # LLM-free mental-math sprint (T-063), offline
+        n = int(argv[argv.index("-n") + 1]) if "-n" in argv else 5
+        kinds = (argv[argv.index("--kind") + 1],) if "--kind" in argv else KINDS
+        store = Store("app.db")
+        try:
+            emit = lambda t: print(t, end="", flush=True)  # noqa: E731
+            run_sprint(store, input, emit, n=n, kinds=kinds)
+        finally:
+            store.close()
         return 0
 
     content_id = argv[0]

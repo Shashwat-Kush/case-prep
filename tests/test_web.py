@@ -61,6 +61,20 @@ class FakeEngine:
     def speak(self, sentence):
         return None
 
+    def dashboard(self):
+        return {"sessions": {"total": 0, "completed": 0}, "dimensions": []}
+
+    def drill_start(self, kind, n):
+        return {"drill_id": "d0", "items": [{"prompt": "10% of 200?"}]}
+
+    def flashcard_start(self):
+        return {"drill_id": "f0", "items": [{"prompt": "india population? (people)"}]}
+
+    def drill_grade(self, drill_id, answers, elapsed_ms):
+        if drill_id != "d0":
+            raise KeyError(drill_id)
+        return {"correct": 1, "total": 1, "items": [{"ok": True, "expected": 20.0}]}
+
 
 @pytest.fixture
 def client():
@@ -79,6 +93,33 @@ def _reassemble(sse_text: str) -> tuple[str, bool]:
         else:
             tokens.append(json.loads(payload)["token"])
     return "".join(tokens), done
+
+
+def test_dashboard_endpoint_returns_engine_payload(client):
+    body = client.get("/api/dashboard").json()
+    assert body["sessions"] == {"total": 0, "completed": 0}
+    assert body["dimensions"] == []
+
+
+def test_drill_start_then_grade(client):
+    start = client.post("/api/drills", json={"kind": "percent", "n": 1}).json()
+    assert start["drill_id"] == "d0" and len(start["items"]) == 1
+    graded = client.post(
+        f"/api/drills/{start['drill_id']}", json={"answers": [20.0]}
+    ).json()
+    assert graded["correct"] == 1 and graded["total"] == 1
+    assert graded["items"] == [{"ok": True, "expected": 20.0}]
+
+
+def test_flashcards_start_returns_cards(client):
+    body = client.post("/api/flashcards").json()
+    assert body["drill_id"] == "f0"
+    assert "population" in body["items"][0]["prompt"]
+
+
+def test_grade_unknown_drill_is_404(client):
+    r = client.post("/api/drills/nope", json={"answers": [1.0]})
+    assert r.status_code == 404
 
 
 def test_content_list_groups_all_three_types(client):

@@ -141,6 +141,35 @@ class Store:
         ).fetchall()
         return [dict(r) for r in rows]
 
+    # --- drill results -------------------------------------------------------
+
+    def add_drill_result(
+        self, kind: str, total: int, correct: int, elapsed_ms: float | None = None
+    ) -> int:
+        cur = self._conn.execute(
+            "INSERT INTO drill_results (kind, total, correct, elapsed_ms, "
+            "created_at) VALUES (?, ?, ?, ?, ?)",
+            (kind, total, correct, elapsed_ms, self._ts()),
+        )
+        self._conn.commit()
+        return int(cur.lastrowid)
+
+    def drill_summary(self) -> list[dict]:
+        """Per-kind rollup (attempts, correct, accuracy) for the progress view."""
+        rows = self._conn.execute(
+            "SELECT kind, SUM(total) AS total, SUM(correct) AS correct "
+            "FROM drill_results GROUP BY kind ORDER BY kind"
+        ).fetchall()
+        return [
+            {
+                "kind": r["kind"],
+                "attempts": r["total"],
+                "correct": r["correct"],
+                "accuracy": round(r["correct"] / r["total"], 2) if r["total"] else 0.0,
+            }
+            for r in rows
+        ]
+
     # --- ladder state --------------------------------------------------------
 
     def upsert_ladder(self, key: str, level: int, avg_score: float | None) -> None:

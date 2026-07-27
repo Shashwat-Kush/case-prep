@@ -13,8 +13,26 @@
     </header>
 
     <section id="library">
-      <h2>Library</h2>
+      <div class="library-head">
+        <h2>Library</h2>
+        <span>
+          <button id="drills-btn" class="link">🔢 Mental math</button>
+          <button id="flashcards-btn" class="link">🧠 Benchmarks</button>
+          <button id="dashboard-btn" class="link">📊 Progress</button>
+        </span>
+      </div>
       <div id="content-list">Loading…</div>
+    </section>
+
+    <section id="drills" hidden>
+      <button id="drills-back" class="link">← library</button>
+      <form id="drills-form"></form>
+      <div id="drills-result"></div>
+    </section>
+
+    <section id="dashboard" hidden>
+      <button id="dash-back" class="link">← library</button>
+      <div id="dash-body"></div>
     </section>
 
     <main id="session" hidden>

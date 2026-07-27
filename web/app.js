@@ -345,6 +345,128 @@ function jumpToTurn(id) {
   setTimeout(() => el.classList.remove("highlight"), 1500);
 }
 
+// --- dashboard (T-062) ------------------------------------------------------
+
+async function showDashboard() {
+  const d = await (await fetch("/api/dashboard")).json();
+  const body = $("dash-body");
+  body.innerHTML = `<h2>Progress</h2>`;
+  note(
+    body,
+    `${d.sessions.completed} of ${d.sessions.total} sessions completed`,
+  );
+
+  const rec = document.createElement("div");
+  rec.className = "group recommendation";
+  rec.innerHTML = `<h3>Next step</h3><p>${d.recommendation.message}</p>`;
+  body.append(rec);
+
+  const dims = document.createElement("div");
+  dims.className = "group";
+  dims.innerHTML = `<h3>Score trends (bar ${d.graduation_bar}/5)</h3>`;
+  if (!d.dimensions.length) note(dims, "No scored cases yet.");
+  for (const dim of d.dimensions) {
+    const row = document.createElement("div");
+    row.className = "dim-row" + (dim.weak ? " weak" : "");
+    const spark = dim.scores.map((s) => "▁▂▃▅▇"[s - 1] || "·").join("");
+    row.textContent = `${dim.dimension}: ${spark} avg ${dim.avg}${dim.weak ? " ⚠" : ""}`;
+    dims.append(row);
+  }
+  body.append(dims);
+
+  if (d.topics.length) {
+    const t = document.createElement("div");
+    t.className = "group";
+    t.innerHTML = `<h3>Case topics</h3>`;
+    for (const top of d.topics) {
+      const modes = Object.entries(top.attempts)
+        .map(([m, n]) => `${n}× ${m}`)
+        .join(", ");
+      const avg = top.avg_score == null ? "—" : `${top.avg_score.toFixed(1)}/5`;
+      note(t, `${top.topic}: ${modes} · avg ${avg}`);
+    }
+    body.append(t);
+  }
+
+  $("library").hidden = true;
+  $("dashboard").hidden = false;
+}
+
+function closeDashboard() {
+  $("dashboard").hidden = true;
+  $("library").hidden = false;
+}
+
+// --- mental-math sprints (T-063) --------------------------------------------
+// LLM-free; the server generates and grades, we just render prompts and inputs.
+
+let drillId = null;
+let drillStart = 0;
+
+const startDrills = () => startSprint("/api/drills", "Mental math", { n: 5 });
+const startFlashcards = () => startSprint("/api/flashcards", "Benchmarks", {});
+
+async function startSprint(url, title, payload) {
+  const d = await (
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+  ).json();
+  drillId = d.drill_id;
+  drillStart = performance.now();
+  const form = $("drills-form");
+  form.innerHTML = `<h2>${title}</h2>`;
+  d.items.forEach((it, i) => {
+    const row = document.createElement("label");
+    row.className = "dim-row";
+    row.textContent = `${i + 1}. ${it.prompt} `;
+    const input = document.createElement("input");
+    input.inputMode = "decimal";
+    input.dataset.i = i;
+    row.append(input);
+    form.append(row);
+  });
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.textContent = "Grade";
+  form.append(submit);
+  $("drills-result").innerHTML = "";
+  $("library").hidden = true;
+  $("drills").hidden = false;
+}
+
+async function gradeDrills(e) {
+  e.preventDefault();
+  if (!drillId) return;
+  const inputs = [...$("drills-form").querySelectorAll("input")];
+  const answers = inputs.map((el) => {
+    const v = parseFloat(el.value.replace(/,/g, ""));
+    return Number.isNaN(v) ? null : v;
+  });
+  const res = await (
+    await fetch(`/api/drills/${drillId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers, elapsed_ms: performance.now() - drillStart }),
+    })
+  ).json();
+  inputs.forEach((el, i) => {
+    const item = res.items[i];
+    el.classList.toggle("wrong", !item.ok);
+    if (!item.ok) el.value = `${el.value || "—"} → ${item.expected}`;
+  });
+  note($("drills-result"), `${res.correct}/${res.total} correct`);
+  drillId = null;
+}
+
+function closeDrills() {
+  drillId = null;
+  $("drills").hidden = true;
+  $("library").hidden = false;
+}
+
 // --- provider status indicator (T-044) --------------------------------------
 
 async function refreshStatus() {
@@ -486,6 +608,12 @@ mic.addEventListener("pointerup", stopRecording);
 mic.addEventListener("pointerleave", stopRecording);
 
 $("quit-btn").addEventListener("click", quit);
+$("dashboard-btn").addEventListener("click", showDashboard);
+$("dash-back").addEventListener("click", closeDashboard);
+$("drills-btn").addEventListener("click", startDrills);
+$("flashcards-btn").addEventListener("click", startFlashcards);
+$("drills-back").addEventListener("click", closeDrills);
+$("drills-form").addEventListener("submit", gradeDrills);
 $("composer").addEventListener("submit", (e) => {
   e.preventDefault();
   const input = $("message");

@@ -84,6 +84,30 @@ button.link {
   margin: 0.35rem 0;
   white-space: pre-wrap;
 }
+.library-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.recommendation {
+  border-left: 3px solid #4a7;
+  padding-left: 0.75rem;
+}
+.dim-row {
+  font-variant-numeric: tabular-nums;
+  margin: 0.2rem 0;
+}
+.dim-row.weak {
+  color: #d33;
+}
+#drills-form label {
+  display: block;
+  margin: 0.4rem 0;
+}
+#drills-form input.wrong {
+  color: #d33;
+  border-color: #d33;
+}
 .timer {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
