@@ -1,0 +1,44 @@
+# CasePrep Local configuration. All behavior tunables live here (04_ENGINEERING_RULES §7).
+# Secrets live in .env, never here.
+
+offline: false          # true skips cloud providers entirely (Ollama only)
+host: 127.0.0.1         # localhost-only bind (04 §8)
+port: 8000
+
+# Provider failover chain (ADR-5). Order is significant.
+providers:
+  - name: groq
+    base_url: https://api.groq.com/openai/v1
+    model: llama-3.3-70b-versatile
+    api_key_env: GROQ_API_KEY
+  - name: nvidia
+    base_url: https://integrate.api.nvidia.com/v1
+    model: meta/llama-3.3-70b-instruct
+    api_key_env: NVIDIA_API_KEY
+  - name: ollama
+    base_url: http://127.0.0.1:11434/v1
+    model: qwen2.5:3b-instruct-q4_K_M
+    api_key_env: null   # local, no key
+
+stt:
+  base_url: https://api.groq.com/openai/v1
+  model: whisper-large-v3
+  api_key_env: GROQ_API_KEY
+
+retry:
+  max_retries: 2        # per provider before failover (04 §5)
+  backoff_base_s: 1.0
+  request_timeout_s: 30
+
+# Per-call LLM context trimming (ADR-2, G-3).
+context:
+  transcript_window_turns: 12
+  transcript_window_tokens: 2000
+
+voice: en_US-lessac-medium
+
+# Feedback / ladder behavior.
+score_visibility: false     # hidden for first sessions (PRD §5)
+ladder:
+  graduation_min_avg: 3.0   # standard 3+/5 unlocks cold (PRD §5, G-10)
+  hidden_score_sessions: 3
