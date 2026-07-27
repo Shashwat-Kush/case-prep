@@ -9,11 +9,16 @@ from app.db.store import Store
 from app.engine.content_models import Case
 from app.engine.scoring import (
     CASE_DIMENSIONS,
+    DimensionScore,
+    Scorecard,
     ScoringError,
+    assemble_feedback,
     build_messages,
     call_tokens,
     persist_scorecard,
+    reveal_model_answer,
     score_case,
+    study_next,
 )
 
 FIXT = Path(__file__).parent / "fixtures" / "content" / "valid"
@@ -116,6 +121,49 @@ def test_persistent_bad_json_fails_chunk_visibly():
             _fake_chat(lambda: "garbage"),
             config=_config(),
         )
+
+
+def test_reveal_is_case_file_content_verbatim():
+    case = _case()
+    ma = case.model_answer
+    reveal = reveal_model_answer(case)
+    # every model-answer field appears verbatim, none paraphrased (ADR-1)
+    assert ma.framework in reveal
+    assert ma.recommendation in reveal
+    assert ma.walkthrough in reveal
+    for insight in ma.key_insights:
+        assert insight in reveal
+
+
+def test_feedback_references_rubric_anchors():
+    case = _case()
+    # score each dimension 3 so the anchor at level 3 is the one quoted
+    card = Scorecard([DimensionScore(d, 3, ["q"]) for d in CASE_DIMENSIONS])
+    fb = assemble_feedback(case, card)
+    for dim in CASE_DIMENSIONS:
+        anchor = getattr(case.rubric, dim).anchors[3]
+        assert anchor in fb  # the achieved-level anchor phrase is present
+        assert f"{dim}: 3/5" in fb
+
+
+def test_feedback_uses_nearest_anchor_when_level_undefined():
+    case = _case()  # structure anchors are defined at 1, 3, 5 only
+    card = Scorecard([DimensionScore("structure", 4, ["q"])])
+    fb = assemble_feedback(case, card)
+    assert case.rubric.structure.anchors[3] in fb  # nearest at-or-below
+
+
+def test_study_next_returns_lowest_scoring_dimensions():
+    card = Scorecard(
+        [
+            DimensionScore("structure", 4, []),
+            DimensionScore("math", 2, []),
+            DimensionScore("judgment", 2, []),
+            DimensionScore("communication", 5, []),
+            DimensionScore("synthesis", 3, []),
+        ]
+    )
+    assert study_next(card) == ["math", "judgment"]
 
 
 def test_persist_scorecard_round_trips():

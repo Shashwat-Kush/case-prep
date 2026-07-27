@@ -90,8 +90,13 @@ def _anchor_text(case: Case, group: list[str]) -> str:
     return "\n".join(lines)
 
 
+def _turn_text(t: Message) -> str:
+    """Turns come from tests as `text` and from the flows as `content`."""
+    return t.get("text") or t.get("content") or ""
+
+
 def _render(turns: Sequence[Message]) -> str:
-    return "\n".join(f"{t['role']}: {t['text']}" for t in turns)
+    return "\n".join(f"{t['role']}: {_turn_text(t)}" for t in turns)
 
 
 def _fit_transcript(turns: Sequence[Message], budget_chars: int) -> list[Message]:
@@ -99,7 +104,7 @@ def _fit_transcript(turns: Sequence[Message], budget_chars: int) -> list[Message
     kept: list[Message] = []
     total = 0
     for t in reversed(turns):
-        line = len(f"{t['role']}: {t['text']}\n")
+        line = len(f"{t['role']}: {_turn_text(t)}\n")
         if total + line > budget_chars and kept:
             break
         kept.append(t)
@@ -183,3 +188,50 @@ def persist_scorecard(store, session_id: int, scorecard: Scorecard) -> None:
         store.add_scorecard(
             session_id, s.dimension, s.score, evidence=" | ".join(s.evidence)
         )
+
+
+# --- Post-case reveal + feedback assembly (T-026) ----------------------------
+
+
+def reveal_model_answer(case: Case) -> str:
+    """The pre-written model answer, verbatim from the case file (ADR-1: never
+    paraphrased or invented). Shown only after the case ends."""
+    ma = case.model_answer
+    insights = "\n".join(f"- {i}" for i in ma.key_insights)
+    return (
+        f"Framework: {ma.framework}\n\n"
+        f"Key insights:\n{insights}\n\n"
+        f"Recommendation: {ma.recommendation}\n\n"
+        f"Walkthrough: {ma.walkthrough}"
+    )
+
+
+def study_next(scorecard: Scorecard) -> list[str]:
+    """Rule stub (until T-061): the lowest-scoring dimensions are what to study
+    next. Ties are all returned."""
+    if not scorecard.scores:
+        return []
+    low = min(s.score for s in scorecard.scores)
+    return [s.dimension for s in scorecard.scores if s.score == low]
+
+
+def _anchor_for(anchors: dict[int, str], score: int) -> str:
+    """The anchor at the score, else the nearest defined level at or below it
+    (rubrics anchor only some levels, e.g. 1/3/5), else the lowest defined."""
+    if score in anchors:
+        return anchors[score]
+    below = [k for k in anchors if k <= score]
+    return anchors[max(below)] if below else anchors[min(anchors)]
+
+
+def assemble_feedback(case: Case, scorecard: Scorecard) -> str:
+    """Per-dimension feedback anchored to the rubric: each line quotes the case
+    file's anchor for the score achieved, so feedback is grounded, not invented."""
+    lines = []
+    for s in scorecard.scores:
+        anchor = _anchor_for(getattr(case.rubric, s.dimension).anchors, s.score)
+        lines.append(f"{s.dimension}: {s.score}/5 — {anchor}")
+    nxt = study_next(scorecard)
+    if nxt:
+        lines.append(f"\nWhat to study next: {', '.join(nxt)}")
+    return "\n".join(lines)

@@ -58,7 +58,7 @@ def test_guided_case_full_run_reaches_terminal_in_order():
     t = out.text
     assert EXPLAIN in t and REVEAL in t
     assert t.index(EXPLAIN) < t.index(REVEAL)  # explain before reveal
-    assert "quick feedback" in t.lower()  # end-of-case feedback shown
+    assert "Model answer" in t  # end-of-case model-answer reveal shown
 
 
 def test_reveal_blocked_before_attempt_in_repl():

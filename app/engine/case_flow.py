@@ -144,6 +144,11 @@ class CaseFlow:
     def transcript_window(self) -> list[Message]:
         return self._transcript[-self._window :] if self._window > 0 else []
 
+    @property
+    def transcript(self) -> list[Message]:
+        """The full transcript (scoring trims it to its own budget, T-025)."""
+        return list(self._transcript)
+
     # --- per-call context ----------------------------------------------------
 
     def context(

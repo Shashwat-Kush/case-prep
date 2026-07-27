@@ -24,6 +24,10 @@ class SessionManager:
     def session_id(self) -> int:
         return self._session_id
 
+    @property
+    def store(self) -> Store:
+        return self._store
+
     def record_turn(
         self,
         role: str,

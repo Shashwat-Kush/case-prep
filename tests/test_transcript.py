@@ -5,9 +5,11 @@ from types import SimpleNamespace
 import pytest
 
 from app.cli import run_case
+from app.config import load_config
 from app.db.store import Store
 from app.engine.case_flow import CaseFlow
 from app.engine.content_models import Case
+from app.engine.scoring import CASE_DIMENSIONS
 from app.engine.session_manager import SessionManager
 
 FIXT = Path(__file__).parent / "fixtures" / "content" / "valid"
@@ -65,17 +67,54 @@ def test_completed_case_yields_ordered_transcript_with_provider_latency(store: S
 
     turns = store.get_turns(session.session_id)
     roles = [(t["role"], t["phase"]) for t in turns]
-    # user question + its assistant reply in opening, then the end-of-case feedback
+    # user question + its assistant reply in opening (no config wired -> no
+    # end-of-case scoring; T-026 persists a scorecard, not a feedback turn)
     assert roles == [
         ("user", "opening"),
         ("assistant", "opening"),
-        ("assistant", "feedback"),
     ]
     for a in [t for t in turns if t["role"] == "assistant"]:
         assert a["provider"] == "groq"
         assert a["latency_ms"] == 123.4
     assert turns[0]["text"] == "why did profit fall?"
     assert store.get_session(session.session_id)["ended_at"] is not None
+
+
+def _scores_chat():
+    """A chat seam that always returns valid scoring JSON (for the end-of-case
+    scoring calls)."""
+    payload = json.dumps(
+        {"scores": {d: {"score": 3, "evidence": ["q1", "q2"]} for d in CASE_DIMENSIONS}}
+    )
+
+    class Stream:
+        record = SimpleNamespace(provider="groq", latency_ms=1.0, ratelimit={})
+
+        def __iter__(self):
+            yield payload
+
+    return lambda messages: Stream()
+
+
+def test_end_of_case_scores_reveals_and_persists_scorecard(store: Store):
+    flow = CaseFlow(_case())
+    session = SessionManager(
+        store, content_id="case-cement-profitability", content_type="case"
+    )
+    out = []
+    run_case(
+        flow,
+        _scores_chat(),
+        _reader(["walk me through it", "/next", "/next", "/next", "/next"]),
+        out.append,
+        session,
+        load_config(),
+    )
+    text = "".join(out)
+    assert "Model answer" in text  # verbatim reveal shown
+    assert flow.case.model_answer.recommendation in text
+    rows = store.get_scorecards(session.session_id)
+    assert {r["dimension"] for r in rows} == set(CASE_DIMENSIONS)  # scorecard persisted
 
 
 def test_user_turn_has_no_provider_or_latency(store: Store):

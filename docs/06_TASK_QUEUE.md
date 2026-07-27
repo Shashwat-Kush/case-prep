@@ -149,7 +149,7 @@ Depends: T-020, T-014. Docs: ADR-6; 01_PRD Module C.
 Accept: no single call exceeds the configured token budget; scorecard has 1-5 per dimension + ≥3 verbatim user quotes; retry-after honored between chunks.
 Tests: chunking against a long fixture transcript with a fake client (assert per-call token ceiling); scorecard assembly.
 
-**T-026 · Model answer reveal + feedback assembly** `[ ]`
+**T-026 · Model answer reveal + feedback assembly** `[x]`
 Goal: post-case reveal from the case file; "what to study next" hook (rule stub until T-061).
 Files: `app/engine/scoring.py` (extend), CLI wiring.
 Depends: T-025.

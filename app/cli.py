@@ -6,8 +6,8 @@ The LLM and IO are seams so the flows can be driven by a fake in tests:
 `chat(messages) -> stream` yields reply tokens and optionally carries a `.record`
 (provider, latency); `read()` returns a typed line; `emit(text)` writes raw
 output. Passing `session=None` runs a flow without persistence (pure-flow tests).
-main() wires the real router, store, and stdin/stdout. End-of-case feedback is a
-single-call placeholder until the scoring orchestrator (T-025).
+main() wires the real router, store, and stdin/stdout. End-of-case runs chunked
+scoring (T-025), then reveals the model answer and anchored feedback (T-026).
 """
 
 from __future__ import annotations
@@ -16,11 +16,18 @@ import sys
 from collections.abc import Callable, Iterable
 from pathlib import Path
 
-from app.config import load_config
+from app.config import Config, load_config
 from app.db.store import Store
 from app.engine.case_flow import CaseComplete, CaseFlow, CoachError
 from app.engine.content_loader import ContentLoader
 from app.engine.lesson_flow import LessonFlow
+from app.engine.scoring import (
+    ScoringError,
+    assemble_feedback,
+    persist_scorecard,
+    reveal_model_answer,
+    score_case,
+)
 from app.engine.session_manager import SessionManager
 from app.llm.templates import Message
 from app.providers.router import Router
@@ -59,6 +66,7 @@ def run_case(
     read: Read,
     emit: Emit,
     session: SessionManager | None = None,
+    config: Config | None = None,
 ) -> None:
     case = flow.case
     persona = "coach" if flow.mode == "guided" else "interviewer"
@@ -77,7 +85,7 @@ def run_case(
             break
         flow.advance()
 
-    _end_feedback(flow, chat, emit, session)
+    _end_feedback(flow, chat, emit, session, config)
 
 
 def _phase_loop(flow, persona, chat, read, emit, session) -> bool:
@@ -112,20 +120,22 @@ def _phase_loop(flow, persona, chat, read, emit, session) -> bool:
         _persist(session, "assistant", reply, flow.phase_name, record)
 
 
-def _end_feedback(flow, chat, emit, session) -> None:
-    emit("\n=== End of case — quick feedback ===\n")
-    messages: list[Message] = [
-        {
-            "role": "system",
-            "content": (
-                "You are a case-interview coach. In 3-4 sentences, give brief, "
-                "encouraging feedback on the conversation so far. Do not invent facts."
-            ),
-        },
-        *flow.transcript_window(),
-    ]
-    reply, record = stream_reply(chat, messages, emit)
-    _persist(session, "assistant", reply, "feedback", record)
+def _end_feedback(flow, chat, emit, session, config) -> None:
+    """Score the case (chunked, T-025), show anchored feedback and the model
+    answer. Scoring is skipped when no config is wired (pure-flow tests) or the
+    provider can't return the scoring JSON — the reveal is always shown."""
+    emit("\n=== End of case ===\n")
+    if config is not None:
+        try:
+            card = score_case(flow.case, flow.transcript, chat, config=config)
+        except ScoringError:
+            card = None
+        if card is not None:
+            emit("\n" + assemble_feedback(flow.case, card) + "\n")
+            if session is not None:
+                persist_scorecard(session.store, session.session_id, card)
+    emit("\n--- Model answer ---\n")
+    emit(reveal_model_answer(flow.case) + "\n")
 
 
 def run_lesson(
@@ -251,7 +261,7 @@ def main(argv: list[str] | None = None) -> int:
             store, content_id=content_id, content_type="case", mode=mode
         )
         try:
-            run_case(flow, chat, read, emit, session)
+            run_case(flow, chat, read, emit, session, config)
         except CaseComplete:
             pass
         finally:
