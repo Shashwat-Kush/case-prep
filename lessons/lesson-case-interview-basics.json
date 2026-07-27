@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-case-interview-basics",
+    "title": "What a Case Interview Is and How It Flows",
+    "concepts_taught": ["case-phases", "thinking-out-loud", "clarifying-questions", "mece"],
+    "order_hint": 1
+  },
+  "sections": [
+    {
+      "heading": "What a case interview actually tests",
+      "content": "A case interview is a business problem the interviewer poses out loud, which you solve through a structured back-and-forth. It is not a quiz with one right answer. The interviewer is watching how you break a vague problem into parts, how you use data when you get it, whether your logic holds up, and how clearly you communicate. A weaker candidate with a sound, well-explained structure often beats a sharper one who jumps to answers.",
+      "worked_example": "Prompt: 'Your client, a dairy company, has seen profits fall over two years. Why, and what should they do?' A strong candidate does not immediately say 'costs went up.' They repeat the problem, ask a few clarifying questions, lay out a structure for where profit could leak, then work through it."
+    },
+    {
+      "heading": "The phases of a case",
+      "content": "Most cases move through the same phases, even when they feel free-form: opening (the interviewer states the prompt), clarifying (you ask targeted questions to scope the problem), structuring (you lay out a framework for how you will attack it), analysis (you work through branches, asking for data), math (you compute where numbers are needed), and synthesis (you state a recommendation with a reason). Knowing the phases keeps you oriented when a case feels like it is wandering.",
+      "worked_example": "In the dairy case: opening (profits fell), clarifying (over what period? which products? revenue or cost side unknown yet), structuring (Profit = Revenue - Costs, break each down), analysis (revenue is flat, so look at costs), math (variable cost per litre rose 10%), synthesis (procurement cost is the driver; renegotiate supply)."
+    },
+    {
+      "heading": "Clarifying questions",
+      "content": "Before structuring, ask 2-4 questions that genuinely change how you would approach the problem. Good clarifiers scope the objective, the timeframe, and the business model. Weak clarifiers ask for data you should derive yourself, or trivia that does not move the case. Always convey the logic behind each question so the interviewer sees why you are asking.",
+      "worked_example": "Good: 'Is the goal to restore profit to its prior level, or maximise it?' 'Has revenue held steady while profit fell, or did both drop?' Weak: 'What is the exact variable cost per litre?' (that is data you extract during analysis, not a scoping question)."
+    },
+    {
+      "heading": "Thinking out loud and MECE",
+      "content": "Narrate your reasoning as you go so the interviewer can follow and, if needed, nudge you. When you break a problem into parts, aim for MECE: mutually exclusive (no overlap) and collectively exhaustive (nothing important left out). Profit = Revenue - Costs is MECE. 'Marketing problems, sales problems, and other stuff' is not.",
+      "worked_example": "MECE revenue break: Revenue = Units sold x Price per unit. Every rupee of revenue falls into exactly one of those two levers, and together they cover all of it."
+    }
+  ],
+  "when_to_use": "Read this first, before any framework lesson or practice case. It orients you to the format and vocabulary the rest of the tool assumes.",
+  "when_not_to_use": "This lesson does not teach any specific framework. Once you know the flow, move to the profitability framework lesson for your first real structure.",
+  "quiz": [
+    {
+      "question": "What is the interviewer primarily evaluating in a case?",
+      "options": ["Whether you reach the exact right number", "How you structure, reason, and communicate", "How many frameworks you can name", "How fast you answer"],
+      "answer": "How you structure, reason, and communicate",
+      "explanation": "Cases reward a sound, well-explained approach over a lucky final answer. The path matters more than the number."
+    },
+    {
+      "question": "Which of these is a strong clarifying question at the start of a profit case?",
+      "options": ["What is the exact variable cost per unit?", "Has revenue stayed flat while profit fell, or did both move?", "What colour is the packaging?", "Can you tell me the answer?"],
+      "answer": "Has revenue stayed flat while profit fell, or did both move?",
+      "explanation": "It scopes whether the problem sits on the revenue or cost side and changes your whole approach. The exact variable cost is data you extract later, not a scoping question."
+    },
+    {
+      "question": "Which breakdown is MECE?",
+      "options": ["Profit = Revenue - Costs", "Problems = marketing, sales, and other issues", "Customers = happy and loyal", "Costs = big costs and small costs"],
+      "answer": "Profit = Revenue - Costs",
+      "explanation": "Revenue and Costs are mutually exclusive and together fully account for profit. The others overlap or leave gaps."
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "id": "case-sunrise-dairy-profitability",
+    "title": "Sunrise Dairy: Falling Profits",
+    "type": "profitability",
+    "industry": "food-and-beverage",
+    "difficulty": "standard",
+    "est_minutes": 30,
+    "prerequisite_concepts": ["lesson-profitability-framework"],
+    "diagnostic": false
+  },
+  "prompt": "Your client is Sunrise Dairy, a packaged milk company in India. Over the last two years its annual profit has fallen sharply, from about 50 crore to about 10 crore, even though the business looks stable on the surface. The CEO wants to know what is driving the decline and what to do about it.",
+  "clarifying": [
+    {"question_pattern": "objective or goal", "answer": "The goal is to understand the driver of the profit decline and recommend how to restore profit toward its earlier level."},
+    {"question_pattern": "timeframe", "answer": "The decline happened over the last two years. Compare the current year against two years ago."},
+    {"question_pattern": "product or business model", "answer": "Sunrise sells packaged liquid milk. Treat it as a single product line for this case. Revenue is volume sold times price per litre."},
+    {"question_pattern": "revenue flat or falling", "answer": "Total revenue has stayed roughly flat over the two years. This is a strong hint about where to look."},
+    {"question_pattern": "geography or new competition", "answer": "No major market or competitive change. The market is stable and Sunrise's share is steady."}
+  ],
+  "facts": {
+    "volume_baseline_m_litres": 100,
+    "volume_current_m_litres": 100,
+    "price_per_litre": 50,
+    "variable_cost_per_litre_baseline": 40,
+    "variable_cost_per_litre_current": 44,
+    "fixed_cost_baseline_m": 500,
+    "fixed_cost_current_m": 500,
+    "note": "All figures in rupees. Revenue and volume are flat across the two years; the change is in variable cost per litre."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_pnl",
+      "title": "P&L Comparison: Two Years Ago vs Current (Rs million)",
+      "data": {
+        "columns": ["Line item", "Two years ago", "Current"],
+        "rows": [
+          ["Volume (million litres)", 100, 100],
+          ["Price per litre (Rs)", 50, 50],
+          ["Revenue", 5000, 5000],
+          ["Variable cost", 4000, 4400],
+          ["Fixed cost", 500, 500],
+          ["Profit", 500, 100]
+        ]
+      },
+      "unlock_condition": "Candidate asks to compare revenue and costs across the two years, or asks for a P&L or financial breakdown.",
+      "so_what": "Revenue is identical across both years. The entire profit fall comes from variable cost rising 4000 to 4400. Fixed cost is unchanged. The problem is on the variable-cost side."
+    },
+    {
+      "id": "ex2_cost_breakdown",
+      "title": "Variable Cost per Litre Breakdown (Rs)",
+      "data": {
+        "columns": ["Component", "Two years ago", "Current"],
+        "rows": [
+          ["Raw milk procurement", 32, 36],
+          ["Packaging", 5, 5],
+          ["Processing labour and energy", 3, 3],
+          ["Variable cost per litre", 40, 44]
+        ]
+      },
+      "unlock_condition": "Candidate isolates variable cost per unit and asks what inside it changed, or asks to break variable cost into components.",
+      "so_what": "The entire 4 rupee per litre rise is raw milk procurement, from 32 to 36 (a 12.5% jump on that component, 10% on total variable cost). Packaging and processing are unchanged. The root cause is procurement price."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Do not volunteer any numbers. Wait for the candidate to repeat the problem back and begin clarifying.",
+      "coaching": {
+        "explain": "A strong candidate restates the problem in one line to confirm understanding, then pauses before diving in. This buys thinking time and shows structure.",
+        "model_approach_for_phase": "Repeat: 'So Sunrise's profit fell from 50 to 10 crore over two years while the business looks stable, and we want the driver and a fix.' Then move to clarifying questions."
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate restates the objective before analysing."
+    },
+    {
+      "name": "clarifying",
+      "interviewer_instructions": "Answer only from the clarifying list and facts. The key fact to give if asked well: revenue has stayed roughly flat. Do not reveal cost figures here; those come via exhibits during analysis.",
+      "coaching": {
+        "explain": "The single most valuable clarifier is whether revenue held while profit fell. If revenue is flat, the whole revenue branch can be set aside and you focus on costs. That one question can halve the case.",
+        "model_approach_for_phase": "Ask objective, timeframe, business model, and crucially 'has revenue stayed flat or did it fall too?' On learning revenue is flat, signal that you will focus on the cost side."
+      },
+      "time_budget": 3,
+      "pass_criteria": "Candidate establishes that revenue is flat and narrows toward costs."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask the candidate to lay out how they will find the driver. Look for Profit = Revenue - Costs, with revenue broken into volume x price and costs into fixed vs variable. Do not accept a vague list.",
+      "coaching": {
+        "explain": "A clean structure here is Profit = Revenue - Costs, revenue = volume x price, costs = fixed + variable (and variable per unit). Because revenue is flat, you flag upfront that you will verify volume and price are steady, then spend your time on costs.",
+        "model_approach_for_phase": "Draw the profit tree, state it is MECE, and pre-commit: 'Since revenue is flat, I expect volume and price are steady, so I will confirm that quickly and then dig into whether the change is fixed or variable cost.'"
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate presents a MECE profit tree and prioritises the cost side given flat revenue."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "When the candidate asks to compare revenue and costs across years, release exhibit ex1_pnl. When they isolate variable cost per unit and ask what moved inside it, release ex2_cost_breakdown. Push once: ask why total variable cost rose.",
+      "coaching": {
+        "explain": "The trap is to see total variable cost rise from 4000 to 4400 and call it a volume effect. But volume is flat at 100 million litres, so this is a per-unit cost rise, not a volume effect. Convert to per-litre (40 to 44) and then ask what component drove it.",
+        "model_approach_for_phase": "Read ex1: revenue identical, variable cost up 400, fixed flat. Note volume is flat, so compute variable cost per litre: 4000/100 = 40 rising to 4400/100 = 44. Then request the per-litre breakdown (ex2) and find procurement is the culprit."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate isolates variable cost per litre (not total) and traces the rise to raw milk procurement."
+    },
+    {
+      "name": "math",
+      "interviewer_instructions": "Ask the candidate to quantify the profit impact and confirm the driver arithmetic. Verdicts on their numbers come from the math checker; communicate those, do not grade arithmetic yourself.",
+      "coaching": {
+        "explain": "Quantifying makes the recommendation concrete. The whole 40 crore profit fall (500m to 100m) equals the 4 rupee/litre procurement rise times 100 million litres = 400 million = 40 crore. Showing the driver fully explains the decline is what separates a strong close.",
+        "model_approach_for_phase": "Variable cost rose 4 rupees/litre x 100 million litres = 400 million = 40 crore, which is exactly the profit fall from 50 to 10 crore. Procurement price explains 100% of the decline."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate shows the 4 Rs/litre x 100m litres = 40 crore impact ties out to the full profit fall."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for a recommendation in a few sentences. Look for driver named, action proposed, and one risk acknowledged.",
+      "coaching": {
+        "explain": "A strong synthesis names the driver (procurement price up 10% on variable cost), proposes a specific action (renegotiate supply, dual-source, or explore backward integration), and flags a risk (a cheaper supplier may hit quality). 'Cut costs' is not a recommendation.",
+        "model_approach_for_phase": "'The entire profit fall traces to raw milk procurement rising from 32 to 36 rupees per litre. I would renegotiate the supply contract or add a second supplier to restore the 4 rupee gap, which recovers roughly 40 crore. The risk is that a cheaper supplier could affect quality, so I would pilot before switching fully.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation names the driver, gives a specific action, and acknowledges a risk."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "100 * 50",
+      "expected_value": 5000,
+      "tolerance": 0,
+      "common_errors": ["Using current vs baseline volume (both are 100, so revenue is unchanged)", "Unit slip between millions and crores"]
+    },
+    {
+      "inputs": "5000 - 4000 - 500",
+      "expected_value": 500,
+      "tolerance": 0,
+      "common_errors": ["Forgetting fixed cost", "Subtracting only one cost line"]
+    },
+    {
+      "inputs": "5000 - 4400 - 500",
+      "expected_value": 100,
+      "tolerance": 0,
+      "common_errors": ["Using baseline variable cost of 4000", "Adding instead of subtracting"]
+    },
+    {
+      "inputs": "4 * 100",
+      "expected_value": 400,
+      "tolerance": 0,
+      "common_errors": ["Multiplying by price instead of volume", "Using total VC rather than the per-litre delta"]
+    },
+    {
+      "inputs": "(500 - 100) / 500 * 100",
+      "expected_value": 80,
+      "tolerance": 0,
+      "common_errors": ["Reporting the absolute 400m rather than the 80% decline when asked for percentage", "Dividing by the wrong base"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose the raw milk supplier says the price rise is permanent and industry-wide. Does your recommendation change? (Strong answer: shift from renegotiation toward structural options, backward integration or passing some cost to price if demand is inelastic, while protecting volume.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Profit = Revenue - Costs. Revenue = volume x price (both flat). Costs = fixed (flat) + variable. Variable cost per litre is the moving part.",
+    "key_insights": [
+      "Revenue is flat, so the problem is entirely on the cost side.",
+      "Volume is flat, so the variable cost rise is a per-unit effect, not a volume effect.",
+      "Variable cost per litre rose 40 to 44, driven wholly by raw milk procurement (32 to 36).",
+      "The 4 Rs/litre x 100m litres = 40 crore impact equals the full profit decline."
+    ],
+    "recommendation": "Address procurement cost directly: renegotiate the supply contract or dual-source to close the 4 Rs/litre gap, recovering about 40 crore. If the rise is permanent and industry-wide, consider backward integration or a measured price increase, guarding against quality and volume risk.",
+    "walkthrough": "Confirm revenue and volume are flat, isolate variable cost per litre, break it into components, find procurement is the sole driver, quantify the 40 crore impact, then recommend a procurement fix with a quality-risk caveat."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No structure; jumps to guesses like 'marketing must be down'.",
+        "3": "States Profit = Revenue - Costs but does not prioritise the cost side despite flat revenue.",
+        "5": "Clean MECE profit tree; uses the flat-revenue clue to focus on costs immediately."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute profit from the P&L or makes uncorrected errors.",
+        "3": "Computes profit correctly but does not convert to per-litre or tie the driver to the full decline.",
+        "5": "Isolates variable cost per litre and shows 4 x 100m = 40 crore equals the entire profit fall."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Blames revenue or fixed costs despite evidence they are flat.",
+        "3": "Reaches the variable-cost driver but treats the total-cost rise as a volume effect at first.",
+        "5": "Recognises flat volume means a per-unit driver and traces it to procurement without prompting."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Silent or rambling; interviewer cannot follow the logic.",
+        "3": "Explains steps but does not signal priorities or narrate the flat-revenue pivot.",
+        "5": "Thinks out loud, states priorities, and pivots clearly once revenue is confirmed flat."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or a vague 'cut costs'.",
+        "3": "Names procurement but omits a specific action or any risk.",
+        "5": "Names the driver, proposes a concrete action, quantifies the recovery, and flags quality risk."
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "id": "guess-atms-delhi",
+    "title": "Number of ATMs in Delhi",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "Estimate the number of ATMs in Delhi.",
+  "clarifications": [
+    {"question_pattern": "cards or machines", "answer": "You are estimating physical ATM machines, not cards."},
+    {"question_pattern": "bank owned vs white label", "answer": "Count all ATMs regardless of who operates them."},
+    {"question_pattern": "population of Delhi", "answer": "Take Delhi's population as about 3 crore."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "households",
+        "benchmark_refs": ["delhi_population", "household_size_urban"],
+        "derivation": "delhi_population / household_size_urban",
+        "value": 7500000,
+        "tolerance": 1000000
+      },
+      {
+        "segment": "atm_cards",
+        "benchmark_refs": [],
+        "derivation": "households * 2",
+        "value": 15000000,
+        "tolerance": 3000000
+      },
+      {
+        "segment": "high_density_atms",
+        "benchmark_refs": [],
+        "derivation": "(atm_cards * 0.6) / 5000",
+        "value": 1800,
+        "tolerance": 400
+      },
+      {
+        "segment": "low_density_atms",
+        "benchmark_refs": [],
+        "derivation": "(atm_cards * 0.4) / 2500",
+        "value": 2400,
+        "tolerance": 500
+      },
+      {
+        "segment": "total_atms",
+        "benchmark_refs": [],
+        "derivation": "high_density_atms + low_density_atms",
+        "value": 4200,
+        "tolerance": 1500
+      }
+    ]
+  },
+  "answer_range": {"low": 3000, "high": 6000},
+  "common_traps": [
+    "Estimating ATM cards and forgetting to convert cards into machines via a cards-per-ATM ratio.",
+    "Using one flat cards-per-ATM ratio instead of splitting by area density.",
+    "Multiplying by population instead of households, double-counting people in the same home."
+  ],
+  "rubric": {
+    "approach": {"anchors": {"5": "Chooses a household-to-cards-to-machines chain and states the cards-per-ATM assumption explicitly."}},
+    "segmentation": {"anchors": {"5": "Splits by area density (or an equivalent), rather than one blanket ratio."}},
+    "arithmetic": {"anchors": {"5": "Carries crore/lakh conversions cleanly and lands in the 3000-6000 range."}},
+    "sanity_check": {"anchors": {"5": "Validates via ATM throughput, e.g. transactions per ATM per day implying each card is used at least monthly."}}
+  }
+}

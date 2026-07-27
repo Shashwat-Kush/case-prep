@@ -43,7 +43,7 @@
       "inputs": "(1500 - 1200) / 1500",
       "expected_value": 0.2,
       "tolerance": 0.001,
-      "common_errors": [{"value": 0.25, "note": "divided by cost instead of revenue"}]
+      "common_errors": ["divided by cost instead of revenue"]
     },
     {
       "inputs": "400 + 500 + 300",

@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "id": "guess-toll-plaza-revenue",
+    "title": "Money Collected per Hour at a Toll Plaza (Rush Hour)",
+    "difficulty": "easy",
+    "est_minutes": 8,
+    "region": "india"
+  },
+  "prompt": "How much money is collected per hour during rush hour at a toll plaza on the Delhi-Mumbai Expressway?",
+  "clarifications": [
+    {"question_pattern": "how many lanes", "answer": "Assume 8 lanes."},
+    {"question_pattern": "average toll", "answer": "Assume an average toll of Rs 50 per vehicle."},
+    {"question_pattern": "cash or electronic", "answer": "Assume cashless (FASTag), so each vehicle clears quickly."}
+  ],
+  "approach": {
+    "recommended": "bottom_up",
+    "tree": [
+      {
+        "segment": "cars_per_lane_per_hour",
+        "benchmark_refs": [],
+        "derivation": "3600 / 8",
+        "value": 450,
+        "tolerance": 100
+      },
+      {
+        "segment": "cars_per_hour_all_lanes",
+        "benchmark_refs": [],
+        "derivation": "8 * cars_per_lane_per_hour",
+        "value": 3600,
+        "tolerance": 800
+      },
+      {
+        "segment": "revenue_per_hour",
+        "benchmark_refs": [],
+        "derivation": "cars_per_hour_all_lanes * 50",
+        "value": 180000,
+        "tolerance": 40000
+      }
+    ]
+  },
+  "answer_range": {"low": 120000, "high": 250000},
+  "common_traps": [
+    "Using minutes instead of seconds per vehicle, undercounting throughput by 60x.",
+    "Forgetting to multiply single-lane throughput by the number of lanes.",
+    "Assuming peak capacity holds all day rather than only during rush hour."
+  ],
+  "rubric": {
+    "approach": {"anchors": {"5": "Recognises this as a supply-rate problem: throughput per lane times lanes times toll."}},
+    "segmentation": {"anchors": {"5": "Builds from per-lane per-second service time up to all lanes, cleanly."}},
+    "arithmetic": {"anchors": {"5": "Handles the seconds-to-hour conversion (3600/8) correctly."}},
+    "sanity_check": {"anchors": {"5": "Comments on whether 3600 vehicles/hour is plausible for a busy 8-lane plaza."}}
+  }
+}

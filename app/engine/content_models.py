@@ -95,16 +95,11 @@ class Phase(BaseModel):
     pass_criteria: str | None = None
 
 
-class CommonError(BaseModel):
-    value: float
-    note: str = ""
-
-
 class MathCheckpoint(BaseModel):
     inputs: str  # arithmetic expression over literal numbers (docs/decisions.md)
     expected_value: float
     tolerance: float = 0.0
-    common_errors: list[CommonError] = []
+    common_errors: list[str] = []  # notes on known-wrong approaches
 
 
 class Curveball(BaseModel):

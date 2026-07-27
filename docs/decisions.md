@@ -55,3 +55,12 @@ Filling gaps in 03_CONTENT_SPEC §4 checks 3 and 5, minimally:
 
 Phase 0 step 5: record verified Groq/Nvidia free-tier limits here with the date
 once accounts are set up (T-003). Docs elsewhere cite indicative numbers only.
+
+## MathCheckpoint.common_errors shape (T-013)
+
+Relaxed `common_errors` from `list[{value, note}]` to `list[str]` (plain note
+strings). Rationale: nothing reads the numeric `value` — the validator and engine
+only ever surface the note text — and seed authors naturally wrote notes-only.
+Keeping the numeric field forced fabricated wrong-answer values with no consumer.
+YAGNI. If a future feature needs to match a candidate's wrong number to a named
+error, reintroduce a structured form then.

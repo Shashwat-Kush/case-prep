@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "id": "case-brewbar-diagnostic",
+    "title": "BrewBar: Diagnostic Profit Case",
+    "type": "profitability",
+    "industry": "food-and-beverage",
+    "difficulty": "guided",
+    "est_minutes": 20,
+    "prerequisite_concepts": [],
+    "diagnostic": true
+  },
+  "prompt": "This is a short baseline case; there are no stakes and your score is just to see where you are starting. BrewBar is a coffee chain with 40 outlets in India. Its annual profit has dropped from about 20 crore to about 8 crore in a single year, though it still runs all 40 outlets. What is going on, and what would you tell them?",
+  "clarifying": [
+    {"question_pattern": "objective", "answer": "Understand the profit drop and give a first recommendation. Baseline only."},
+    {"question_pattern": "number of stores", "answer": "40 outlets, unchanged over the year."},
+    {"question_pattern": "revenue flat or down", "answer": "Revenue per store fell about 20% this year; footfall dropped while prices held."},
+    {"question_pattern": "cost structure", "answer": "Most of BrewBar's costs are fixed (rent, salaries). Only a minority scale with sales volume."}
+  ],
+  "facts": {
+    "stores": 40,
+    "revenue_per_store_baseline_cr": 2,
+    "revenue_per_store_current_cr": 1.6,
+    "fixed_cost_total_cr": 40,
+    "variable_cost_baseline_cr": 20,
+    "variable_cost_scales_with_volume": true,
+    "note": "All figures in crore. Revenue fell 20% via footfall. Fixed costs do not move; variable costs scale down with volume."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_pnl",
+      "title": "BrewBar P&L: Last Year vs This Year (Rs crore)",
+      "data": {
+        "columns": ["Line item", "Last year", "This year"],
+        "rows": [
+          ["Revenue (40 stores)", 80, 64],
+          ["Fixed costs", 40, 40],
+          ["Variable costs", 20, 16],
+          ["Total costs", 60, 56],
+          ["Profit", 20, 8]
+        ]
+      },
+      "unlock_condition": "Candidate asks for a revenue and cost comparison across the two years.",
+      "so_what": "Revenue fell 20% (80 to 64) but total cost fell only 7% (60 to 56), because fixed costs did not move. Profit fell 60%. This is operating leverage: a modest volume drop amplified into a large profit drop by a fixed-heavy cost base."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt, note it is a no-stakes baseline, and let the candidate begin. Volunteer nothing.",
+      "time_budget": 2,
+      "pass_criteria": "Candidate restates the objective."
+    },
+    {
+      "name": "clarifying",
+      "interviewer_instructions": "Answer from the clarifying list. If asked well, reveal that revenue per store fell ~20% via footfall and that costs are mostly fixed.",
+      "time_budget": 3,
+      "pass_criteria": "Candidate learns revenue fell via footfall and that costs are fixed-heavy."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask for a structure. Look for Profit = Revenue - Costs with a fixed vs variable cost split.",
+      "time_budget": 3,
+      "pass_criteria": "Candidate presents a basic profit tree."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "Release ex1_pnl when asked for the year-on-year comparison. Prompt: why did profit fall 60% when revenue fell only 20%?",
+      "time_budget": 6,
+      "pass_criteria": "Candidate identifies operating leverage: fixed costs did not fall with revenue."
+    },
+    {
+      "name": "math",
+      "interviewer_instructions": "Ask the candidate to compute this year's profit from the P&L. Communicate math-checker verdicts; do not grade arithmetic yourself.",
+      "time_budget": 4,
+      "pass_criteria": "Candidate computes revenue 64, costs 56, profit 8, and notes the 60% profit drop vs 20% revenue drop."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for a short recommendation. Look for restoring footfall or flexing the fixed cost base, plus one risk.",
+      "time_budget": 4,
+      "pass_criteria": "Recommendation addresses the footfall drop or fixed-cost rigidity with one tradeoff noted."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "40 * 2",
+      "expected_value": 80,
+      "tolerance": 0,
+      "common_errors": ["Using current per-store revenue of 1.6", "Multiplying by the wrong store count"]
+    },
+    {
+      "inputs": "40 * 1.6",
+      "expected_value": 64,
+      "tolerance": 0,
+      "common_errors": ["Applying a flat 20% to profit instead of revenue", "Rounding 1.6 to 2"]
+    },
+    {
+      "inputs": "40 + 16",
+      "expected_value": 56,
+      "tolerance": 0,
+      "common_errors": ["Scaling fixed costs down with volume", "Forgetting variable costs fell to 16"]
+    },
+    {
+      "inputs": "64 - 56",
+      "expected_value": 8,
+      "tolerance": 0,
+      "common_errors": ["Using last year's cost of 60", "Sign error"]
+    }
+  ],
+  "model_answer": {
+    "framework": "Profit = Revenue - Costs, with costs split into fixed (unchanging) and variable (scaling with volume).",
+    "key_insights": [
+      "Revenue fell 20% from a footfall drop, with price held.",
+      "Total costs fell only 7% because fixed costs (rent, salaries) did not move.",
+      "The mismatch is operating leverage: a fixed-heavy cost base turns a 20% revenue drop into a 60% profit drop."
+    ],
+    "recommendation": "Restore footfall (promotions, product, location-level fixes) and/or make the cost base more flexible (renegotiate rent, adjust staffing to demand). Risk: aggressive fixed-cost cuts can hurt service quality and worsen footfall, so move carefully.",
+    "walkthrough": "Confirm revenue fell via footfall, structure the profit tree, read the P&L, spot that fixed costs did not fall, name operating leverage, and recommend restoring volume or flexing fixed costs."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No structure or an unMECE list.",
+        "3": "States Profit = Revenue - Costs but does not split fixed vs variable.",
+        "5": "Profit tree with a clear fixed vs variable cost split."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute profit from the P&L.",
+        "3": "Computes profit but does not compare the 20% revenue drop to the 60% profit drop.",
+        "5": "Computes cleanly and quantifies the leverage mismatch."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Misattributes the fall to price or a new competitor.",
+        "3": "Reaches the cost side but does not name operating leverage.",
+        "5": "Identifies operating leverage and explains why fixed costs amplify the drop."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Hard to follow.",
+        "3": "Explains steps but flatly.",
+        "5": "Narrates clearly and signals the key insight."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation.",
+        "3": "Generic 'increase sales' with no risk.",
+        "5": "Targets footfall or fixed-cost flexibility and notes a tradeoff."
+      }
+    }
+  }
+}

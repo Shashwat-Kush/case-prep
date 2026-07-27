@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "id": "lesson-profitability-framework",
+    "title": "The Profitability Framework",
+    "concepts_taught": ["profitability-tree", "revenue-cost-breakdown", "fixed-vs-variable-costs", "isolating-the-driver"],
+    "order_hint": 2
+  },
+  "sections": [
+    {
+      "heading": "The core equation",
+      "content": "Every profitability case sits on one identity: Profit = Revenue - Costs. When profit falls, the cause lives on the revenue side, the cost side, or both. Your job is to find which, then keep splitting that side until you reach the specific driver. Top line means revenue; bottom line means profit.",
+      "worked_example": "Profit fell from 50 Cr to 10 Cr. First question: did revenue drop, did costs rise, or both? If revenue is flat, you can set the whole revenue branch aside and dig into costs. That single fork saves you from analysing the wrong half of the tree."
+    },
+    {
+      "heading": "Breaking down revenue",
+      "content": "Revenue = Units sold x Price per unit. Units can be split further by customers x units per customer, or by market size x market share. Price can move because of competition, brand, or mix. A drop in revenue is always a drop in units, price, or both, so name which one before going deeper.",
+      "worked_example": "A retailer's revenue falls. Units sold dropped while price held. Units = footfall x conversion x basket size. Footfall fell. Now you have a specific, checkable driver instead of a vague 'revenue problem'."
+    },
+    {
+      "heading": "Breaking down costs",
+      "content": "Split costs into variable (scale with units: raw materials, per-unit labour, packaging) and fixed (do not scale in the short run: rent, salaries, insurance). Look at cost per unit, not just total cost, because rising volume raises total variable cost without being a problem. The question that isolates most cost cases is: what percentage of total cost sits in each part of the value chain, and which part moved?",
+      "worked_example": "Total cost rose but volume was flat, so the rise is not from selling more. Variable cost per unit went from 40 to 44, a 10% jump, while fixed cost held. The driver is a per-unit input cost, most likely a raw-material procurement price."
+    },
+    {
+      "heading": "Fixed costs and operating leverage",
+      "content": "When fixed costs are a large share of total cost, a small drop in volume causes a large drop in profit, because revenue falls but fixed costs do not. This is operating leverage. Spot it whenever volume moves a little and profit moves a lot.",
+      "worked_example": "A cafe chain's footfall falls 20%. Revenue falls 20%, but rent and salaries (most of its cost) do not move, so profit can fall by half or more. The lever to pull is either restoring volume or converting fixed costs to variable."
+    },
+    {
+      "heading": "Isolating the driver, then recommending",
+      "content": "Do not recommend until you have isolated one specific driver with numbers behind it. A recommendation should name the driver, propose an action, and acknowledge one risk or tradeoff. 'Cut costs' is weak. 'Renegotiate the raw-milk supply contract or dual-source it, since a 10% procurement price rise drove the entire profit fall, while watching for quality risk from a new supplier' is strong.",
+      "worked_example": "Driver: variable cost per litre up 10% from procurement. Action: renegotiate or add a second supplier. Risk: a cheaper supplier may hit product quality, so pilot before switching fully."
+    }
+  ],
+  "when_to_use": "Use when the prompt is about falling, low, or comparative profit, or any 'why are we making less money' question. It is the most common case type and the backbone of many others.",
+  "when_not_to_use": "Do not force it onto pure market-entry, market-sizing, or capacity/operations questions. Those have their own structures, though profitability often appears as a branch inside them.",
+  "quiz": [
+    {
+      "question": "In a profit case, what should you establish before diving deep?",
+      "options": ["The exact recommendation", "Whether the problem is on the revenue side, cost side, or both", "The competitor's CEO", "The company's founding year"],
+      "answer": "Whether the problem is on the revenue side, cost side, or both",
+      "explanation": "This first fork tells you which half of the tree to analyse and stops you from working the wrong branch."
+    },
+    {
+      "question": "Why look at cost per unit rather than only total cost?",
+      "options": ["Total cost is always wrong", "Because total variable cost can rise simply from selling more units, which is not a problem", "Per-unit cost is easier to say", "It never matters"],
+      "answer": "Because total variable cost can rise simply from selling more units, which is not a problem",
+      "explanation": "Rising volume lifts total variable cost without signalling trouble. Per-unit cost isolates a real efficiency or input-price change."
+    },
+    {
+      "question": "A cafe's footfall drops 20% and profit halves. What is happening?",
+      "options": ["Pricing error", "Operating leverage from high fixed costs", "Tax change", "Nothing unusual"],
+      "answer": "Operating leverage from high fixed costs",
+      "explanation": "Revenue fell with volume, but large fixed costs did not, so profit fell much more than 20%."
+    }
+  ]
+}

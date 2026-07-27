@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "id": "guess-tea-cups-india",
+    "title": "Cups of Tea Consumed in India per Week",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "How many cups of tea are consumed in all of India every week?",
+  "clarifications": [
+    {"question_pattern": "which beverages count", "answer": "Only tea. Treat coffee and milk as separate."},
+    {"question_pattern": "does day of week matter", "answer": "Assume every day is identical for tea consumption."},
+    {"question_pattern": "population", "answer": "Take India's population as about 1.45 billion."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "daily_cups_per_person",
+        "benchmark_refs": ["age_0_14_share_india", "age_15_24_share_india", "age_25_59_share_india", "age_60_plus_share_india"],
+        "derivation": "age_0_14_share_india * 0.1 + age_15_24_share_india * 0.8 + age_25_59_share_india * 1.3 + age_60_plus_share_india * 1.1",
+        "value": 0.88,
+        "tolerance": 0.2
+      },
+      {
+        "segment": "daily_cups_total",
+        "benchmark_refs": ["india_population"],
+        "derivation": "india_population * daily_cups_per_person",
+        "value": 1276000000,
+        "tolerance": 250000000
+      },
+      {
+        "segment": "weekly_cups_total",
+        "benchmark_refs": [],
+        "derivation": "daily_cups_total * 7",
+        "value": 8930000000,
+        "tolerance": 2000000000
+      }
+    ]
+  },
+  "answer_range": {"low": 6000000000, "high": 12000000000},
+  "common_traps": [
+    "Applying one cups-per-person figure to the whole population without an age split, overcounting children.",
+    "Forgetting to multiply the daily figure by seven for a weekly answer.",
+    "Mixing units between crore and billion mid-calculation."
+  ],
+  "rubric": {
+    "approach": {"anchors": {"5": "Uses an age-weighted demand approach rather than a single blanket per-capita rate."}},
+    "segmentation": {"anchors": {"5": "Splits by age bands with sensible per-band consumption, children near zero."}},
+    "arithmetic": {"anchors": {"5": "Keeps population and per-capita units consistent and multiplies by seven for the week."}},
+    "sanity_check": {"anchors": {"5": "Checks that the implied per-capita rate (~0.9 cups/day) is believable for India."}}
+  }
+}
