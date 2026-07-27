@@ -25,6 +25,9 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] "Next phase" walks all phases; "Finish" ends and shows the model answer.
 - [ ] Exhibit buttons appear only once the exhibit is unlocked (auto on its phase,
       or via an intent unlock); clicking one renders its data as a table.
+- [ ] A live timer shows on each phase; on a phase with a budget it counts against
+      it and turns red past the budget. Overrunning a phase then finishing lists
+      the overrun phases in the end-of-case pacing note.
 
 ## Lesson (completable)
 

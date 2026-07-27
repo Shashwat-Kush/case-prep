@@ -102,3 +102,22 @@ def test_no_phases_rejected():
     case.phases = []
     with pytest.raises(ValueError):
         CaseFlow(case)
+
+
+def test_phase_overrun_captured_with_fake_clock():
+    clock = {"t": 0.0}
+    flow = CaseFlow(_case(), now=lambda: clock["t"])  # enters opening at t=0
+    clock["t"] += 300  # 5 min in opening (no budget)
+    flow.advance()  # -> structuring
+    clock["t"] += 60  # 1 min in structuring (no budget)
+    flow.advance()  # -> analysis (budget 10 min)
+    clock["t"] += 720  # 12 min in analysis -> overrun
+    flow.advance()  # -> synthesis
+    clock["t"] += 60  # 1 min in synthesis (no budget)
+    flow.close()  # capture the final phase
+
+    assert [t["phase"] for t in flow.timings] == PHASES  # every phase timed
+    assert [t["phase"] for t in flow.overruns] == ["analysis"]  # only the over one
+    analysis = flow.timings[2]
+    assert analysis["budget_s"] == 600 and analysis["elapsed_s"] == 720
+    assert flow.timings[0]["over"] is False  # no-budget phase never overruns

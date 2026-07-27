@@ -10,6 +10,9 @@ the engine's judgment call (G-1 full design later).
 
 from __future__ import annotations
 
+import time
+from collections.abc import Callable
+
 from app.engine.content_models import Case, Phase
 from app.llm.templates import (
     Message,
@@ -34,6 +37,7 @@ class CaseFlow:
         *,
         mode: str = "standard",
         transcript_window_turns: int = 12,
+        now: Callable[[], float] = time.monotonic,
     ):
         if not case.phases:
             raise ValueError(f"case {case.meta.id!r} has no phases")
@@ -49,6 +53,9 @@ class CaseFlow:
         self._exhibit_ids = {e.id for e in case.exhibits}
         self._unlocked: set[str] = set()
         self._attempted = False
+        self._now = now
+        self._phase_started = now()
+        self._timings: list[dict] = []
         self._auto_unlock()
 
     @property
@@ -75,13 +82,48 @@ class CaseFlow:
     def unlocked_exhibit_ids(self) -> frozenset[str]:
         return frozenset(self._unlocked)
 
+    # --- pacing (T-043) ------------------------------------------------------
+
+    @property
+    def phase_budget_s(self) -> float | None:
+        """The current phase's time budget in seconds (time_budget is minutes)."""
+        b = self.current_phase.time_budget
+        return b * 60 if b else None
+
+    def close(self) -> None:
+        """Capture timing for the final phase when the case ends (advance() does
+        this for every earlier phase)."""
+        self._close_phase()
+
+    def _close_phase(self) -> None:
+        budget_s = self.phase_budget_s
+        elapsed = self._now() - self._phase_started
+        self._timings.append(
+            {
+                "phase": self.phase_name,
+                "budget_s": budget_s,
+                "elapsed_s": elapsed,
+                "over": budget_s is not None and elapsed > budget_s,
+            }
+        )
+
+    @property
+    def timings(self) -> list[dict]:
+        return list(self._timings)
+
+    @property
+    def overruns(self) -> list[dict]:
+        return [t for t in self._timings if t["over"]]
+
     # --- transitions (explicit only) ----------------------------------------
 
     def advance(self) -> Phase:
         if self.is_terminal:
             raise CaseComplete(f"case {self._case.meta.id!r} is at its final phase")
+        self._close_phase()  # capture timing for the phase being left
         self._i += 1
         self._attempted = False  # a fresh attempt is required in each phase
+        self._phase_started = self._now()
         self._auto_unlock()
         return self.current_phase
 

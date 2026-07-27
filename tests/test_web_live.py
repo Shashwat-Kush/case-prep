@@ -83,11 +83,14 @@ def test_typed_case_runs_over_http_end_to_end():
     assert [t["role"] for t in turns] == ["user", "assistant"]
     assert turns[1]["provider"] == "groq"
 
+    assert "time_budget_s" in opened  # per-phase budget exposed for the UI timer
+
     for _ in range(6):
         state = _act(client, sid, "advance")
         if state.get("done"):
             break
     assert state["done"] and state["model_answer"]
+    assert isinstance(state["overruns"], list)  # pacing summary in the end payload
 
 
 def test_guided_case_coaching_and_reveal_gate():

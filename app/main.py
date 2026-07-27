@@ -178,6 +178,7 @@ class LiveCaseSession:
             "persona": self._persona,
             "last": self._flow.is_terminal,
             "exhibits": sorted(self._flow.unlocked_exhibit_ids),
+            "time_budget_s": self._flow.phase_budget_s,
         }
         if self._flow.mode == "guided" and self._flow.has_coaching:
             s["coaching"] = self._flow.coach_explain()
@@ -222,7 +223,18 @@ class LiveCaseSession:
         return {"id": ex.id, "title": ex.title, "data": ex.data}
 
     def _end(self) -> None:
-        payload: dict = {"model_answer": reveal_model_answer(self._flow.case)}
+        if self._end_payload is not None:
+            return
+        self._flow.close()  # capture the final phase's timing
+        overruns = [t["phase"] for t in self._flow.overruns]
+        if overruns:
+            self._session.record_turn(
+                "system", "overran phases: " + ", ".join(overruns), phase="pacing"
+            )
+        payload: dict = {
+            "model_answer": reveal_model_answer(self._flow.case),
+            "overruns": overruns,
+        }
         try:
             card = score_case(
                 self._flow.case, self._flow.transcript, self._chat, config=self._config

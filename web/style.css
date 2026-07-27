@@ -65,6 +65,16 @@ button.link {
   margin: 0.35rem 0;
   white-space: pre-wrap;
 }
+.timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  opacity: 0.8;
+  margin: 0.25rem 0;
+}
+.timer.over {
+  color: #d33;
+  opacity: 1;
+}
 .turn {
   margin: 0.5rem 0;
   padding: 0.5rem 0.75rem;

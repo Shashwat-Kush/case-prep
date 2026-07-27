@@ -202,7 +202,7 @@ Depends: T-041.
 Accept: exhibits appear only when unlocked; data renders as tables.
 Tests: unlock gating at API level.
 
-**T-043 · Timer + phase pacing UI** `[ ]`
+**T-043 · Timer + phase pacing UI** `[x]`
 Goal: visible timer with per-phase budgets; overrun flag into feedback.
 Files: `web/`, `app/engine/case_flow.py` (overrun capture).
 Depends: T-041.

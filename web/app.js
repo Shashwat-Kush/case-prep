@@ -4,6 +4,7 @@
 
 const $ = (id) => document.getElementById(id);
 let sessionId = null;
+let timerId = null;
 
 // --- library ----------------------------------------------------------------
 
@@ -61,6 +62,8 @@ async function start(contentId, mode) {
 }
 
 function quit() {
+  clearInterval(timerId);
+  timerId = null;
   sessionId = null;
   $("session").hidden = true;
   $("library").hidden = false;
@@ -118,6 +121,8 @@ async function sendMessage(text) {
 function render(state) {
   const view = $("view");
   const controls = $("controls");
+  clearInterval(timerId);
+  timerId = null;
   view.innerHTML = "";
   controls.innerHTML = "";
   $("composer").hidden = false;
@@ -133,12 +138,16 @@ function renderCase(s, view, controls) {
   if (s.done) {
     $("composer").hidden = true;
     note(view, "Case complete");
+    if (s.overruns && s.overruns.length) {
+      note(view, "⏱ Pacing: you overran " + s.overruns.join(", ") + ".");
+    }
     addTurn("model", "Model answer\n\n" + s.model_answer);
     if (s.feedback) addTurn("model", s.feedback);
     return;
   }
   if (s.prompt) note(view, s.prompt);
   note(view, "Phase: " + s.phase + (s.last ? " (final)" : ""));
+  startTimer(view, s.time_budget_s);
   if (s.coaching) note(view, "Coach: " + s.coaching);
   if (s.coach_reveal) addTurn("model", "Model approach\n\n" + s.coach_reveal);
   for (const id of s.exhibits || []) {
@@ -229,6 +238,24 @@ function renderGuess(s, view, controls) {
 }
 
 // --- small helpers ----------------------------------------------------------
+
+function startTimer(parent, budgetS) {
+  const el = document.createElement("div");
+  el.className = "timer";
+  parent.append(el);
+  const start = Date.now();
+  const tick = () => {
+    const elapsed = Math.floor((Date.now() - start) / 1000);
+    el.textContent = "⏱ " + fmt(elapsed) + (budgetS ? " / " + fmt(budgetS) : "");
+    el.classList.toggle("over", budgetS && elapsed > budgetS);
+  };
+  tick();
+  timerId = setInterval(tick, 1000);
+}
+
+function fmt(s) {
+  return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+}
 
 function note(parent, text) {
   const el = document.createElement("p");
