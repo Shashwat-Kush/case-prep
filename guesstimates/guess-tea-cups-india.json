@@ -45,9 +45,33 @@
     "Mixing units between crore and billion mid-calculation."
   ],
   "rubric": {
-    "approach": {"anchors": {"5": "Uses an age-weighted demand approach rather than a single blanket per-capita rate."}},
-    "segmentation": {"anchors": {"5": "Splits by age bands with sensible per-band consumption, children near zero."}},
-    "arithmetic": {"anchors": {"5": "Keeps population and per-capita units consistent and multiplies by seven for the week."}},
-    "sanity_check": {"anchors": {"5": "Checks that the implied per-capita rate (~0.9 cups/day) is believable for India."}}
+    "approach": {
+      "anchors": {
+        "1": "Multiplies total population by a single cups-per-person figure with no age reasoning.",
+        "3": "Recognises age matters but applies a rough two-way split rather than proper age bands.",
+        "5": "Uses an age-weighted demand approach rather than a single blanket per-capita rate."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No age split, or one that ignores that children barely drink tea.",
+        "3": "Splits by age but assigns implausible per-band rates, e.g. children drinking as much as adults.",
+        "5": "Splits by age bands with sensible per-band consumption, children near zero."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Unit chaos between crore and billion, or forgets to convert daily to weekly entirely.",
+        "3": "Computes a daily figure correctly but slips on the times-seven or a unit conversion.",
+        "5": "Keeps population and per-capita units consistent and multiplies by seven for the week."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No check on whether the per-capita rate is believable.",
+        "3": "Notes a check is needed but doesn't compute the implied per-capita rate.",
+        "5": "Checks that the implied per-capita rate (~0.9 cups/day) is believable for India."
+      }
+    }
   }
 }

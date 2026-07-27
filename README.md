@@ -24,7 +24,14 @@ python -m app.cli           # (Phase 1) terminal chat REPL
 ## Validate content
 
 ```sh
-python scripts/validate_case.py
+python scripts/validate_case.py        # lists every violation, exits nonzero if any
+```
+
+Enable the pre-commit hook once so validation + ruff run automatically before
+every commit (blocks the commit if content is invalid or code is lint/format-dirty):
+
+```sh
+git config core.hooksPath .githooks
 ```
 
 ## Docs

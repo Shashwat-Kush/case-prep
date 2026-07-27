@@ -59,9 +59,33 @@
     "Multiplying by population instead of households, double-counting people in the same home."
   ],
   "rubric": {
-    "approach": {"anchors": {"5": "Chooses a household-to-cards-to-machines chain and states the cards-per-ATM assumption explicitly."}},
-    "segmentation": {"anchors": {"5": "Splits by area density (or an equivalent), rather than one blanket ratio."}},
-    "arithmetic": {"anchors": {"5": "Carries crore/lakh conversions cleanly and lands in the 3000-6000 range."}},
-    "sanity_check": {"anchors": {"5": "Validates via ATM throughput, e.g. transactions per ATM per day implying each card is used at least monthly."}}
+    "approach": {
+      "anchors": {
+        "1": "No chain from people to machines; guesses a number, or estimates ATM cards and stops without converting cards into machines.",
+        "3": "Builds a household-to-cards chain but never states the cards-per-ATM ratio, or applies it vaguely.",
+        "5": "Chooses a household-to-cards-to-machines chain and states the cards-per-ATM assumption explicitly."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "Applies one flat ratio to the whole city with no segmentation.",
+        "3": "Segments, but with an arbitrary split not tied to a real driver of ATM density.",
+        "5": "Splits by area density (or an equivalent), rather than one blanket ratio."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Botches crore/lakh conversions or lands far outside any plausible range.",
+        "3": "Reaches an answer but with a conversion slip, or lands just outside the 3000-6000 range.",
+        "5": "Carries crore/lakh conversions cleanly and lands in the 3000-6000 range."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check; states the number as final.",
+        "3": "Mentions a check but doesn't carry it through, or the check doesn't actually test the estimate.",
+        "5": "Validates via ATM throughput, e.g. transactions per ATM per day implying each card is used at least monthly."
+      }
+    }
   }
 }

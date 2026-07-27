@@ -1,0 +1,16 @@
+#!/bin/sh
+# Blocks commits when content is invalid or code is unformatted/lint-dirty.
+# Install once: git config core.hooksPath .githooks
+set -e
+
+PY=".venv/bin/python"
+[ -x "$PY" ] || PY="python3"
+
+echo "pre-commit: validating content..."
+"$PY" scripts/validate_case.py
+
+echo "pre-commit: ruff check..."
+"$PY" -m ruff check app tests scripts
+
+echo "pre-commit: ruff format check..."
+"$PY" -m ruff format --check app tests scripts

@@ -45,9 +45,33 @@
     "Assuming peak capacity holds all day rather than only during rush hour."
   ],
   "rubric": {
-    "approach": {"anchors": {"5": "Recognises this as a supply-rate problem: throughput per lane times lanes times toll."}},
-    "segmentation": {"anchors": {"5": "Builds from per-lane per-second service time up to all lanes, cleanly."}},
-    "arithmetic": {"anchors": {"5": "Handles the seconds-to-hour conversion (3600/8) correctly."}},
-    "sanity_check": {"anchors": {"5": "Comments on whether 3600 vehicles/hour is plausible for a busy 8-lane plaza."}}
+    "approach": {
+      "anchors": {
+        "1": "No rate logic; guesses vehicles or revenue directly without service time, lanes, and toll.",
+        "3": "Has the throughput-times-toll idea but omits lanes or service-time reasoning.",
+        "5": "Recognises this as a supply-rate problem: throughput per lane times lanes times toll."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "Treats the plaza as a single undifferentiated flow with no per-lane build-up.",
+        "3": "Reasons per lane but doesn't cleanly scale to all lanes, or double-counts.",
+        "5": "Builds from per-lane per-second service time up to all lanes, cleanly."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Uses minutes instead of seconds per vehicle, undercounting throughput roughly 60x, or a similar large error.",
+        "3": "Gets throughput right but slips on the final multiplication or the toll figure.",
+        "5": "Handles the seconds-to-hour conversion (3600/8) correctly."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No plausibility check on the vehicle count or revenue.",
+        "3": "Comments the number 'seems fine' without testing it against plaza capacity.",
+        "5": "Comments on whether 3600 vehicles/hour is plausible for a busy 8-lane plaza."
+      }
+    }
   }
 }

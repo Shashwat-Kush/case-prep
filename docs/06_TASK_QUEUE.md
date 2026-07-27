@@ -47,42 +47,42 @@ Depends: T-010. Docs: 03_CONTENT_SPEC §4.
 Accept: all six checks implemented; math checkpoints and guesstimate trees actually recomputed; violations return structured errors (file, check, detail), not exceptions.
 Tests: one fixture per failure class (bad schema, wrong checkpoint, broken tree, missing benchmark ref, dangling exhibit/lesson ref, duplicate id) + one fully valid set.
 
-**T-012 · Validator CLI + pre-commit** `[ ]`
+**T-012 · Validator CLI + pre-commit** `[x]`
 Goal: `scripts/validate_case.py` wrapping T-011 for all content folders; git pre-commit hook (validator + ruff).
 Files: `scripts/validate_case.py`, `.githooks/pre-commit`, hook install note in README.
 Depends: T-011.
 Accept: CLI exits nonzero listing every violation; hook blocks commits with invalid content; runtime under 2s on the seed set.
 Tests: CLI against valid and invalid fixture dirs.
 
-**T-013 · Content loader** `[ ]`
+**T-013 · Content loader** `[x]`
 Goal: scan folders, validate, build in-memory library, skip-with-warning, atomic refresh.
 Files: `app/engine/content_loader.py`.
 Depends: T-011. Docs: 03_CONTENT_SPEC §3.
 Accept: invalid file → warning with filename + failed check, app continues; refresh swaps atomically; library exposes lookup by id and by type.
 Tests: mixed valid/invalid dir loads only valid; warning list correct; refresh picks up an added file; removed file disappears without touching (future) session data.
 
-**T-014 · LLM client + provider router (Groq only)** `[ ]`
+**T-014 · LLM client + provider router (Groq only)** `[x]`
 Goal: OpenAI-compatible chat client with streaming; router shell with single provider.
 Files: `app/providers/llm_client.py`, `app/providers/router.py`.
 Depends: T-002. Docs: 02_ARCHITECTURE §3; 04 §5.
 Accept: streaming tokens surface as an iterator; per-call record (provider, model, latencies, token counts, ratelimit headers) returned alongside; no provider specifics outside `app/providers/`.
 Tests: against a mocked HTTP server: happy path, streamed chunks reassemble, headers captured.
 
-**T-015 · Prompt template loader** `[ ]`
+**T-015 · Prompt template loader** `[x]`
 Goal: file-based prompt templates with variable substitution; context assembly helpers.
 Files: `app/llm/templates.py`, `app/llm/templates/*.md` (stubs for interviewer, coach, tutor).
 Depends: T-001. Docs: 07_PROMPTS §3-4.
 Accept: templates load from files; assembly function enforces the solution-exclusion rule by construction (interviewer context builder has no code path to model_answer).
 Tests: substitution correctness; assembling interviewer context from a case fixture never contains model_answer text (assert on string absence).
 
-**T-016 · Case state machine** `[ ]`
+**T-016 · Case state machine** `[x]`
 Goal: phases, transitions, exhibit unlocking, per-phase context scoping.
 Files: `app/engine/case_flow.py`.
 Depends: T-010, T-015. Docs: 02_ARCHITECTURE §5.
 Accept: transitions only via explicit engine calls; exhibits unlock per unlock_condition; per-call context contains only current-phase instructions + recent transcript window (size from config).
 Tests: full transition table; exhibit gating; context scoping (token-count proxy: context excludes other phases' instructions).
 
-**T-017 · Lesson flow + quiz** `[ ]`
+**T-017 · Lesson flow + quiz** `[x]`
 Goal: section walk-through with Q&A, quiz administration, coverage result.
 Files: `app/engine/lesson_flow.py`.
 Depends: T-010, T-015.
