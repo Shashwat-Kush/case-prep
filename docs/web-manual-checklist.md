@@ -23,6 +23,8 @@ python -m app.main        # binds 127.0.0.1:8000 (config.host/port)
 - [ ] After typing an answer (streamed reply appears token-by-token), reveal shows
       the model approach.
 - [ ] "Next phase" walks all phases; "Finish" ends and shows the model answer.
+- [ ] Exhibit buttons appear only once the exhibit is unlocked (auto on its phase,
+      or via an intent unlock); clicking one renders its data as a table.
 
 ## Lesson (completable)
 

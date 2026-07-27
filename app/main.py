@@ -108,6 +108,20 @@ def create_app(engine: Engine) -> FastAPI:
     def action(sid: str, req: ActionReq) -> dict:
         return _lookup(engine, sid).act(req.action, req.value)
 
+    @app.get("/api/session/{sid}/exhibit/{exhibit_id}")
+    def exhibit(sid: str, exhibit_id: str) -> dict:
+        # Server-side gate (defense in depth): a locked exhibit's data never
+        # leaves the backend, whatever the client requests (07_PROMPTS §4).
+        getter = getattr(_lookup(engine, sid), "exhibit", None)
+        if getter is None:
+            raise HTTPException(404, "this session has no exhibits")
+        try:
+            return getter(exhibit_id)
+        except KeyError as e:
+            raise HTTPException(404, f"unknown exhibit: {exhibit_id}") from e
+        except PermissionError as e:
+            raise HTTPException(403, f"exhibit is locked: {exhibit_id}") from e
+
     app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
     return app
 
@@ -148,6 +162,7 @@ class LiveCaseSession:
         self._session = session
         self._config = config
         self._persona = "coach" if flow.mode == "guided" else "interviewer"
+        self._exhibits = {e.id: e for e in flow.case.exhibits}
         self._end_payload: dict | None = None
 
     def state(self) -> dict:
@@ -195,6 +210,16 @@ class LiveCaseSession:
                 return {**self.state(), "error": str(e)}
             return self.state()
         raise HTTPException(400, f"unknown action: {action}")
+
+    def exhibit(self, exhibit_id: str) -> dict:
+        """An unlocked exhibit's renderable payload. `so_what` (the takeaway) is
+        withheld — the candidate interprets the data themselves (07_PROMPTS §4)."""
+        ex = self._exhibits.get(exhibit_id)
+        if ex is None:
+            raise KeyError(exhibit_id)
+        if not self._flow.is_unlocked(exhibit_id):
+            raise PermissionError(exhibit_id)
+        return {"id": ex.id, "title": ex.title, "data": ex.data}
 
     def _end(self) -> None:
         payload: dict = {"model_answer": reveal_model_answer(self._flow.case)}

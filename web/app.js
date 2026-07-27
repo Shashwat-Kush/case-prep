@@ -141,8 +141,49 @@ function renderCase(s, view, controls) {
   note(view, "Phase: " + s.phase + (s.last ? " (final)" : ""));
   if (s.coaching) note(view, "Coach: " + s.coaching);
   if (s.coach_reveal) addTurn("model", "Model approach\n\n" + s.coach_reveal);
+  for (const id of s.exhibits || []) {
+    button(controls, "📊 " + id, () => viewExhibit(id));
+  }
   if (s.mode === "guided") button(controls, "Reveal approach", () => act("reveal"));
   button(controls, s.last ? "Finish" : "Next phase", () => act("advance"));
+}
+
+// --- exhibits ---------------------------------------------------------------
+
+async function viewExhibit(id) {
+  const res = await fetch(`/api/session/${sessionId}/exhibit/${id}`);
+  if (!res.ok) return alert("Exhibit unavailable: " + (await res.text()));
+  const ex = await res.json();
+  const wrap = document.createElement("div");
+  wrap.className = "exhibit";
+  wrap.innerHTML = `<h4>${ex.title}</h4>`;
+  wrap.append(dataTable(ex.data));
+  $("transcript").append(wrap);
+  wrap.scrollIntoView();
+}
+
+function dataTable(data) {
+  const table = document.createElement("table");
+  if (Array.isArray(data)) {
+    const cols = data.length ? Object.keys(data[0]) : [];
+    table.append(rowEl(cols, "th"));
+    for (const r of data) table.append(rowEl(cols.map((c) => r[c])));
+  } else if (data && typeof data === "object") {
+    for (const [k, v] of Object.entries(data)) table.append(rowEl([k, v]));
+  } else {
+    table.append(rowEl([String(data)]));
+  }
+  return table;
+}
+
+function rowEl(cells, tag = "td") {
+  const tr = document.createElement("tr");
+  for (const c of cells) {
+    const el = document.createElement(tag);
+    el.textContent = c;
+    tr.append(el);
+  }
+  return tr;
 }
 
 function renderLesson(s, view, controls) {

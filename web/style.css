@@ -80,3 +80,23 @@ button.link {
 .turn.model {
   background: rgba(80, 200, 120, 0.15);
 }
+.exhibit {
+  margin: 0.75rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+.exhibit h4 {
+  margin: 0 0 0.5rem;
+}
+.exhibit table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.exhibit th,
+.exhibit td {
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  padding: 0.3rem 0.6rem;
+  text-align: left;
+}

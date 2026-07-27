@@ -195,7 +195,7 @@ Depends: T-040.
 Accept: lesson, guided case, coached guesstimate each completable in browser.
 Tests: minimal JS unit tests or scripted API-level checks; manual checklist in PR notes.
 
-**T-042 · Exhibit viewer** `[ ]`
+**T-042 · Exhibit viewer** `[x]`
 Goal: render exhibit tables/data on unlock.
 Files: `web/`, exhibit payload endpoint.
 Depends: T-041.

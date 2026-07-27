@@ -128,6 +128,39 @@ def test_lesson_runs_teaching_quiz_to_completion():
     assert graded["stage"] == "complete" and "coverage" in graded
 
 
+def test_exhibit_gated_until_unlocked_then_serves_data():
+    client, _ = _client()
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    ex = "ex-cost-breakdown"  # unlock_condition: phase:analysis
+
+    # locked in the opening phase -> data never leaves the backend
+    assert client.get(f"/api/session/{sid}/exhibit/{ex}").status_code == 403
+    assert client.get(f"/api/session/{sid}/exhibit/nope").status_code == 404
+
+    # walking to the analysis phase auto-unlocks it
+    state = _act(client, sid, "advance")
+    while ex not in state.get("exhibits", []):
+        state = _act(client, sid, "advance")
+    r = client.get(f"/api/session/{sid}/exhibit/{ex}")
+    assert r.status_code == 200
+    assert r.json()["data"] == {"power": 400, "freight": 500, "other": 300}
+
+
+def test_intent_unlock_action_exposes_exhibit():
+    client, _ = _client()
+    sid = _start(client, "case-cement-profitability")["session_id"]
+    ex = "ex-cost-breakdown"
+    state = _act(client, sid, "exhibit", ex)  # explicit unlock, before analysis
+    assert ex in state["exhibits"]
+    assert client.get(f"/api/session/{sid}/exhibit/{ex}").status_code == 200
+
+
+def test_non_case_session_has_no_exhibits():
+    client, _ = _client()
+    sid = _start(client, "lesson-profitability")["session_id"]
+    assert client.get(f"/api/session/{sid}/exhibit/x").status_code == 404
+
+
 def test_coached_guesstimate_runs_all_steps_to_completion():
     client, _ = _client()
     sid = _start(client, "guess-petrol-pumps-delhi", mode="coached")["session_id"]
