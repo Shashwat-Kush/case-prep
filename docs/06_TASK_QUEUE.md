@@ -156,7 +156,7 @@ Depends: T-025.
 Accept: reveal text is file content verbatim; feedback references rubric anchors.
 Tests: reveal equals file content; feedback includes anchor phrases.
 
-**T-027 · Diagnostic session flow** `[ ]`
+**T-027 · Diagnostic session flow** `[x]`
 Goal: diagnostic-flagged case + 2 guesstimates as one session; scores recorded, hidden per config.
 Files: `app/engine/session_manager.py` (extend).
 Depends: T-021, T-022, T-025.
