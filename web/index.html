@@ -8,7 +8,10 @@
   </head>
   <body>
     <header>
-      <h1>CasePrep Local</h1>
+      <div class="brand">
+        <h1>CasePrep Local</h1>
+        <p class="tagline">Practice consulting case interviews — out loud, on your machine.</p>
+      </div>
       <div id="provider-status" class="status">provider: —</div>
     </header>
 
@@ -21,6 +24,12 @@
           <button id="dashboard-btn" class="link">📊 Progress</button>
         </span>
       </div>
+      <p class="lead">
+        Pick something to practice. A <strong>case</strong> is a full
+        interviewer-led session; a <strong>guesstimate</strong> is a quick
+        estimation drill; a <strong>lesson</strong> teaches a framework. Or warm
+        up with mental-math and benchmark drills. Everything runs on your machine.
+      </p>
       <div id="content-list">Loading…</div>
     </section>
 
@@ -40,10 +49,16 @@
       <div id="view"></div>
       <div id="transcript"></div>
       <form id="composer">
-        <input id="message" placeholder="your response…" autocomplete="off" />
-        <button id="mic" type="button" title="Hold to talk">🎤</button>
-        <button type="submit">Send</button>
+        <input id="message" placeholder="Type your response…" autocomplete="off" />
+        <button id="mic" type="button" title="Click to record, click again to stop">
+          🎤 Speak
+        </button>
+        <button type="submit" class="btn-primary">Send</button>
       </form>
+      <p id="composer-hint" class="composer-hint">
+        Type your answer, or click <strong>🎤 Speak</strong> to dictate — then
+        <strong>Send</strong>. Use the buttons below to move through the case.
+      </p>
       <div id="number-confirm" hidden></div>
       <div id="controls"></div>
     </main>

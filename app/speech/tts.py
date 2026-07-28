@@ -10,10 +10,13 @@ timeout — returns None so the turn degrades to text only and never blocks (04 
 from __future__ import annotations
 
 import logging
+import os
 import re
 import shutil
 import subprocess
+import tempfile
 from collections.abc import Callable, Iterable, Iterator
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -86,3 +89,58 @@ class PiperTTS:
             log.warning("Piper exited %s — text only", proc.returncode)
             return None
         return proc.stdout
+
+
+class SystemTTS:
+    """macOS `say` fallback, used when Piper is not installed. `say` writes a WAV
+    to a file (not stdout), so we synthesize to a temp file and return its bytes.
+    Same contract as PiperTTS.synthesize: None on any failure -> text only."""
+
+    def __init__(
+        self,
+        *,
+        say: str | None = None,
+        timeout_s: float = 10.0,
+        run: Callable[..., subprocess.CompletedProcess] = subprocess.run,
+    ):
+        self._say = say if say is not None else shutil.which("say")
+        self._timeout = timeout_s
+        self._run = run
+
+    def synthesize(self, text: str) -> bytes | None:
+        text = text.strip()
+        if not text or not self._say:
+            return None
+        fd, path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+        try:
+            proc = self._run(
+                [self._say, "-o", path, "--data-format=LEI16@22050", text],
+                capture_output=True,
+                timeout=self._timeout,
+            )
+            code = getattr(proc, "returncode", 1)
+            if code != 0:
+                log.warning("say exited %s — text only", code)
+                return None
+            data = Path(path).read_bytes()
+            return data or None
+        except (OSError, subprocess.SubprocessError) as exc:
+            log.warning("say synthesis failed: %s — text only", exc)
+            return None
+        finally:
+            Path(path).unlink(missing_ok=True)
+
+
+def build_tts(voice: str, *, piper: str | None = None, say: str | None = None):
+    """Pick the best available local TTS: Piper if its binary is on PATH, else
+    macOS `say`, else a no-op Piper (text only). `piper`/`say` may be passed
+    explicitly (tests); otherwise they are looked up on PATH."""
+    resolved_piper = piper if piper is not None else shutil.which("piper")
+    if resolved_piper:
+        return PiperTTS(voice, piper=resolved_piper)
+    resolved_say = say if say is not None else shutil.which("say")
+    if resolved_say:
+        log.info("Piper not found; using system `say` for TTS")
+        return SystemTTS(say=resolved_say)
+    return PiperTTS(voice, piper="")  # no-op -> text only

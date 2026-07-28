@@ -23,19 +23,70 @@ async function loadLibrary() {
 function group(label, items) {
   const wrap = document.createElement("div");
   wrap.className = "group";
-  wrap.innerHTML = `<h3>${label}</h3>`;
-  for (const it of items) {
-    const row = document.createElement("div");
-    row.className = "row";
-    const btn = document.createElement("button");
-    btn.textContent = it.title || it.id;
-    const mode = modeSelect(it.modes);
-    btn.addEventListener("click", () => start(it.id, mode ? mode.value : "standard"));
-    row.append(btn);
-    if (mode) row.append(mode);
-    wrap.append(row);
-  }
+  const h = document.createElement("h3");
+  h.textContent = label;
+  const count = document.createElement("span");
+  count.className = "count";
+  count.textContent = items.length;
+  h.append(" ", count);
+  wrap.append(h);
+  for (const it of items) wrap.append(itemCard(it));
   return wrap;
+}
+
+// A descriptive library card: title, one-line blurb, metadata badges, and Start.
+function itemCard(it) {
+  const card = document.createElement("div");
+  card.className = "item";
+
+  const main = document.createElement("div");
+  main.className = "item-main";
+  const title = document.createElement("div");
+  title.className = "item-title";
+  title.textContent = it.title || it.id;
+  main.append(title);
+  if (it.blurb) {
+    const blurb = document.createElement("div");
+    blurb.className = "item-blurb";
+    blurb.textContent = it.blurb;
+    main.append(blurb);
+  }
+  const meta = document.createElement("div");
+  meta.className = "item-meta";
+  for (const b of itemBadges(it)) {
+    const span = document.createElement("span");
+    span.className = "badge" + (b === "diagnostic" ? " badge-diag" : "");
+    span.textContent = b;
+    meta.append(span);
+  }
+  main.append(meta);
+  card.append(main);
+
+  const actions = document.createElement("div");
+  actions.className = "item-actions";
+  const mode = modeSelect(it.modes);
+  if (mode) actions.append(mode);
+  const startBtn = document.createElement("button");
+  startBtn.className = "btn-primary";
+  startBtn.textContent = "Start →";
+  startBtn.addEventListener("click", () =>
+    start(it.id, mode ? mode.value : "standard"),
+  );
+  actions.append(startBtn);
+  card.append(actions);
+  return card;
+}
+
+function itemBadges(it) {
+  const b = [];
+  if (it.difficulty) b.push(it.difficulty);
+  if (it.minutes) b.push(`~${it.minutes} min`);
+  if (it.type) b.push(it.type);
+  if (it.industry) b.push(it.industry);
+  if (it.region) b.push(it.region);
+  if (it.concepts) b.push(`${it.concepts} concepts`);
+  if (it.diagnostic) b.push("diagnostic");
+  return b;
 }
 
 function modeSelect(modes) {
@@ -143,6 +194,12 @@ async function sendMessage(text) {
 
 // --- rendering by content type ----------------------------------------------
 
+// The composer (input + mic + Send) and its hint show/hide together.
+function showComposer(v) {
+  $("composer").hidden = !v;
+  $("composer-hint").hidden = !v;
+}
+
 function render(state) {
   const view = $("view");
   const controls = $("controls");
@@ -150,7 +207,7 @@ function render(state) {
   timerId = null;
   view.innerHTML = "";
   controls.innerHTML = "";
-  $("composer").hidden = false;
+  showComposer(true);
   if (state.error) note(view, "⚠ " + state.error);
   ({ case: renderCase, lesson: renderLesson, guess: renderGuess })[state.type](
     state,
@@ -159,29 +216,77 @@ function render(state) {
   );
 }
 
+const PHASE_HINTS = {
+  opening: "Restate the problem and objective in one line, then Send.",
+  clarifying: "Ask a few sharp clarifying questions before diving in.",
+  structuring: "Lay out your framework (a clean, MECE tree). Send it, then continue.",
+  analysis: "Work the drivers. Ask about the data to unlock exhibits.",
+  math: "Do the arithmetic out loud — state your numbers so they can be checked.",
+  synthesis: "Give a recommendation: name the driver, an action, and one risk.",
+};
+
 function renderCase(s, view, controls) {
   if (s.done) {
-    $("composer").hidden = true;
-    note(view, "Case complete");
+    showComposer(false);
+    note(view, "✓ Case complete — here's the model answer and your feedback.");
     if (s.overruns && s.overruns.length) {
       note(view, "⏱ Pacing: you overran " + s.overruns.join(", ") + ".");
     }
     addTurn("model", "Model answer\n\n" + s.model_answer);
     if (s.feedback) addTurn("model", s.feedback);
-    button(controls, "Review session", showReview);
+    button(controls, "Review session", showReview).classList.add("btn-primary");
     return;
   }
-  if (s.prompt) note(view, s.prompt);
-  note(view, "Phase: " + s.phase + (s.last ? " (final)" : ""));
+  stepper(view, s.phases || [s.phase], s.phase);
+  if (s.prompt) promptBlock(view, s.prompt);
+  hintBox(
+    view,
+    PHASE_HINTS[s.phase] ||
+      "Type or speak your answer, then Send. Click Next phase → when ready.",
+  );
   startTimer(view, s.time_budget_s);
-  if (s.coaching) note(view, "Coach: " + s.coaching);
+  if (s.coaching) note(view, "🎓 Coach: " + s.coaching);
   if (s.coach_reveal) addTurn("model", "Model approach\n\n" + s.coach_reveal);
   for (const id of s.exhibits || []) {
-    button(controls, "📊 " + id, () => viewExhibit(id));
+    button(controls, "📊 View exhibit: " + id, () => viewExhibit(id));
   }
   if (s.mode === "guided") button(controls, "Reveal approach", () => act("reveal"));
-  if (s.mode !== "cold") button(controls, "💡 Hint", () => act("hint")); // costs score
-  button(controls, s.last ? "Finish" : "Next phase", () => act("advance"));
+  if (s.mode !== "cold") button(controls, "💡 Hint (costs score)", () => act("hint"));
+  const next = button(
+    controls,
+    s.last ? "Finish & see feedback →" : "Next phase →",
+    () => act("advance"),
+  );
+  next.classList.add("btn-primary");
+}
+
+// The case's phases as a progress spine: done · current · upcoming.
+function stepper(parent, phases, current) {
+  const wrap = document.createElement("div");
+  wrap.className = "stepper";
+  const at = phases.indexOf(current);
+  phases.forEach((name, i) => {
+    const el = document.createElement("span");
+    el.className =
+      "step" + (i < at ? " done" : i === at ? " current" : "");
+    el.textContent = (i < at ? "✓ " : "") + name;
+    wrap.append(el);
+  });
+  parent.append(wrap);
+}
+
+function promptBlock(parent, text) {
+  const el = document.createElement("p");
+  el.className = "prompt";
+  el.textContent = text;
+  parent.append(el);
+}
+
+function hintBox(parent, text) {
+  const el = document.createElement("div");
+  el.className = "hint";
+  el.textContent = text;
+  parent.append(el);
 }
 
 // --- exhibits ---------------------------------------------------------------
@@ -227,16 +332,16 @@ function renderLesson(s, view, controls) {
     note(view, s.heading);
     note(view, s.content);
     if (s.worked_example) note(view, "Example: " + s.worked_example);
-    button(controls, "Next", () => act("advance"));
+    button(controls, "Next →", () => act("advance")).classList.add("btn-primary");
   } else if (s.stage === "quiz") {
-    $("composer").hidden = true;
+    showComposer(false);
     note(view, s.question);
     for (const opt of s.options) button(controls, opt, () => act("answer", opt));
     if (s.correct !== undefined) {
       note(view, (s.correct ? "✓ Correct. " : "✗ Not quite. ") + s.explanation);
     }
   } else {
-    $("composer").hidden = true;
+    showComposer(false);
     const c = s.coverage;
     note(view, `Done. Quiz ${c.quiz_correct}/${c.quiz_total}.`);
     note(view, "Concepts: " + c.concepts.join(", "));
@@ -246,7 +351,7 @@ function renderLesson(s, view, controls) {
 function renderGuess(s, view, controls) {
   if (s.prompt) note(view, s.prompt);
   if (s.done) {
-    $("composer").hidden = true;
+    showComposer(false);
     note(view, "Complete. Your estimates:");
     for (const e of s.estimates) note(view, `${e.segment}: ${e.value}`);
     if (s.final_check) {
@@ -260,16 +365,20 @@ function renderGuess(s, view, controls) {
     }
     return;
   }
-  note(view, "Step: " + s.step);
+  stepper(view, ["clarify", "approach", "segmentation", "estimation"], s.step);
   if (s.step === "estimation") {
+    hintBox(view, "Enter your number for this segment, then Submit estimate.");
     note(view, "Estimate for: " + s.segment);
     const input = document.createElement("input");
     input.type = "number";
     input.placeholder = "your number";
     controls.append(input);
-    button(controls, "Submit estimate", () => act("estimate", input.value));
+    button(controls, "Submit estimate", () => act("estimate", input.value)).classList.add(
+      "btn-primary",
+    );
   } else {
-    button(controls, "Next step", () => act("advance"));
+    hintBox(view, "Talk through this step, then click Next step → to continue.");
+    button(controls, "Next step →", () => act("advance")).classList.add("btn-primary");
   }
 }
 
@@ -317,7 +426,7 @@ async function showReview() {
   timerId = null;
   view.innerHTML = "";
   $("transcript").innerHTML = "";
-  $("composer").hidden = true;
+  showComposer(false);
   $("controls").innerHTML = "";
   note(view, `Scorecard — average ${r.average}/5`);
   for (const s of r.scores) {
@@ -485,12 +594,17 @@ async function refreshStatus() {
   }
 }
 
-// --- push-to-talk (T-050) ---------------------------------------------------
-// Hold the mic to record; releasing uploads the raw blob. STT lands in T-051, so
-// for now a capture just confirms audio reached the backend; typing still works.
+// --- talk (T-050) -----------------------------------------------------------
+// Click the mic to start recording, click again to stop; the blob uploads for
+// transcription (T-051). No holding required. Typing always works too.
 
 let recorder = null;
 let audioChunks = [];
+
+function toggleRecording() {
+  if (recorder && recorder.state === "recording") stopRecording();
+  else startRecording();
+}
 
 async function startRecording() {
   try {
@@ -500,14 +614,18 @@ async function startRecording() {
     recorder.addEventListener("dataavailable", (e) => audioChunks.push(e.data));
     recorder.addEventListener("stop", uploadRecording);
     recorder.start();
-    $("mic").classList.add("recording");
+    const mic = $("mic");
+    mic.classList.add("recording");
+    mic.textContent = "● Stop";
   } catch {
-    alert("Microphone unavailable — please type your response.");
+    alert("Microphone unavailable — please type your response instead.");
   }
 }
 
 function stopRecording() {
-  $("mic").classList.remove("recording");
+  const mic = $("mic");
+  mic.classList.remove("recording");
+  mic.textContent = "🎤 Speak";
   if (recorder && recorder.state !== "inactive") {
     recorder.stop();
     recorder.stream.getTracks().forEach((t) => t.stop());
@@ -601,13 +719,7 @@ function stopAudio() {
   audioPlaying = false;
 }
 
-const mic = $("mic");
-mic.addEventListener("pointerdown", (e) => {
-  e.preventDefault();
-  startRecording();
-});
-mic.addEventListener("pointerup", stopRecording);
-mic.addEventListener("pointerleave", stopRecording);
+$("mic").addEventListener("click", toggleRecording);
 
 $("quit-btn").addEventListener("click", quit);
 $("dashboard-btn").addEventListener("click", showDashboard);

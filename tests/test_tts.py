@@ -2,9 +2,17 @@
 not installed in tests, so synthesis is exercised through an injected `run`."""
 
 import subprocess
+from pathlib import Path
 from types import SimpleNamespace
 
-from app.speech.tts import PiperTTS, drain_sentences, iter_sentences, split_sentences
+from app.speech.tts import (
+    PiperTTS,
+    SystemTTS,
+    build_tts,
+    drain_sentences,
+    iter_sentences,
+    split_sentences,
+)
 
 # --- sentence splitting -----------------------------------------------------
 
@@ -76,3 +84,45 @@ def test_subprocess_error_degrades_without_raising():
 def test_empty_text_is_not_synthesized():
     tts = PiperTTS("voice", piper="/usr/bin/piper", run=_ok_run)
     assert tts.synthesize("   ") is None
+
+
+# --- macOS `say` fallback + backend selection -------------------------------
+
+
+def _say_run_writing(data):
+    """Fake `say`: writes `data` to the -o output path, like the real command."""
+
+    def run(cmd, **k):
+        Path(cmd[cmd.index("-o") + 1]).write_bytes(data)
+        return SimpleNamespace(returncode=0, stdout=b"")
+
+    return run
+
+
+def test_system_tts_returns_wav_bytes_from_temp_file():
+    tts = SystemTTS(say="/usr/bin/say", run=_say_run_writing(b"RIFFsaywav"))
+    assert tts.synthesize("Hello.") == b"RIFFsaywav"
+
+
+def test_system_tts_missing_say_degrades_to_none():
+    assert SystemTTS(say="").synthesize("Hello.") is None
+
+
+def test_system_tts_nonzero_exit_degrades_to_none():
+    def bad(cmd, **k):
+        return SimpleNamespace(returncode=1, stdout=b"")
+
+    assert SystemTTS(say="/usr/bin/say", run=bad).synthesize("Hi.") is None
+
+
+def test_build_tts_prefers_piper_when_present():
+    assert isinstance(build_tts("voice", piper="/usr/bin/piper"), PiperTTS)
+
+
+def test_build_tts_falls_back_to_say_when_no_piper():
+    assert isinstance(build_tts("voice", piper="", say="/usr/bin/say"), SystemTTS)
+
+
+def test_build_tts_noop_when_nothing_available():
+    tts = build_tts("voice", piper="", say="")
+    assert isinstance(tts, PiperTTS) and tts.synthesize("Hi.") is None

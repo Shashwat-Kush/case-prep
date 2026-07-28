@@ -54,7 +54,7 @@ from app.engine.scoring import (
 from app.engine.session_manager import SessionManager
 from app.engine.stt_postprocess import clean_transcript, detect_numbers
 from app.providers.router import Router
-from app.speech.tts import PiperTTS, drain_sentences
+from app.speech.tts import build_tts, drain_sentences
 
 WEB_DIR = Path(__file__).parent.parent / "web"
 
@@ -240,6 +240,15 @@ def _link_quotes(turns: list[dict], evidence: str | None) -> list[dict]:
     return out
 
 
+def _blurb(text: str, limit: int = 140) -> str:
+    """A one-line library description: first sentence of the text, trimmed."""
+    text = " ".join((text or "").split())
+    head = text.split(". ", 1)[0].rstrip(".")
+    if len(head) <= limit:
+        return head
+    return head[:limit].rsplit(" ", 1)[0] + "…"
+
+
 def _lookup(engine: Engine, sid: str) -> WebSession:
     try:
         return engine.get(sid)
@@ -289,6 +298,7 @@ class LiveCaseSession:
             "prompt": self._flow.case.prompt,
             "mode": self._flow.mode,
             "phase": self._flow.phase_name,
+            "phases": [p.name for p in self._flow.case.phases],  # for the stepper
             "persona": self._persona,
             "last": self._flow.is_terminal,
             "exhibits": sorted(self._flow.unlocked_exhibit_ids),
@@ -569,6 +579,9 @@ class LiveEngine:
         self._drills: dict[str, list] = {}  # drill_id -> generated Drills (T-063)
 
     def content_list(self) -> dict:
+        cases = sorted(self._library.cases.values(), key=lambda x: x.meta.id)
+        lessons = sorted(self._library.lessons.values(), key=lambda x: x.meta.id)
+        guesses = sorted(self._library.guesstimates.values(), key=lambda x: x.meta.id)
         return {
             "cases": [
                 {
@@ -577,20 +590,36 @@ class LiveEngine:
                     # cold is always selectable (library never locked, G-10); the
                     # dashboard only *recommends* it after graduation (T-061).
                     "modes": ["standard", "guided", "cold"],
+                    "blurb": _blurb(c.prompt),
+                    "type": c.meta.type,
+                    "industry": c.meta.industry,
+                    "difficulty": c.meta.difficulty,
+                    "minutes": c.meta.est_minutes,
+                    "diagnostic": c.meta.diagnostic,
                 }
-                for c in sorted(self._library.cases.values(), key=lambda x: x.meta.id)
+                for c in cases
             ],
             "lessons": [
-                {"id": lsn.meta.id, "title": lsn.meta.title}
-                for lsn in sorted(
-                    self._library.lessons.values(), key=lambda x: x.meta.id
-                )
+                {
+                    "id": lsn.meta.id,
+                    "title": lsn.meta.title,
+                    "blurb": _blurb(lsn.when_to_use),
+                    "concepts": len(lsn.meta.concepts_taught),
+                }
+                for lsn in lessons
             ],
             "guesstimates": [
-                {"id": g.meta.id, "title": g.meta.title, "modes": ["coached", "timed"]}
-                for g in sorted(
-                    self._library.guesstimates.values(), key=lambda x: x.meta.id
-                )
+                {
+                    "id": g.meta.id,
+                    "title": g.meta.title,
+                    "modes": ["coached", "timed"],
+                    "blurb": _blurb(g.prompt),
+                    "difficulty": g.meta.difficulty,
+                    "minutes": g.meta.est_minutes,
+                    "region": g.meta.region,
+                    "diagnostic": g.meta.diagnostic,
+                }
+                for g in guesses
             ],
         }
 
@@ -702,7 +731,7 @@ def main() -> None:
     library = ContentLoader(Path(".")).library
     store = Store("app.db")
     router = Router(config)
-    tts = PiperTTS(config.voice)
+    tts = build_tts(config.voice)  # Piper if installed, else macOS `say`
     engine = LiveEngine(
         config,
         library,
