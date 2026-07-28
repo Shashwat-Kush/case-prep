@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-pricing-framework",
+    "title": "The Pricing Framework",
+    "concepts_taught": ["pricing-strategy", "cost-based-pricing", "value-based-pricing", "price-elasticity", "breakeven-price"],
+    "order_hint": 5
+  },
+  "sections": [
+    {
+      "heading": "Three lenses on price",
+      "content": "Set price by triangulating three views: cost-based (your cost plus a margin), competitor/substitute benchmark (what rivals and substitutes charge), and value-based (what the product is worth to the customer). The three give a floor, a market anchor, and a ceiling. A strong answer uses all three rather than defaulting to cost-plus.",
+      "worked_example": "For a new water purifier, cost-based says at least Rs 4000 to cover cost and margin, competitors sit around Rs 6000, and the value of clean water to a family might justify Rs 8000. That triangle frames the sensible price band."
+    },
+    {
+      "heading": "Cost-based and the breakeven floor",
+      "content": "Start from company cost across the entire value chain plus a target product margin. Use payback period and a breakeven approach to find the lower limit of price: the price below which you never recover cost. Remember profit = units x (price - variable cost per unit) - fixed cost, and units are a function of price, so raising price lifts margin per unit but can cut volume.",
+      "worked_example": "Fixed cost Rs 10 lakh, variable cost Rs 50/unit, expected 5000 units: breakeven price = 50 + 1,000,000/5000 = Rs 250. Anything below Rs 250 loses money at that volume, so Rs 250 is the floor."
+    },
+    {
+      "heading": "Value-based pricing",
+      "content": "Price to the value delivered, not just to cost. Value shows up as time saved, work done for the customer, or revenue the product generates for them. One way to size it: value = number of customers x conversion rate x revenue per customer the product enables. When none of the three methods pin a number, fall back to the customer's affordability.",
+      "worked_example": "A scheduling tool that saves a clinic 2 hours of staff time a day is priced off that saved wage bill, not off the trivial cost of the software, so a Rs 500/month tool can rightly be sold for Rs 5000."
+    },
+    {
+      "heading": "Elasticity, competitor reaction, and recommendations",
+      "content": "Always gauge price elasticity: who the customers are, their market share and purchasing trends. Watch for competitor reaction and price wars, especially for substitutes (study bidding, tendering, game theory). Good recommendations create a price range and run what-if analysis, expect the competitive response, and offer alternative models such as premiumisation, discount schemes, or financing.",
+      "worked_example": "Dropping price to grab share can trigger a price war that erases everyone's margin. A better move is a discount scheme or an EMI option that lowers the effective price for elastic customers without a headline cut competitors must match."
+    }
+  ],
+  "when_to_use": "Use when the prompt is about setting or changing a price: pricing a new product, a proposed rate increase, or a discounting decision. Pricing also appears as a lever inside profitability and market-entry cases.",
+  "when_not_to_use": "Do not force it onto a broad profit-decline diagnosis or a market-sizing question. Pricing is one lever; when the problem is cost or volume, use the profitability framework instead.",
+  "quiz": [
+    {
+      "question": "What do the three pricing lenses give you?",
+      "options": ["Three unrelated numbers to average", "A cost floor, a market anchor, and a value ceiling", "Only the competitor price", "The exact optimal price"],
+      "answer": "A cost floor, a market anchor, and a value ceiling",
+      "explanation": "Cost-based sets the floor, competitor benchmark anchors to the market, and value-based sets the ceiling; together they frame the price band."
+    },
+    {
+      "question": "Why is cutting price to win share often a poor recommendation?",
+      "options": ["Customers dislike low prices", "It can trigger a price war that erases everyone's margin", "It is illegal", "It always raises costs"],
+      "answer": "It can trigger a price war that erases everyone's margin",
+      "explanation": "Competitors match the cut, so volume gains are offset by lower margins for all; targeted discounts or financing are usually smarter."
+    },
+    {
+      "question": "Value-based pricing anchors the price to what?",
+      "options": ["The company's cost plus margin", "The value delivered to the customer, such as time saved or revenue enabled", "The cheapest competitor", "The breakeven volume"],
+      "answer": "The value delivered to the customer, such as time saved or revenue enabled",
+      "explanation": "Value-based pricing charges for the worth to the customer, which can far exceed the cost of providing it."
+    }
+  ]
+}

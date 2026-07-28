@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "id": "guess-aeroplanes-india",
+    "title": "Aeroplanes flying over India right now",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "india"
+  },
+  "prompt": "Estimate the number of aeroplanes flying in India right now.",
+  "clarifications": [
+    {"question_pattern": "which aircraft to count", "answer": "Count only commercial passenger flights that have taken off but not yet landed; ignore cargo, military, and seasonal surges."},
+    {"question_pattern": "average flight duration", "answer": "Take the average domestic flight duration as about 2 hours (geometric mean of a 1-4 hour range)."},
+    {"question_pattern": "how many airports", "answer": "Assume about 130 operational airports, split by size into major, medium, and small."},
+    {"question_pattern": "supply or demand side", "answer": "A supply-side approach is cleaner here: count take-offs per hour by airport type."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "major_takeoffs_per_hour",
+        "benchmark_refs": [],
+        "derivation": "5 * 2 * (60 / 5)",
+        "value": 120,
+        "tolerance": 1
+      },
+      {
+        "segment": "medium_takeoffs_per_hour",
+        "benchmark_refs": [],
+        "derivation": "25 * 1 * (60 / 10)",
+        "value": 150,
+        "tolerance": 1
+      },
+      {
+        "segment": "small_takeoffs_per_hour",
+        "benchmark_refs": [],
+        "derivation": "100 * 1 * (60 / 30)",
+        "value": 200,
+        "tolerance": 1
+      },
+      {
+        "segment": "takeoffs_per_hour",
+        "benchmark_refs": [],
+        "derivation": "major_takeoffs_per_hour + medium_takeoffs_per_hour + small_takeoffs_per_hour",
+        "value": 470,
+        "tolerance": 1
+      },
+      {
+        "segment": "planes_aloft_full_capacity",
+        "benchmark_refs": [],
+        "derivation": "takeoffs_per_hour * 2",
+        "value": 940,
+        "tolerance": 1
+      },
+      {
+        "segment": "planes_in_air",
+        "benchmark_refs": [],
+        "derivation": "planes_aloft_full_capacity * 0.43",
+        "value": 404.2,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 250, "high": 750},
+  "common_traps": [
+    "Counting take-offs per hour but forgetting to multiply by average flight duration, so planes already landed are dropped.",
+    "Using full operational capacity as the live count and ignoring that airports run well below peak most of the day.",
+    "Treating one flat take-off gap for all airports instead of splitting by airport size."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no take-off-rate reasoning.",
+        "3": "Builds a take-off-rate approach but omits flight duration or the capacity adjustment.",
+        "5": "Counts take-offs per hour by airport type and multiplies by average flight duration to get planes aloft."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "One flat take-off rate for all airports.",
+        "3": "Segments airports but with take-off gaps not tied to airport size.",
+        "5": "Splits airports into major/medium/small with runway counts and realistic take-off gaps."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Errors in the per-hour-to-per-2-hour scaling; lands far outside any plausible range.",
+        "3": "Reaches a number but skips the capacity haircut, landing just outside 250-750.",
+        "5": "Carries the rate math cleanly and applies a capacity factor to land near 400 (250-750)."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Back-checks via daily passengers: ~400 planes x ~120 seats over the day implies a few lakh flyers, which is reasonable."
+      }
+    }
+  }
+}

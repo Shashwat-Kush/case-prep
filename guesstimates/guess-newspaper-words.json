@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "id": "guess-newspaper-words",
+    "title": "Words in an average daily newspaper",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "global"
+  },
+  "prompt": "How many words are there in an average daily newspaper?",
+  "clarifications": [
+    {"question_pattern": "newspaper size", "answer": "Assume a page of 12 in x 20 in (240 sq in) and 24 pages total, of which 4 are almost entirely images (negligible text)."},
+    {"question_pattern": "text vs images", "answer": "About a third of a page is illustrations; after removing images, borders and column spacing, assume ~100 sq in of net text area per page."},
+    {"question_pattern": "word density", "answer": "Assume ~30 words per sq in for body text and ~8 for headings, with body/heading area split 90/10."},
+    {"question_pattern": "which pages count", "answer": "Only the ~20 text pages carry words; count words per page then scale to those pages."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "words_per_page",
+        "benchmark_refs": [],
+        "derivation": "100 * 0.9 * 30 + 100 * 0.1 * 8",
+        "value": 2780,
+        "tolerance": 1
+      },
+      {
+        "segment": "total_words",
+        "benchmark_refs": [],
+        "derivation": "words_per_page * 20",
+        "value": 55600,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 40000, "high": 70000},
+  "common_traps": [
+    "Multiplying full page area by word density without removing images, borders and column gaps.",
+    "Using one word density for both body text and headings.",
+    "Counting all 24 pages instead of only the ~20 pages that actually carry text."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no area-to-words reasoning.",
+        "3": "Uses area x density but on gross page area, not net text area.",
+        "5": "Derives net text area per page, applies body/heading densities, then scales to text pages."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No separation of text from non-text space.",
+        "3": "Removes images but ignores borders or column spacing.",
+        "5": "Separates images, borders and spacing, and splits remaining area into body vs heading text."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Density-times-area math is off; lands orders of magnitude away.",
+        "3": "Reaches a number with a slip, landing just outside 40000-70000.",
+        "5": "Carries the per-page and page-count math cleanly, landing near 55000 words."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Back-checks via articles: ~55000 words at ~250 words each implies ~200 articles, which is reasonable."
+      }
+    }
+  }
+}

@@ -140,6 +140,25 @@ tolerance 0 means "state it exactly" (benchmark-pinned segments), 1.0 means
 derivations recompute exactly so the absolute check is immaterial in practice.
 The final answer is checked against answer_range [low, high].
 
+## KNOWN ISSUE (deferred, found in live testing 2026-07-28): guesstimate tolerances authored as absolute
+
+Every seeded and converted guesstimate authored `tree[].tolerance` as an
+ABSOLUTE number (e.g. households `tolerance: 1000000`), but the live coached
+checker treats it as RELATIVE: `check_segment` computes
+`band = abs(tolerance * expected)` (`app/engine/math_checker.py:108`). So a
+segment expecting 7,500,000 with tolerance 1,000,000 gets a band of
+1,000,000 × 7,500,000 ≈ 7.5e12, accepting any estimate — the coached per-step
+"too high / too low" direction hint never fires. Confirmed live: a 20,000,000
+estimate against a 7,500,000 expected returned `ok: True`.
+
+Impact is limited to coached-mode directional feedback; the final-answer
+`answer_range` check (the real correctness gate) and content validation are
+unaffected (derivations recompute exactly, so `abs(0) <= any tolerance` passes).
+
+Fix when picked up: reset each guesstimate segment `tolerance` to a small
+relative fraction (~0.2–0.3; tighter/0 for benchmark-pinned segments) across all
+17 files in `guesstimates/`. Validation stays green. Not changing now, per user.
+
 ## Spoken-number confirmation gate (T-052)
 
 Spoken numbers are unreliable (teen/ty homophones — fifteen/fifty, thirteen/

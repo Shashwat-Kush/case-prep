@@ -284,23 +284,34 @@ skipped, never partially loaded.
    phases; exhibit ids are unique within a case.
 6. **Id uniqueness** — ids are unique across all four content types.
 
+> **Float-tolerance gotcha.** A `tolerance: 0` checkpoint fails on floating-point
+> results: `0.8 * 1 + 0.2 * 2` evaluates to `1.2000000000000002`, not `1.2`. Give
+> any non-integer expected value a small tolerance (`0.001`); keep `0` only for
+> exact-integer results.
+
 ### Running the validator
 
-The CLI wrapper and pre-commit hook are task **T-012** (not built yet). Until it
-lands, validate a draft set directly through the shared logic:
+The CLI wrapper and pre-commit hook (T-012) are built. Validate every content
+folder in one shot:
+
+```sh
+.venv/bin/python scripts/validate_case.py   # all four types; exits nonzero, lists each violation
+```
+
+Enable the hook once so validation + ruff run before every commit:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+To validate a draft set programmatically (e.g. in a test), call the shared logic
+directly:
 
 ```python
-# from repo root, .venv active
 from app.engine.validation import validate_all
 result = validate_all(benchmarks_raw, cases_raw, guesses_raw, lessons_raw)
 for v in result.violations:
     print(v.file, v.check, v.detail)
-```
-
-Once T-012 is done this becomes simply:
-
-```sh
-python scripts/validate_case.py   # validates all four content types
 ```
 
 ---

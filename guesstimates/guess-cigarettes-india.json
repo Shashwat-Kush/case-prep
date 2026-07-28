@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "id": "guess-cigarettes-india",
+    "title": "Cigarettes smoked in India per month",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "india"
+  },
+  "prompt": "Estimate the number of cigarettes smoked in India per month.",
+  "clarifications": [
+    {"question_pattern": "which splits", "answer": "Use a multi-level split: age, then urban/rural locality, then gender, since all three drive smoking rates. Ignore under-16."},
+    {"question_pattern": "population base", "answer": "Start from India's 140 crore population; ages 16-22 are ~10% and 22+ ~60% of it."},
+    {"question_pattern": "smoking penetration", "answer": "Urban smokes more than rural, and men more than women; penetration ranges from ~5% (rural women) to ~60% (urban 22+ men)."},
+    {"question_pattern": "cigarettes per smoker", "answer": "Assume per-smoker monthly consumption from ~10 (light) up to ~90 (heavy urban male). Answer in crore cigarettes per month."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "cigarettes_16_22_cr",
+        "benchmark_refs": [],
+        "derivation": "1.4 * 60 + 0.28 * 30 + 1.26 * 30 + 0.168 * 10",
+        "value": 131.88,
+        "tolerance": 0.01
+      },
+      {
+        "segment": "cigarettes_22plus_cr",
+        "benchmark_refs": [],
+        "derivation": "7.56 * 90 + 2.52 * 60 + 7.056 * 40 + 1.176 * 20",
+        "value": 1137.36,
+        "tolerance": 0.01
+      },
+      {
+        "segment": "total_cigarettes_cr",
+        "benchmark_refs": [],
+        "derivation": "cigarettes_16_22_cr + cigarettes_22plus_cr",
+        "value": 1269.24,
+        "tolerance": 0.01
+      }
+    ]
+  },
+  "answer_range": {"low": 900, "high": 1600},
+  "common_traps": [
+    "Applying one smoking rate to the whole adult population instead of splitting by locality and gender.",
+    "Forgetting that the 22+ urban-male cell dominates, so a rough age split alone misses most of the volume.",
+    "Multiplying smokers by a daily rate but reporting the answer as monthly (or vice versa)."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no smokers-times-consumption structure.",
+        "3": "Estimates smokers and consumption but at one blanket rate, not multi-level.",
+        "5": "Builds smokers per cell via age-locality-gender penetration, then multiplies by per-smoker consumption."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No meaningful segmentation of smokers.",
+        "3": "Splits on one dimension (e.g. age or gender) only.",
+        "5": "Splits on age, locality and gender with distinct penetration and consumption per cell."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Loses the crore conversions or the day/month basis; lands far off.",
+        "3": "Reaches a number with a slip, landing just outside 900-1600 crore.",
+        "5": "Carries the per-cell products and crore math cleanly, landing near 1270 crore per month."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks that the 22+ urban-male cell dominating the total is consistent with real smoking patterns."
+      }
+    }
+  }
+}

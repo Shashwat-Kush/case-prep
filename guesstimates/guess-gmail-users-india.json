@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "id": "guess-gmail-users-india",
+    "title": "Active Gmail users in India",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "india"
+  },
+  "prompt": "Determine the number of active Gmail users in India.",
+  "clarifications": [
+    {"question_pattern": "which split", "answer": "Use an age-wise split of the 140 crore population, applying internet penetration, email-usage penetration and an active-user rate to each band."},
+    {"question_pattern": "penetration by age", "answer": "0-18: 10% internet x 10% email x 50% active; 21-60: 50% x 80% x 80%; 60+: 50% x 25% x 50%."},
+    {"question_pattern": "gmail share", "answer": "Take Gmail's share of active email users as about 85%."},
+    {"question_pattern": "units of the answer", "answer": "Answer in crore active users (total email users ~28 Cr, Gmail ~24 Cr)."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "email_users_0_18_cr",
+        "benchmark_refs": [],
+        "derivation": "(140 * 0.25) * 0.10 * 0.10 * 0.50",
+        "value": 0.175,
+        "tolerance": 0.01
+      },
+      {
+        "segment": "email_users_21_60_cr",
+        "benchmark_refs": [],
+        "derivation": "(140 * 0.60) * 0.50 * 0.80 * 0.80",
+        "value": 26.88,
+        "tolerance": 0.01
+      },
+      {
+        "segment": "email_users_60plus_cr",
+        "benchmark_refs": [],
+        "derivation": "(140 * 0.15) * 0.50 * 0.25 * 0.50",
+        "value": 1.3125,
+        "tolerance": 0.01
+      },
+      {
+        "segment": "total_email_users_cr",
+        "benchmark_refs": [],
+        "derivation": "email_users_0_18_cr + email_users_21_60_cr + email_users_60plus_cr",
+        "value": 28.3675,
+        "tolerance": 0.01
+      },
+      {
+        "segment": "gmail_users_cr",
+        "benchmark_refs": [],
+        "derivation": "total_email_users_cr * 0.85",
+        "value": 24.112375,
+        "tolerance": 0.01
+      }
+    ]
+  },
+  "answer_range": {"low": 18, "high": 30},
+  "common_traps": [
+    "Applying one internet-penetration rate across all ages instead of varying it by age band.",
+    "Confusing having internet access with actively using email, skipping the email-penetration step.",
+    "Forgetting to apply Gmail's market share, reporting total email users instead of Gmail users."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no penetration-based build-up.",
+        "3": "Applies internet penetration but not email usage or the active-user filter.",
+        "5": "Chains age-band internet, email and active-user rates, then applies Gmail's share."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No age segmentation.",
+        "3": "Segments ages but with one blanket penetration rate.",
+        "5": "Segments by age with distinct internet, email and active-user rates per band."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Chains the penetration fractions incorrectly; lands far off.",
+        "3": "Reaches a number with a slip, landing just outside 18-30 crore.",
+        "5": "Carries the successive-fraction and share math cleanly, landing near 24 crore."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks that ~24 crore Gmail users is a believable ~85% of ~28 crore active email users in India."
+      }
+    }
+  }
+}

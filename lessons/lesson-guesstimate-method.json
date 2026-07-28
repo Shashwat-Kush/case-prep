@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-guesstimate-method",
+    "title": "How to Approach a Guesstimate",
+    "concepts_taught": ["guesstimate-method", "supply-vs-demand-approach", "population-segmentation", "sanity-check", "sensitivity-analysis"],
+    "order_hint": 4
+  },
+  "sections": [
+    {
+      "heading": "Three ways in: supply, demand, proxy",
+      "content": "Every guesstimate can be attacked from one of three angles. Supply-side: find the bottleneck in the supply chain and estimate through it (good when production capacity is well-defined). Demand-side: start from the population and build up who needs the thing. Proxy: estimate a related, easier quantity and scale from it. State which you are using and why before you start crunching.",
+      "worked_example": "Number of petrol pumps in a city: supply-side (pumps x cars served per pump) is cleaner than demand-side (all car owners' fuel need), because the per-pump throughput is a well-defined bottleneck."
+    },
+    {
+      "heading": "A seven-step process",
+      "content": "Run the same sequence every time: (1) clarify and repeat the problem, (2) ask preliminary questions, (3) state the possible approaches, (4) write the mathematical formula, (5) do the number crunching, (6) run a sensitivity analysis on your biggest assumptions, (7) sanity-check the final number. Writing the formula before plugging numbers keeps the logic MECE and easy for the interviewer to follow.",
+      "worked_example": "For 'cups of tea in India per week', the formula is population x share who drink tea x cups per drinker per week. Stating that up front means the interviewer can agree the structure before you argue over any single assumption."
+    },
+    {
+      "heading": "The demand-side build-up",
+      "content": "Demand often equals replacement demand plus new demand: (number in use / lifecycle) + (number x growth). Get the 'number in use' by segmenting the population along the axis that matters most: rural/urban, age, gender, or income (use different lifecycles per income band where relevant). Then filter down the funnel of the six A's: Awareness, Availability, Accessibility, Affordability, Willingness, and Penetration.",
+      "worked_example": "Smartphones sold per year: start from population, segment by income, apply awareness and affordability to get owners, then add replacement (owners / 3-year lifecycle) plus new first-time buyers from population growth."
+    },
+    {
+      "heading": "Simplify, then sanity-check",
+      "content": "Use round numbers and clean percentages so you can compute in your head and spend your thinking on structure, not arithmetic. Guesstimates are judged on approach, not the exact figure. Always close with a sanity check: back into the answer from a different angle, or check a per-person or per-day implication is believable.",
+      "worked_example": "If you estimate 400 planes in the air over India, sanity-check via passengers: 400 planes x ~120 seats over a day implies a few lakh flyers, which is reasonable. If it had implied 50 crore, you would know an assumption was off."
+    }
+  ],
+  "when_to_use": "Use whenever you must estimate a number or a market size with no data given: counts of objects, volumes consumed, or the size of a market. It also appears as the market-size branch inside market-entry cases.",
+  "when_not_to_use": "Do not use for diagnosing a profit decline or choosing a strategy. Those need the profitability, pricing, or market-entry frameworks, even though a guesstimate may sit inside them.",
+  "quiz": [
+    {
+      "question": "What should you do before crunching any numbers?",
+      "options": ["Guess the final answer", "State your approach and write the formula", "Ask for the exact data", "Pick the largest segment only"],
+      "answer": "State your approach and write the formula",
+      "explanation": "Naming the approach and writing the formula keeps the structure MECE and lets the interviewer agree the logic before any assumption is debated."
+    },
+    {
+      "question": "Demand is often split as replacement plus new demand. What is replacement demand?",
+      "options": ["Population times growth", "Number in use divided by product lifecycle", "Market size times share", "Price times units"],
+      "answer": "Number in use divided by product lifecycle",
+      "explanation": "Each year a fraction of the installed base wears out and is replaced; that fraction is the stock divided by the lifecycle."
+    },
+    {
+      "question": "Why round numbers aggressively in a guesstimate?",
+      "options": ["To hide mistakes", "Because the answer is judged on approach, and clean numbers free you to focus on structure", "Because precise numbers are banned", "To make the answer larger"],
+      "answer": "Because the answer is judged on approach, and clean numbers free you to focus on structure",
+      "explanation": "Guesstimates reward a sound method over a precise figure; simple numbers let you compute quickly and think about structure."
+    }
+  ]
+}

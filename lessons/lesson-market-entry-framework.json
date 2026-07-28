@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "id": "lesson-market-entry-framework",
+    "title": "The Market Entry Framework",
+    "concepts_taught": ["market-entry", "economic-sense-check", "barriers-to-entry", "modes-of-entry", "market-size-and-share"],
+    "order_hint": 3
+  },
+  "sections": [
+    {
+      "heading": "What a market-entry case asks",
+      "content": "A market-entry prompt asks whether entering something new is worthwhile: a new geography, a new product, or a new customer segment. Before analysing, restate it as 'is this market feasible and attractive enough to enter?' and pin down the key success indicators (profit, revenue, investment cost) and the objective, which may be financial (IRR, breakeven, payback, profit) or strategic (diversification, exit options, tax benefits, blocking a competitor).",
+      "worked_example": "'Should our snack brand enter Indonesia?' First clarify: what does success look like, a target profit in three years or a strategic foothold? A strategic objective tolerates thinner early returns; a financial one does not, and that changes the whole recommendation."
+    },
+    {
+      "heading": "Preliminary questions",
+      "content": "Work through a fixed checklist so you never miss a branch: key success indicators; objective (financial vs strategic); time frame and target market share; why this specific industry (any synergies, have we entered similar markets before); the company (product, geography, where in the value chain we want to play); customers (target and existing); and competitors (market scenario, substitutes, competitor market shares). Say why you ask each one.",
+      "worked_example": "Asking 'have we done a similar entry before?' surfaces synergies: an FMCG firm with an existing India distribution network can piggyback it for a new product, which slashes the entry investment and shifts the economics in favour of entry."
+    },
+    {
+      "heading": "Does it make economic sense?",
+      "content": "Quantify the prize before debating how to enter. Expected profit = market size x market share x profit per unit - fixed cost / investment. Market size usually comes from a guesstimate; market share from the strength of your 4 Ps versus competitors. Setting profit to zero gives the breakeven share or volume you must clear to justify entry.",
+      "worked_example": "Market size 100 crore units, realistic share 5%, profit Rs 2/unit gives 100 crore x 0.05 x 2 = Rs 10 crore contribution against, say, Rs 40 crore setup. That will not break even for years, so either the share assumption must rise or entry is off."
+    },
+    {
+      "heading": "Understanding the market",
+      "content": "Three things decide attractiveness: market size (guesstimate it), achievable market share (driven by product, price, promotion, place, market growth and competitors), and barriers to entry. Scan barriers with PESTLE: political, economic, social, technological, legal, environmental, plus competitor dominance. Be crisp about what 'market size' and 'share' mean so your numbers stay consistent.",
+      "worked_example": "A solar-lantern entrant finds a large rural market but a legal barrier: subsidies flow only to firms with a local manufacturing base. That single barrier reshapes the plan toward a local assembly partner before any sales."
+    },
+    {
+      "heading": "How to enter, and staying profitable",
+      "content": "Once entry looks attractive, choose a mode: organically (build your own capabilities) or inorganically (joint venture, franchise, merger/acquisition, licensing). Plan implementation across the supply chain (production, distribution, sales and marketing), weigh risks versus rewards, and think about sustenance: long-term risks, price sensitivity, competitor response, and even an exit strategy (barriers to exit, returns on exit).",
+      "worked_example": "A carmaker entering a new country picks a joint venture over building alone: it borrows the partner's dealer network and regulatory know-how, trading some margin for a far faster, lower-risk entry, then revisits full ownership once volumes prove out."
+    }
+  ],
+  "when_to_use": "Use when the prompt is about entering a new market, launching a new product, expanding to a new geography, or serving a new customer segment, and the client wants to know whether and how to do it.",
+  "when_not_to_use": "Do not use for a profit-decline diagnosis, a pure pricing decision, or an internal operations problem. Market sizing and profitability appear inside a market-entry case, but they are not the whole frame.",
+  "quiz": [
+    {
+      "question": "What should you quantify to test whether an entry is worth it?",
+      "options": ["Only the market size", "Expected profit = market size x market share x profit per unit minus investment", "The competitor's CEO's salary", "The number of PESTLE factors"],
+      "answer": "Expected profit = market size x market share x profit per unit minus investment",
+      "explanation": "Sizing the prize against the investment (the economic-sense check) tells you whether to enter before you debate how."
+    },
+    {
+      "question": "Which of these is an inorganic mode of entry?",
+      "options": ["Building your own plant and sales team", "A joint venture or acquisition", "Running a guesstimate", "Lowering your price"],
+      "answer": "A joint venture or acquisition",
+      "explanation": "Inorganic entry borrows another firm's capabilities (JV, franchise, M&A, licensing); organic entry builds your own."
+    },
+    {
+      "question": "What does PESTLE help you scan?",
+      "options": ["Pricing tiers", "Barriers to entry (political, economic, social, technological, legal, environmental)", "Profit per unit", "Product features"],
+      "answer": "Barriers to entry (political, economic, social, technological, legal, environmental)",
+      "explanation": "PESTLE is a checklist for the external barriers that can block or reshape an entry."
+    }
+  ]
+}

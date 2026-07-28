@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "id": "guess-mall-coins",
+    "title": "Loose change on the floor of a mall in a day",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "How much change (in rupees) would you find on the floor of an average mall in a day?",
+  "clarifications": [
+    {"question_pattern": "cash or coins", "answer": "Assume only coins are dropped, not notes; the mall is open 16 hours a day."},
+    {"question_pattern": "mall size", "answer": "Two floors of ~300,000 usable sq ft each (600,000 total); an average store is 100 x 100 = 10,000 sq ft, so about 60 stores."},
+    {"question_pattern": "footfall", "answer": "Split the day into high rush (4 h, 1500/h), medium rush (6 h, 1000/h) and low rush (6 h, 500/h)."},
+    {"question_pattern": "loss rate", "answer": "Assume 50% of customers pay by cash, 5% of cash payers drop a coin, and an average dropped coin is worth Rs 2."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "stores_in_mall",
+        "benchmark_refs": [],
+        "derivation": "600000 / 10000",
+        "value": 60,
+        "tolerance": 1
+      },
+      {
+        "segment": "high_rush_visitors",
+        "benchmark_refs": [],
+        "derivation": "1500 * 4",
+        "value": 6000,
+        "tolerance": 1
+      },
+      {
+        "segment": "medium_rush_visitors",
+        "benchmark_refs": [],
+        "derivation": "1000 * 6",
+        "value": 6000,
+        "tolerance": 1
+      },
+      {
+        "segment": "low_rush_visitors",
+        "benchmark_refs": [],
+        "derivation": "500 * 6",
+        "value": 3000,
+        "tolerance": 1
+      },
+      {
+        "segment": "daily_visitors",
+        "benchmark_refs": [],
+        "derivation": "high_rush_visitors + medium_rush_visitors + low_rush_visitors",
+        "value": 15000,
+        "tolerance": 1
+      },
+      {
+        "segment": "change_on_floor",
+        "benchmark_refs": [],
+        "derivation": "daily_visitors * 0.5 * 0.05 * 2",
+        "value": 750,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 400, "high": 1200},
+  "common_traps": [
+    "Estimating footfall at one flat rate instead of splitting the day into rush bands.",
+    "Forgetting the chain of fractions: cash payers, then coin-droppers, then coin value.",
+    "Sizing the mall by total area rather than usable area net of corridors and common space."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a rupee figure with no footfall-times-loss-rate chain.",
+        "3": "Estimates footfall but applies loss rates loosely or skips a step.",
+        "5": "Builds daily footfall then applies cash-share, drop-rate and coin-value in sequence."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "One flat footfall rate for the whole day.",
+        "3": "Splits the day but with rush rates not clearly reasoned.",
+        "5": "Splits the day into high/medium/low rush with distinct hourly rates."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Chains the fractions incorrectly; lands orders of magnitude off.",
+        "3": "Reaches a number with a slip, landing just outside 400-1200.",
+        "5": "Carries the footfall and fraction math cleanly, landing near 750 rupees."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks that ~15000 visitors dropping the odd coin yields a small, believable few-hundred-rupee total."
+      }
+    }
+  }
+}

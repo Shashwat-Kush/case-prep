@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "id": "guess-factories-mumbai",
+    "title": "Number of medium-sized factories in Mumbai",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "How many medium-sized factories are there in Mumbai?",
+  "clarifications": [
+    {"question_pattern": "define medium factory", "answer": "Define it by blue-collar headcount: 50 to 200 workers, geometric mean ~100 workers per medium factory."},
+    {"question_pattern": "population of Mumbai", "answer": "Take Mumbai's population as 2 crore, of which about half is working population."},
+    {"question_pattern": "who is blue-collar", "answer": "Assume about 75% of the working population does blue-collar work (~75 lakh people)."},
+    {"question_pattern": "share in factories", "answer": "Assume 10% of blue-collar workers are in factories, and 30% of those are in medium-sized factories."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "working_population",
+        "benchmark_refs": ["mumbai_population"],
+        "derivation": "mumbai_population * 0.5",
+        "value": 10000000,
+        "tolerance": 1
+      },
+      {
+        "segment": "blue_collar_workers",
+        "benchmark_refs": [],
+        "derivation": "working_population * 0.75",
+        "value": 7500000,
+        "tolerance": 1
+      },
+      {
+        "segment": "factory_workers",
+        "benchmark_refs": [],
+        "derivation": "blue_collar_workers * 0.10",
+        "value": 750000,
+        "tolerance": 1
+      },
+      {
+        "segment": "medium_factory_workers",
+        "benchmark_refs": [],
+        "derivation": "factory_workers * 0.30",
+        "value": 225000,
+        "tolerance": 1
+      },
+      {
+        "segment": "medium_factories",
+        "benchmark_refs": [],
+        "derivation": "medium_factory_workers / 100",
+        "value": 2250,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 1500, "high": 3500},
+  "common_traps": [
+    "Counting the whole population or all workers instead of narrowing to blue-collar factory workers.",
+    "Forgetting to convert a worker count into a factory count via workers-per-factory.",
+    "Picking workers-per-factory arbitrarily instead of a geometric mean of the 50-200 range."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a factory count with no worker-based reasoning.",
+        "3": "Estimates factory workers but does not convert to a factory count, or defines 'medium' loosely.",
+        "5": "Chains population to blue-collar to factory to medium-factory workers, then divides by workers-per-factory."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No narrowing from population to the relevant worker pool.",
+        "3": "Narrows workers but with shares not clearly reasoned.",
+        "5": "Applies sensible successive shares (working, blue-collar, factory, medium-factory)."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Lakh/crore conversions slip; lands far outside a plausible range.",
+        "3": "Reaches a number with a slip, landing just outside 1500-3500.",
+        "5": "Carries the successive-share and workers-per-factory math cleanly, landing near 2250."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks that ~2250 medium factories fits Mumbai's scale as a major industrial hub."
+      }
+    }
+  }
+}

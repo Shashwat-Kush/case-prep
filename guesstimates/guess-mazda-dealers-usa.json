@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "id": "guess-mazda-dealers-usa",
+    "title": "Number of Mazda dealers in the USA",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "usa"
+  },
+  "prompt": "How many Mazda dealers are there in the USA?",
+  "clarifications": [
+    {"question_pattern": "market share", "answer": "Mazda is a minor, value player with roughly 2% US market share, cars in the $15,000-30,000 bracket."},
+    {"question_pattern": "household size", "answer": "Take the average US household size as 2.5 people."},
+    {"question_pattern": "car lifespan", "answer": "Assume an average car lifespan of about 6 years and ~1% annual population growth."},
+    {"question_pattern": "dealer throughput", "answer": "Assume a dealer sells about 50 cars a month, i.e. 600 a year."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "us_households",
+        "benchmark_refs": ["usa_population"],
+        "derivation": "usa_population / 2.5",
+        "value": 136000000,
+        "tolerance": 1
+      },
+      {
+        "segment": "existing_low_end_cars",
+        "benchmark_refs": [],
+        "derivation": "us_households * (0.8 * 1 * 0.75 + 0.2 * 0.6 * 0.9)",
+        "value": 96288000,
+        "tolerance": 1
+      },
+      {
+        "segment": "annual_low_end_sales",
+        "benchmark_refs": [],
+        "derivation": "existing_low_end_cars * 0.01 + existing_low_end_cars / 6",
+        "value": 17010880,
+        "tolerance": 1
+      },
+      {
+        "segment": "mazda_cars_sold",
+        "benchmark_refs": [],
+        "derivation": "annual_low_end_sales * 0.02",
+        "value": 340217.6,
+        "tolerance": 1
+      },
+      {
+        "segment": "mazda_dealers",
+        "benchmark_refs": [],
+        "derivation": "mazda_cars_sold / 600",
+        "value": 567.03,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 400, "high": 700},
+  "common_traps": [
+    "Estimating the stock of cars but forgetting to convert it into annual sales via replacement plus growth.",
+    "Applying Mazda's market share to the whole car market instead of the low-end segment it competes in.",
+    "Skipping dealer throughput, so the car count is never turned into a dealer count."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a dealer count with no households-to-cars-to-dealers chain.",
+        "3": "Builds a car-sales estimate but omits either the replacement/growth step or dealer throughput.",
+        "5": "Chains households to low-end car stock to annual sales to Mazda's share to dealers via throughput."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "Treats all cars and households identically.",
+        "3": "Segments cars but with ownership factors not clearly reasoned.",
+        "5": "Isolates the low-end segment Mazda competes in and applies its share there."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Botches the stock-to-flow (replacement) conversion; lands far outside a plausible range.",
+        "3": "Reaches a number with a slip, landing just outside 400-700 dealers.",
+        "5": "Carries the replacement-plus-growth and share math cleanly, landing near 550-570 dealers."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks that ~570 dealers each selling ~600 cars a year matches the ~3.4 lakh Mazda cars estimated."
+      }
+    }
+  }
+}

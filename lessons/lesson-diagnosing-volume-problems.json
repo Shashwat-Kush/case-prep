@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-diagnosing-volume-problems",
+    "title": "Diagnosing a Volume Problem",
+    "concepts_taught": ["demand-vs-supply", "push-pull-chain", "competitor-benchmarking", "customer-funnel", "retention-and-churn"],
+    "order_hint": 8
+  },
+  "sections": [
+    {
+      "heading": "Is it demand or supply?",
+      "content": "When units sold fall, first split the cause into a demand problem or a supply problem. Demand-side: reduced buying (market shrinking), customers preferring a substitute, or switching to a competitor. Supply-side: a bottleneck in the supply chain, low capacity utilisation, legislative or regulatory limits, or delivery not happening on time. The one question that separates them: have we been able to meet the market's demand?",
+      "worked_example": "Sales are down. Ask 'if we produced the same amount, could we sell it?' If yes, it is a demand problem (fewer buyers); if no, it is a supply problem (we cannot produce or deliver enough). That fork sends you down a completely different branch."
+    },
+    {
+      "heading": "Follow the push-pull chain",
+      "content": "Product flows along a chain: production and storage, then distributor and retail push, then customer pull. Locate where the flow stops. If goods pile up in storage, the push side (distributors, retail placement, incentives) is failing. If shelves are stocked but nothing sells, the pull side (customers) is failing. Distributor push can be improved with monetary incentives (margins) or non-monetary ones (size, shelf-life, mode/channel).",
+      "worked_example": "A snack brand's factory runs full but warehouses are overflowing: the break is in distributor push. The fix is better retailer margins or wider channel coverage, not more production."
+    },
+    {
+      "heading": "Benchmark against competitors",
+      "content": "A demand problem usually shows up as a gap versus competitors. Benchmark on price, quality (durability, safety, appearance), marketing and advertising, brand value and loyalty (after-sales, schemes), and packaging. Benchmark both on the product and on the customers you serve. This tells you why customers pick a rival over you.",
+      "worked_example": "Two detergents sell at the same price, but the competitor advertises heavily and offers a loyalty scheme. The volume gap is a brand-and-marketing gap, not a product gap, which points at the fix."
+    },
+    {
+      "heading": "The customer funnel: attract, convince, retain",
+      "content": "On the pull side, walk the customer journey. Attraction (pre-sale): knowledge via marketing, accessibility and sales channel; and perception via brand value and loyalty. Value proposition (during sale): monetary levers (price, discount schemes, financing/EMI) and non-monetary ones (product and service quality, seen from the customer's shoes). Retention (post-sale): after-sales, feedback and complaints handling, payment options, loyalty programs, and exit barriers that reduce churn.",
+      "worked_example": "A telecom loses subscribers. Attraction is fine (ads reach people) and the value proposition is competitive, but retention is weak: no loyalty program and easy exits. The lever is post-sale retention, cutting churn, not more advertising spend."
+    }
+  ],
+  "when_to_use": "Use when units sold or footfall are falling or below target, or as the volume branch inside a profitability case once you have established the problem is on the revenue side.",
+  "when_not_to_use": "Do not use when the driver is clearly cost or price, or for market-entry and sizing questions. This framework diagnoses why volume is low, not why costs rose.",
+  "quiz": [
+    {
+      "question": "What single question best separates a demand problem from a supply problem?",
+      "options": ["What is our profit margin?", "If we produced the same amount, could we sell it?", "Who is our CEO?", "What is the market size?"],
+      "answer": "If we produced the same amount, could we sell it?",
+      "explanation": "If yes, buyers are the issue (demand); if no, we cannot produce or deliver enough (supply). The answer picks the branch."
+    },
+    {
+      "question": "Goods are piling up in the warehouse while the factory runs full. Where is the break?",
+      "options": ["Production capacity", "The distributor and retail push side", "Raw-material sourcing", "Customer pull only"],
+      "answer": "The distributor and retail push side",
+      "explanation": "Full production but stalled inventory means the product is not being pushed into distribution and retail, not a production problem."
+    },
+    {
+      "question": "A brand attracts and converts customers well but loses them fast. Which stage needs work?",
+      "options": ["Attraction (pre-sale)", "Value proposition (during sale)", "Retention (post-sale)", "Supply chain"],
+      "answer": "Retention (post-sale)",
+      "explanation": "Losing customers after the sale is a retention failure; the levers are after-sales, loyalty programs, and reducing churn."
+    }
+  ]
+}

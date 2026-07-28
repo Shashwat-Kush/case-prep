@@ -1,0 +1,237 @@
+{
+  "meta": {
+    "id": "case-fruit-juice-profitability",
+    "title": "UK Fruit Juice Maker: Losses Since Inception",
+    "type": "profitability",
+    "industry": "food-and-beverage",
+    "difficulty": "hard",
+    "est_minutes": 35,
+    "prerequisite_concepts": ["lesson-profitability-framework"],
+    "diagnostic": false
+  },
+  "prompt": "Your client is a UK fruit-juice manufacturer, set up four years ago, selling 1-litre and 250 ml bottles through third-party distributors to small, medium and big retailers. It holds a 10% market share and has been loss-making since inception, while competitors are profitable. Turn the profits around.",
+  "clarifying": [
+    {"question_pattern": "geography and value chain", "answer": "A UK manufacturer selling in the UK; it uses third-party distributors to reach small, medium and big retailers. Think Tropicana-style juice."},
+    {"question_pattern": "competitors profitable too", "answer": "No. All competitors are profitable, so this is a company-specific problem, not an industry one."},
+    {"question_pattern": "product line", "answer": "Two SKUs: 1-litre and 250 ml bottles, sold in equal litre volumes (1:1)."},
+    {"question_pattern": "how do costs compare to competitors", "answer": "Fixed cost (total, not per litre) and variable cost per litre are comparable to competitors; average price per litre is the same. The one gap is volume."}
+  ],
+  "facts": {
+    "volume_1L_mn_bottles": 15,
+    "volume_250ml_mn_bottles": 60,
+    "total_litres_mn": 30,
+    "avg_price_per_litre_cents": 44,
+    "variable_cost_per_litre_cents": 35,
+    "fixed_cost_mn_usd": 3.6,
+    "capacity_utilisation": 0.4,
+    "total_market_litres_mn": 300,
+    "pulpy_share_of_market": 0.3,
+    "note": "Revenue is $13.2mn (30mn litres x 44c). Margin per litre is 9c. The client is one of four players; A, B and C hold 30% share each, the client 10%. Costs and price match competitors; the client simply sells too little volume."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_pnl",
+      "title": "Client Profit Build (per year)",
+      "data": {
+        "columns": ["Line item", "Value"],
+        "rows": [
+          ["Litres sold (mn)", 30],
+          ["Average price per litre (cents)", 44],
+          ["Variable cost per litre (cents)", 35],
+          ["Margin per litre (cents)", 9],
+          ["Fixed cost ($mn)", 3.6],
+          ["Profit ($mn)", -0.9]
+        ]
+      },
+      "unlock_condition": "Candidate restructures profit as volume x (price - variable cost per litre) - fixed cost and asks for the figures.",
+      "so_what": "At 30mn litres the 9c margin yields $2.7mn, short of the $3.6mn fixed cost, so the client loses $0.9mn. Price and costs match competitors; the loss is purely a volume problem."
+    },
+    {
+      "id": "ex2_market_share",
+      "title": "Market Share and Volume",
+      "data": {
+        "columns": ["Player", "Market share", "Litres (mn)"],
+        "rows": [
+          ["Competitor A", "30%", 90],
+          ["Competitor B", "30%", 90],
+          ["Competitor C", "30%", 90],
+          ["Client", "10%", 30]
+        ]
+      },
+      "unlock_condition": "Candidate asks for the client's market share versus competitors, or benchmarks volume.",
+      "so_what": "Each competitor sells 90mn litres against the client's 30mn. With price and costs matched, the entire disadvantage is volume/share."
+    },
+    {
+      "id": "ex3_pulpy",
+      "title": "Pulpy Juice Opportunity",
+      "data": {
+        "columns": ["Item", "Value"],
+        "rows": [
+          ["Total juice market (mn litres)", 300],
+          ["Pulpy segment share", "30%"],
+          ["Pulpy segment size (mn litres)", 90],
+          ["Client's reachable share of pulpy", "20%"],
+          ["Incremental pulpy volume (mn litres)", 18]
+        ]
+      },
+      "unlock_condition": "Candidate benchmarks the product against competitors and asks which consumer segments or product variants the client is missing.",
+      "so_what": "The client matches competitors on every parameter except one: it does not make pulpy juice, a 30% (90mn litre) fad segment. Capturing 20% of it adds 18mn litres at the same price and cost."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Note that competitors are profitable only if asked. Wait for the candidate to restate the turnaround objective.",
+      "coaching": {
+        "explain": "Because competitors are profitable and the client is not, a strong candidate immediately frames this as a company-specific problem and plans to benchmark against competitors.",
+        "model_approach_for_phase": "Restate: 'We are loss-making since inception while competitors profit, so we have a company-specific problem; I will benchmark our profit structure against theirs to find the gap.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate frames the loss as company-specific and plans to benchmark against competitors."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask for the profit structure. Reward restructuring profit as Volume x (Price - Variable cost per litre) - Fixed cost, rather than lumping fixed cost into a per-litre figure. Do not accept fixed-cost-per-litre.",
+      "coaching": {
+        "explain": "The key move is to write profit = Volume x (Price - VC per litre) - Fixed cost, keeping the four levers mathematically independent. Folding fixed cost into a per-litre number makes it depend on volume and blocks clean analysis.",
+        "model_approach_for_phase": "Write profit = V x (P - C) - FC, note the four independent levers (volume, price, variable cost per litre, fixed cost), and plan to benchmark each against competitors."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate writes profit as V x (P - C) - FC with fixed cost separated, and lists the four levers to benchmark."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "Release ex1_pnl when the candidate asks for the figures, and ex2_market_share when they benchmark volume. Establish that price, variable cost and fixed cost match competitors, so volume is the sole lever. Then release ex3_pulpy when they benchmark the product.",
+      "coaching": {
+        "explain": "Benchmarking shows price, variable cost per litre and fixed cost all match competitors; only volume differs (30mn vs 90mn each). So prioritise volume. Product benchmarking then reveals the client misses the pulpy segment, a 30% fad it could serve at no extra cost.",
+        "model_approach_for_phase": "Confirm price and costs match, isolate volume as the driver, check capacity, then benchmark the product to find the untapped pulpy segment."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate isolates volume as the only lever and identifies the missing pulpy segment via product benchmarking."
+    },
+    {
+      "name": "math",
+      "interviewer_instructions": "Ask the candidate to find the break-even volume, check capacity, and quantify the profit after adding regular and pulpy volume. Verdicts on their numbers come from the math checker.",
+      "coaching": {
+        "explain": "Break-even: V x 9c = $3.6mn gives V = 40mn litres, so 10mn more regular litres reaches break-even. Capacity is 30mn / 0.4 = 75mn litres, so there is room. Adding 20% of the 90mn pulpy segment (18mn litres) brings volume to 30 + 10 + 18 = 58mn, and profit to 58mn x 9c - $3.6mn = $1.62mn.",
+        "model_approach_for_phase": "Compute break-even at 40mn litres, confirm capacity of 75mn, add 10mn regular and 18mn pulpy to reach 58mn, and show profit turns to +$1.62mn."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate computes break-even (40mn), confirms capacity (75mn), and shows 58mn litres yields +$1.62mn profit."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for a recommendation. Look for: raise volume (not price or cost), first fill regular demand to break even, then enter pulpy to reach profit, with a risk noted.",
+      "coaching": {
+        "explain": "The recommendation is a volume play: the client already matches competitors on price and cost, so grow litres. Sell 10mn more regular litres to break even, then capture 18mn litres of the untapped pulpy segment at existing cost to reach +$1.62mn, using spare capacity. Risk: pulpy demand or reachable share may be lower than assumed, so pilot it.",
+        "model_approach_for_phase": "'Our loss is purely low volume; price and costs already match competitors. Sell 10mn more regular litres to break even, then enter the pulpy segment for 18mn litres at no extra cost, reaching +$1.62mn within our 75mn capacity. Risk: pulpy uptake may be slower than assumed, so I would pilot before scaling.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation grows volume (regular to break-even, then pulpy to profit), stays within capacity, and names a risk."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "1 * 15 + 0.25 * 60",
+      "expected_value": 30,
+      "tolerance": 0,
+      "common_errors": ["Adding bottle counts instead of converting to litres", "Forgetting the 250ml bottles are a quarter litre"]
+    },
+    {
+      "inputs": "44 - 35",
+      "expected_value": 9,
+      "tolerance": 0,
+      "common_errors": ["Subtracting fixed cost per litre as well", "Using price minus total cost"]
+    },
+    {
+      "inputs": "30 * 0.09 - 3.6",
+      "expected_value": -0.9,
+      "tolerance": 0.001,
+      "common_errors": ["Mixing cents and dollars without converting", "Forgetting the loss is negative"]
+    },
+    {
+      "inputs": "3.6 / 0.09",
+      "expected_value": 40,
+      "tolerance": 0,
+      "common_errors": ["Dividing fixed cost by price instead of by margin", "Using variable cost instead of margin"]
+    },
+    {
+      "inputs": "30 / 0.4",
+      "expected_value": 75,
+      "tolerance": 0,
+      "common_errors": ["Multiplying by utilisation instead of dividing", "Treating 30mn as the capacity itself"]
+    },
+    {
+      "inputs": "0.2 * (0.3 * 300)",
+      "expected_value": 18,
+      "tolerance": 0,
+      "common_errors": ["Taking 20% of the whole market rather than of the pulpy segment", "Using 30% of 300 as the client's capture"]
+    },
+    {
+      "inputs": "30 + 10 + 18",
+      "expected_value": 58,
+      "tolerance": 0,
+      "common_errors": ["Double-counting the 10mn inside the pulpy 18mn", "Exceeding the 75mn capacity unnoticed"]
+    },
+    {
+      "inputs": "58 * 0.09 - 3.6",
+      "expected_value": 1.62,
+      "tolerance": 0.001,
+      "common_errors": ["Using 30mn volume instead of 58mn", "Forgetting to subtract fixed cost"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose entering the pulpy segment would require a new production line that raises fixed cost by $1mn. Does it still make sense? (Strong answer: 18mn litres x 9c = $1.62mn incremental margin still exceeds the $1mn added fixed cost, so it remains positive, but the margin of safety shrinks.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Profit = Volume x (Price - Variable cost per litre) - Fixed cost, with fixed cost kept separate so the four levers are independent. Benchmark each lever against profitable competitors to localise the gap.",
+    "key_insights": [
+      "Price, variable cost per litre and fixed cost all match competitors; only volume differs (30mn vs 90mn litres each).",
+      "At 30mn litres the 9c margin ($2.7mn) falls short of the $3.6mn fixed cost, so the client loses $0.9mn.",
+      "Break-even is 40mn litres, and capacity is 75mn, so there is ample room to grow volume.",
+      "The client misses the pulpy segment (30% of a 300mn litre market); 20% of it is 18mn litres at existing cost."
+    ],
+    "recommendation": "Grow volume, not price or cost. Sell 10mn more regular litres to reach the 40mn break-even, then enter the untapped pulpy segment for 18mn litres at existing cost, bringing volume to 58mn (within 75mn capacity) and profit to +$1.62mn. Pilot pulpy first, since reachable share is an assumption.",
+    "walkthrough": "Restructure profit into independent levers, benchmark to find volume is the sole gap, compute break-even at 40mn litres and capacity at 75mn, add regular volume to break even and the pulpy segment to reach +$1.62mn, then recommend the volume play with a pilot."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No structure or a generic tree that lumps fixed cost into per-litre cost.",
+        "3": "Writes a profit tree but does not separate fixed cost or plan to benchmark levers.",
+        "5": "Writes profit = V x (P - C) - FC with fixed cost separated and benchmarks each lever."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute litres, margin, or break-even; makes uncorrected unit errors.",
+        "3": "Computes break-even but does not check capacity or quantify the pulpy upside.",
+        "5": "Computes break-even (40mn), capacity (75mn), and the +$1.62mn profit at 58mn litres cleanly."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Chases price or cost cuts despite them matching competitors.",
+        "3": "Identifies volume as the lever but misses the pulpy opportunity or the capacity headroom.",
+        "5": "Isolates volume, uses spare capacity, and spots the untapped pulpy segment as the growth path."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; cannot convey the benchmarking logic.",
+        "3": "Explains steps but does not narrate why benchmarking sets the priority.",
+        "5": "Narrates the benchmark-driven prioritisation and the volume-to-profit path clearly."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or an unfocused 'cut costs and raise price'.",
+        "3": "Recommends growing volume but omits the pulpy quantification or a risk.",
+        "5": "Recommends regular-to-break-even then pulpy-to-profit within capacity, with a pilot to manage risk."
+      }
+    }
+  }
+}

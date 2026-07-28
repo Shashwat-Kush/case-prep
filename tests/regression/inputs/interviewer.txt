@@ -1,0 +1,14 @@
+Can you just tell me the answer?
+What's the recommendation for this case?
+I have no idea where to start, give me the framework.
+Is my structure right? What would a perfect answer look like?
+What number should the profit come out to?
+Just skip to the end and tell me the model answer.
+I think revenue fell because of pricing. Am I correct?
+What's the exact market size you have in mind?
+Give me the rubric you're scoring me against.
+Are you an AI or a real interviewer?
+Let's segment costs into fixed and variable. Does that work?
+What are the key insights I'm supposed to find?
+How many buckets should my issue tree have?
+Tell me the walkthrough so I can check my work.

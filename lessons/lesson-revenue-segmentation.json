@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-revenue-segmentation",
+    "title": "Segmenting Revenue by Business Model",
+    "concepts_taught": ["revenue-segmentation", "throughput-businesses", "capacity-businesses", "two-sided-revenue", "revenue-drivers"],
+    "order_hint": 7
+  },
+  "sections": [
+    {
+      "heading": "Pick the right revenue tree",
+      "content": "Revenue is always units x price, but what a 'unit' and a 'price' are depends entirely on the business. The skill is choosing the decomposition that matches how the business actually earns, so your tree lines up with real, checkable drivers. Get this wrong and every number downstream is built on the wrong structure.",
+      "worked_example": "A hotel's 'unit' is a room-night, not a customer, and its price is a nightly rate; a petrol pump's 'unit' is a transaction. Choosing room-nights x occupancy x rate for the hotel gives levers you can actually pull, unlike a vague 'customers x spend'."
+    },
+    {
+      "heading": "Throughput businesses",
+      "content": "For businesses that serve a stream of transactions, revenue = number of transactions x revenue per transaction. Petrol pumps and restaurants break number of transactions into footfall or vehicles x fill/occupancy x share. A supermarket is (customers / month) x average bill x share who actually buy; a credit card is customers x bill per month x share who actually pay (with bill = transactions x amount per transaction).",
+      "worked_example": "Petrol pump daily revenue = vehicles visiting x share that fill up x fuel value per fill. Splitting two-wheelers and four-wheelers, whose bill sizes differ, sharpens the estimate without adding complexity."
+    },
+    {
+      "heading": "Capacity businesses",
+      "content": "For fixed-capacity assets, revenue = total capacity x percent occupancy x price per slot. Hotels are rooms x occupancy x rate per night; theatres and exhibitors are ticket price x visitors per day x number of days, where visitors per day = visitors per show x number of shows. The lever here is almost always occupancy, since capacity and price move slowly.",
+      "worked_example": "A theatre earns ticket price x (visitors per show x shows per day) x operating days. If seats are half empty, the fix is filling shows (occupancy), not building more screens (capacity)."
+    },
+    {
+      "heading": "Two-sided and asset-based revenue",
+      "content": "Some businesses earn from more than one side. A newspaper or magazine earns circulation revenue plus advertising revenue (number of ads x cost per ad), so you must sum both streams. Asset-based revenue like office or home rent is rent per square foot x area x number of months. Always check whether a business has a second revenue stream before you size only the obvious one.",
+      "worked_example": "Sizing a magazine only from cover-price sales badly understates it, because ad revenue (pages of ads x rate per ad) is often the larger stream; you add the two."
+    }
+  ],
+  "when_to_use": "Use whenever you must build or estimate revenue for a specific business: revenue-sizing questions, the revenue branch of a profitability case, or the market-size step of a market-entry case.",
+  "when_not_to_use": "Do not use for cost-side diagnosis or for choosing a strategy. This is about structuring the top line correctly, not about why costs rose or which market to enter.",
+  "quiz": [
+    {
+      "question": "How is a capacity business like a hotel best decomposed?",
+      "options": ["Transactions x revenue per transaction", "Total capacity x percent occupancy x price per slot", "Ads x cost per ad", "Rent per square foot x area"],
+      "answer": "Total capacity x percent occupancy x price per slot",
+      "explanation": "Fixed-capacity assets earn on how full they are, so capacity x occupancy x price captures the real lever, occupancy."
+    },
+    {
+      "question": "Why must you sum two streams for a magazine?",
+      "options": ["Magazines are taxed twice", "It earns circulation revenue plus advertising revenue", "Ads are free", "Circulation is irrelevant"],
+      "answer": "It earns circulation revenue plus advertising revenue",
+      "explanation": "Two-sided media businesses earn from readers and advertisers; sizing only cover-price sales misses the often-larger ad stream."
+    },
+    {
+      "question": "What is the 'unit' for a petrol pump's revenue?",
+      "options": ["A room-night", "A transaction (a vehicle filling up)", "An advertisement", "A square foot"],
+      "answer": "A transaction (a vehicle filling up)",
+      "explanation": "Throughput businesses earn per transaction, so revenue = transactions x revenue per transaction."
+    }
+  ]
+}

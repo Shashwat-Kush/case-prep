@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "id": "guess-noodles-campus",
+    "title": "Packets of noodles consumed monthly on a college campus",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "How many packets of noodles are consumed in a month on a residential college campus?",
+  "clarifications": [
+    {"question_pattern": "campus size", "answer": "Assume about 7000 resident students and about 700 working professionals (400 faculty + 300 staff), each professional with one family member."},
+    {"question_pattern": "who to include", "answer": "Count students and on-campus professionals with their families; ignore non-resident staff like guards and hostel workers."},
+    {"question_pattern": "weeks per month", "answer": "Assume four weeks in a month."},
+    {"question_pattern": "how to split consumers", "answer": "Split each group into frequent, less-frequent and least-frequent eaters."}
+  ],
+  "approach": {
+    "recommended": "bottom_up",
+    "tree": [
+      {
+        "segment": "students_frequent",
+        "benchmark_refs": [],
+        "derivation": "1400 * 4 * 4",
+        "value": 22400,
+        "tolerance": 1
+      },
+      {
+        "segment": "students_less_frequent",
+        "benchmark_refs": [],
+        "derivation": "3500 * 2 * 4",
+        "value": 28000,
+        "tolerance": 1
+      },
+      {
+        "segment": "students_least_frequent",
+        "benchmark_refs": [],
+        "derivation": "2100 * 1 * 4",
+        "value": 8400,
+        "tolerance": 1
+      },
+      {
+        "segment": "professionals_total",
+        "benchmark_refs": [],
+        "derivation": "0.2 * 700 * 2 * 6 + 0.5 * 700 * 2 * 4 + 0.3 * 700 * 2 * 2",
+        "value": 5320,
+        "tolerance": 1
+      },
+      {
+        "segment": "total_packets",
+        "benchmark_refs": [],
+        "derivation": "students_frequent + students_less_frequent + students_least_frequent + professionals_total",
+        "value": 64120,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 50000, "high": 80000},
+  "common_traps": [
+    "Estimating only students and forgetting professionals and their families.",
+    "Mixing weekly and monthly rates without converting via weeks-per-month.",
+    "Applying one flat consumption rate instead of splitting each group by eating frequency."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no per-group consumption build-up.",
+        "3": "Estimates students only, or omits the weekly-to-monthly conversion.",
+        "5": "Builds consumption bottom-up for students and professionals with an explicit weeks-per-month conversion."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "One flat rate for everyone on campus.",
+        "3": "Splits students and professionals but with a single rate within each.",
+        "5": "Splits each group into frequent/less/least eaters with distinct rates."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Errors in the weekly-to-monthly scaling; lands far outside a plausible range.",
+        "3": "Reaches a number with a slip, landing just outside 50000-80000.",
+        "5": "Carries the per-group math cleanly, landing near 64000 packets."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Back-checks per-person: ~65000 packets over ~8400 people is roughly one packet per person every four days."
+      }
+    }
+  }
+}

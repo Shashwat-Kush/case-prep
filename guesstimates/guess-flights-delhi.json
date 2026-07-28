@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "id": "guess-flights-delhi",
+    "title": "Flights taking off in a day from Delhi Airport",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "Estimate the number of flights taking off in a day from Delhi Airport.",
+  "clarifications": [
+    {"question_pattern": "which flights", "answer": "Count only commercial passenger flights; ignore seasonal surges, cargo and military."},
+    {"question_pattern": "how many gates", "answer": "Assume about 80 boarding gates, with one take-off (including boarding) per gate per hour."},
+    {"question_pattern": "how are hours split", "answer": "Split the day into 8 peak hours (80% gates used), 12 non-peak hours (50% gates used) and 4 non-operational hours (0)."},
+    {"question_pattern": "supply or demand side", "answer": "Use a supply-side approach: gate capacity by time band."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "peak_flights",
+        "benchmark_refs": [],
+        "derivation": "80 * 8 * 0.8",
+        "value": 512,
+        "tolerance": 1
+      },
+      {
+        "segment": "non_peak_flights",
+        "benchmark_refs": [],
+        "derivation": "80 * 12 * 0.5",
+        "value": 480,
+        "tolerance": 1
+      },
+      {
+        "segment": "total_flights",
+        "benchmark_refs": [],
+        "derivation": "peak_flights + non_peak_flights",
+        "value": 992,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 700, "high": 1300},
+  "common_traps": [
+    "Assuming full gate utilisation all day instead of splitting into peak / non-peak / non-operational.",
+    "Forgetting the ~1 hour take-off gap per gate, so gate count is not converted into flights per hour.",
+    "Counting arrivals as well as departures when the question asks only for take-offs."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no gate-capacity reasoning.",
+        "3": "Uses gates x hours but at one flat utilisation across the whole day.",
+        "5": "Applies gate capacity per time band with distinct utilisation for peak and non-peak hours."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No split of the day into time bands.",
+        "3": "Splits hours but with utilisation rates not clearly reasoned.",
+        "5": "Splits the day into peak / non-peak / non-operational with sensible utilisation for each."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Errors in the gates-times-hours-times-utilisation product; lands far off.",
+        "3": "Reaches a number with a slip, landing just outside 700-1300.",
+        "5": "Carries the per-band math cleanly, landing near 1000 flights."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Back-checks via passengers: ~1000 flights x ~120 seats implies ~1 lakh daily flyers, which is reasonable for Delhi."
+      }
+    }
+  }
+}

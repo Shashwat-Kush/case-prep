@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-growth-strategy",
+    "title": "The Growth Strategy Framework",
+    "concepts_taught": ["growth-strategy", "ansoff-matrix", "organic-vs-inorganic-growth", "diversification", "growth-timeframe"],
+    "order_hint": 6
+  },
+  "sections": [
+    {
+      "heading": "The Ansoff matrix",
+      "content": "Growth options fall into a two-by-two of product (existing vs new) against market (existing vs new). Existing product in existing market is market penetration; new product in existing market is product development; existing product in new market is market development; new product in new market is diversification. Naming the quadrant keeps your options MECE and stops you from jumping straight to 'launch something new'.",
+      "worked_example": "A biscuit maker wanting to grow first asks: sell more of today's biscuits to today's customers (penetration), add a new snack for them (product development), take today's biscuits to a new region (market development), or a genuinely new product in a new market (diversification)? Each has very different risk."
+    },
+    {
+      "heading": "Grow within what you have first",
+      "content": "For the existing product in the existing market, the levers are the customer-pull funnel and benchmarking: improve customer pull (attraction, value proposition, retention), and benchmark your product and competitiveness to close gaps. This is the lowest-risk growth because you already know the product and the customer.",
+      "worked_example": "A gym grows by lifting retention (cutting churn with loyalty perks) and conversion (better trial-to-membership pull) before it ever considers opening a second branch, because squeezing the existing funnel is cheaper and faster."
+    },
+    {
+      "heading": "New products and new markets",
+      "content": "A new product for existing customers can come from product differentiation, complementary products, or vertical integration. A new market for an existing product can come from geographic expansion, replicating your current strategy elsewhere, or exploring B2B versus B2C options. Each step outward adds risk because you know less about either the product or the customer.",
+      "worked_example": "A coffee chain adds packaged beans (complementary product) for its existing cafe customers, then later replicates its cafe format in a new city (geographic expansion), taking the two new-axis moves one at a time rather than both at once."
+    },
+    {
+      "heading": "Diversification, mode, and timeframe",
+      "content": "The riskiest quadrant is diversification: related (adjacent, some shared capability) or unrelated, plus asset capitalisation and new distribution channels. Decide the mode as with entry: organic (build your own) versus inorganic (JV, franchise, merger, licensing). Above all, always ask the time frame for the growth needed, because a target this year points to penetration while a five-year horizon can justify diversification.",
+      "worked_example": "A cash-rich retailer 'diversifies' by capitalising an under-used asset, renting out its warehouse space as fulfilment for other sellers, a related move that uses an existing capability rather than a risky leap into an unrelated business."
+    }
+  ],
+  "when_to_use": "Use when the client wants to grow revenue, scale the business, or find new sources of growth, and you must lay out and choose among options.",
+  "when_not_to_use": "Do not use when the goal is to fix falling profit (profitability), decide whether to enter one specific market (market entry), or set a price (pricing). Growth is about expanding, not diagnosing a decline.",
+  "quiz": [
+    {
+      "question": "In the Ansoff matrix, what is a new product sold to a new market called?",
+      "options": ["Market penetration", "Product development", "Market development", "Diversification"],
+      "answer": "Diversification",
+      "explanation": "New product plus new market is diversification, the riskiest quadrant because you know neither the product nor the customer well."
+    },
+    {
+      "question": "Which growth move is usually lowest-risk?",
+      "options": ["Diversifying into an unrelated business", "Selling more of the existing product to existing customers", "Entering a new country", "Launching a brand-new product line"],
+      "answer": "Selling more of the existing product to existing customers",
+      "explanation": "Penetration works within a known product and known customer base, so it carries the least uncertainty."
+    },
+    {
+      "question": "What question should you always ask before choosing a growth strategy?",
+      "options": ["The CEO's name", "The time frame for the growth needed", "The competitor's price", "The office rent"],
+      "answer": "The time frame for the growth needed",
+      "explanation": "A short horizon favours penetration; a long horizon can justify riskier product, market, or diversification moves."
+    }
+  ]
+}

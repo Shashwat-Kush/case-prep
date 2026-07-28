@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "id": "lesson-value-chain-operations",
+    "title": "Value Chain and Operations (MTP)",
+    "concepts_taught": ["value-chain", "cost-across-value-chain", "man-technology-process", "capacity-and-bottlenecks", "sales-force-efficiency"],
+    "order_hint": 9
+  },
+  "sections": [
+    {
+      "heading": "The value chain as a cost map",
+      "content": "Lay the business out as a value chain and ask what share of total cost sits in each link: demand forecasting, raw-material sourcing, warehousing, inbound logistics, manufacturing (labour, utilities, conversion cost), outbound logistics, distribution, sales and marketing, and after-sales. The link with the biggest cost share, or the one that moved, is where you dig. Any link can be broken down further into its own drivers.",
+      "worked_example": "A packaged-food firm's cost rise turns out to be warehousing, not manufacturing. Asking 'what percent of total cost is in each link?' up front pointed straight at the moved link instead of guessing at the factory."
+    },
+    {
+      "heading": "MTP: Man, Technology, Process",
+      "content": "For operations, capacity, and efficiency cases, break a step or bottleneck into Man, Technology, and Process. Man: number of workers and man-efficiency (men per machine, and sales-force effectiveness). Technology: existing (is it less efficient or obsolete?) versus adopting new technology. Process: ask what the process is, break it by workflow, prioritise the steps by cost and time, and understand where time is lost. You can break almost any value-chain link through MTP.",
+      "worked_example": "A warehouse is slow. Man (too few pickers), Technology (manual vs a scanner system), Process (an inefficient pick path) are tested in turn; the process redesign and a scanner, not more staff, clear the bottleneck."
+    },
+    {
+      "heading": "Capacity and bottlenecks",
+      "content": "To raise output, first raise capacity (relieve the binding supply bottleneck), then raise demand to fill it, much like the value-chain logic. Model throughput explicitly. Peak queue time = (people at peak - people not at the exhibit) / number of exhibits x average time per batch / batch size. In transport, trips = operational hours / time per trip, constrained by time or by quantity (quantity / quantity per trip).",
+      "worked_example": "A museum's queues are long at peak. The formula shows the binding constraint is exhibits per visitor and batch size, so staggering entry (batching) and adding a popular exhibit cuts the queue more than extending hours."
+    },
+    {
+      "heading": "Sales force efficiency",
+      "content": "When selling is the bottleneck, products sold per day = customers reached per day x conversion rate x products per customer, where customers reached = operating hours x customers per hour. If conversion is low, diagnose whether it is a buyer-not-buying (demand) issue, a product problem, or salesperson quality. Improve the sales force through training (personnel and inherent attributes), motivation (tangible and intangible incentives), and opportunities (during and after work).",
+      "worked_example": "A field team's sales lag. Reach and product are fine, but conversion is low due to weak product knowledge. The fix is training and a better incentive on conversion, not hiring more reps."
+    }
+  ],
+  "when_to_use": "Use for operations, capacity, cost-structure, and efficiency cases: where cost is rising inside the value chain, where a bottleneck limits output, or where a sales force or process needs to be made more efficient.",
+  "when_not_to_use": "Do not use for market-entry, pricing, or pure demand-side volume questions. This framework diagnoses how work and cost flow inside the business, not whether to enter a market or what price to set.",
+  "quiz": [
+    {
+      "question": "What is the first question to ask when mapping cost across a value chain?",
+      "options": ["Who is the CEO?", "What percent of total cost sits in each link?", "What is the market size?", "What price do competitors charge?"],
+      "answer": "What percent of total cost sits in each link?",
+      "explanation": "The cost share by link tells you which part of the chain to dig into, rather than guessing."
+    },
+    {
+      "question": "What do the three letters of MTP stand for?",
+      "options": ["Market, Time, Price", "Man, Technology, Process", "Money, Trade, Profit", "Method, Target, Plan"],
+      "answer": "Man, Technology, Process",
+      "explanation": "MTP breaks an operations step into people, technology, and process to locate the inefficiency."
+    },
+    {
+      "question": "Sales reach and product are fine but conversion is low. What is the likely fix?",
+      "options": ["Hire more sales reps", "Improve salesperson training and conversion incentives", "Lower production", "Enter a new market"],
+      "answer": "Improve salesperson training and conversion incentives",
+      "explanation": "Low conversion despite good reach and product points to sales-force capability and motivation, not headcount."
+    }
+  ]
+}

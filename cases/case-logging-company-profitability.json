@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "id": "case-logging-company-profitability",
+    "title": "Teak Logging Company: Why Are Profits So High?",
+    "type": "profitability",
+    "industry": "forestry",
+    "difficulty": "hard",
+    "est_minutes": 30,
+    "prerequisite_concepts": ["lesson-profitability-framework"],
+    "diagnostic": false
+  },
+  "prompt": "Your client is a South Indian teak-wood plank manufacturer whose profits are far higher than its competitors'. Management does not know why, and is worried about whether these high profits are sustainable. They want you to explain the source of the advantage and whether it will last.",
+  "clarifying": [
+    {"question_pattern": "how high, versus what", "answer": "Profits are significantly higher than competitors', and have been since the client started three years ago. Benchmark against competitors."},
+    {"question_pattern": "why is high profit a concern", "answer": "Management wants to know whether the unusually high profits are sustainable."},
+    {"question_pattern": "product and value chain", "answer": "Both the client and competitors make wooden planks of two types, A and B, differing in sturdiness. Firms own forest plots, cut teak trees into planks, and sell them in a common wholesale market to construction firms."},
+    {"question_pattern": "geography", "answer": "The Nilgiri forests, the teak-wood hub of South India; the client and competitors operate there."},
+    {"question_pattern": "is the product differentiated", "answer": "Planks are commoditised; customers do not prefer the client's type A over a competitor's type A. Assume every plank produced in the industry gets sold, so sales follow production."}
+  ],
+  "facts": {
+    "unit_production_vs_competitor": 1.5,
+    "client_typeB_split": "3:1",
+    "competitor_typeB_split": "1:9",
+    "land_area_sqm": 50,
+    "lease_years": 99,
+    "mineral_depletion_years": 5,
+    "note": "Type B planks are sturdier and higher-margin. Land area is identical across firms (50 sqm each on 99-year government leases), so the client's edge is not land quantity."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_production_compare",
+      "title": "Client vs Competitor Production (indexed)",
+      "data": {
+        "columns": ["Metric", "Client", "Typical competitor"],
+        "rows": [
+          ["Units produced (indexed)", 1.5, 1.0],
+          ["Type B : Type A split", "3:1", "1:9"],
+          ["Land area (sqm)", 50, 50]
+        ]
+      },
+      "unlock_condition": "Candidate benchmarks the client against competitors and asks how production volume and product mix differ.",
+      "so_what": "Two advantages: the client produces 1.5x the units and skews production 3:1 toward high-margin type B versus competitors' 1:9. Land area is identical, so neither advantage comes from owning more land."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Do not volunteer the two drivers. Wait for the candidate to restate the question and note that high profit relative to competitors implies a company-specific advantage.",
+      "coaching": {
+        "explain": "Because profits are high versus competitors and have been since inception, the cause is a company-specific advantage. A strong candidate says this out loud and frames the case as: find the advantage, then test its durability.",
+        "model_approach_for_phase": "Restate: 'We earn far more than competitors and have since we started, so we likely have an internal advantage we do not fully understand; we need to identify it and judge whether it lasts.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate frames the high profit as a company-specific advantage to be identified and stress-tested."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask how the candidate will find the source of the advantage. Look for benchmarking profit into units sold and margin (mix of type A vs B), against competitors. Do not accept a generic profit tree with no comparison.",
+      "coaching": {
+        "explain": "Profit versus competitors decomposes into units sold and margin per unit. Since planks are commoditised and every plank sells, the levers are how many units the client produces and what share are high-margin type B. Benchmarking against competitors localises the advantage.",
+        "model_approach_for_phase": "Structure profit = units x margin, benchmark each against competitors, and plan to explain any gap in units and in the type-B mix, then test durability."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate decomposes profit into units and margin-mix and compares against competitors."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "When the candidate benchmarks production, release exhibit ex1_production_compare. Confirm both drivers: 1.5x units and a 3:1 vs 1:9 type-B split. Land is identical. Push them to ask WHY: more cutting cycles (faster tree growth) and more type-B wood, both from soil minerals.",
+      "coaching": {
+        "explain": "Both drivers trace to one root cause. Land area is equal, so producing 1.5x units means more cutting cycles, i.e. faster tree growth. And a richer type-B mix means sturdier wood. Both come from minerals in the client's soil that make trees grow faster and stronger.",
+        "model_approach_for_phase": "Establish the two drivers, note land is equal so higher output means faster growth (more cutting cycles), and trace both the extra volume and the type-B skew to a single cause: soil minerals."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate traces both the 1.5x volume and the favourable type-B mix to soil minerals as the single root cause."
+    },
+    {
+      "name": "sustainability",
+      "interviewer_instructions": "Ask whether the advantage lasts. Reveal that the minerals deplete linearly over 5 years and cannot be regenerated, replaced, or relocated. Guide the candidate to conclude the high profits are not sustainable.",
+      "coaching": {
+        "explain": "The advantage is a finite natural resource. The minerals deplete linearly over 5 years (about 20% a year) and cannot be regenerated, sourced elsewhere, or replicated on another plot. So the high profit is temporary, not a durable moat.",
+        "model_approach_for_phase": "Test each preservation option (regenerate, buy more mineral-rich soil, acquire a mineral-rich plot) and, finding all impossible, conclude the ~20%-a-year depletion makes the profit unsustainable within 5 years."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate establishes the minerals deplete (~20%/year over 5 years) and cannot be preserved, so the advantage is temporary."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for a recommendation given a temporary advantage. Look for: monetise the window, especially by raising type-B price where the client is uniquely positioned, plus a plan for after depletion. Reward the long-run cumulative-profit argument.",
+      "coaching": {
+        "explain": "Since the volume and mix edge cannot be preserved, monetise the window. The client uniquely produces abundant type-B wood, so it can raise the type-B price even at some short-run volume cost, maximising long-run cumulative profit before depletion, and prepare for the post-mineral era via cost optimisation or diversification. 'Do nothing' wastes a closing window.",
+        "model_approach_for_phase": "'The advantage is soil minerals depleting over 5 years and cannot be preserved. I would monetise the window by raising type-B prices, where we are uniquely positioned, accepting a short-run volume dip for higher cumulative profit, and prepare for depletion through cost or diversification moves. Risk: competitive pressure caps how far prices can rise.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation monetises the temporary advantage (e.g. type-B pricing) and plans for post-depletion, acknowledging a risk."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "3 / (3 + 1) * 100",
+      "expected_value": 75,
+      "tolerance": 0,
+      "common_errors": ["Reading the 3:1 ratio as 3% rather than a 3-to-1 share", "Confusing type A and type B shares"]
+    },
+    {
+      "inputs": "1 / (1 + 9) * 100",
+      "expected_value": 10,
+      "tolerance": 0,
+      "common_errors": ["Reading the competitor 1:9 split as 90% type B rather than 10%"]
+    },
+    {
+      "inputs": "(1.5 - 1) * 100",
+      "expected_value": 50,
+      "tolerance": 0,
+      "common_errors": ["Reporting 1.5x as a 150% increase rather than a 50% increase"]
+    },
+    {
+      "inputs": "100 / 5",
+      "expected_value": 20,
+      "tolerance": 0,
+      "common_errors": ["Assuming depletion is back-loaded rather than linear at ~20% a year"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose a competitor discovers a similar mineral-rich plot next year. How does that change your recommendation? (Strong answer: the type-B pricing window shrinks further, so monetise faster and accelerate the shift toward cost and diversification advantages.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Benchmark profit against competitors, decomposed into units sold and margin mix (type A vs high-margin type B). Because planks are commoditised and all output sells, both levers come down to production, which is set by the client's plot.",
+    "key_insights": [
+      "The client both produces 1.5x the units and skews 3:1 toward high-margin type B versus competitors' 1:9.",
+      "Land area is identical, so higher output means faster tree growth (more cutting cycles), not more land.",
+      "Both the extra volume and the richer type-B mix trace to a single root cause: minerals in the client's soil.",
+      "Those minerals deplete linearly over 5 years (~20%/year) and cannot be regenerated, replaced, or relocated, so the advantage is temporary."
+    ],
+    "recommendation": "Recognise the advantage as a finite, ~5-year resource that cannot be preserved. Monetise the window, especially by raising type-B prices where the client is uniquely positioned, accepting a short-run volume dip for higher long-run cumulative profit, and prepare for depletion through cost optimisation or diversification. The main risk is competitive pressure limiting price increases.",
+    "walkthrough": "Frame high profit as a company-specific advantage, benchmark units and type-B mix against competitors, trace both drivers to soil minerals, establish that the minerals deplete over 5 years and cannot be preserved, then recommend monetising the window via type-B pricing while planning for the post-mineral era."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No benchmarking; a generic profit tree with no comparison to competitors.",
+        "3": "Decomposes profit into units and margin but does not compare against competitors.",
+        "5": "Decomposes profit into units and type-B mix and benchmarks each against competitors."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot convert the 3:1 and 1:9 ratios into shares or the 1.5x into a percentage.",
+        "3": "Converts one ratio correctly but stumbles on the others or the depletion rate.",
+        "5": "Converts 3:1 to 75%, 1:9 to 10%, 1.5x to +50%, and depletion to ~20%/year cleanly."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Attributes the advantage to something not supported (e.g. more land) despite equal area.",
+        "3": "Finds the two drivers but does not connect them to a single root cause.",
+        "5": "Traces both drivers to soil minerals and recognises this makes the advantage exhaustible."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; the interviewer cannot follow the diagnosis.",
+        "3": "Explains steps but does not narrate why each question isolates the driver.",
+        "5": "Thinks out loud, states priorities, and clearly narrates the path to the root cause."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or 'keep doing what we do' despite depletion.",
+        "3": "Notes the advantage is temporary but gives no concrete monetisation or post-depletion plan.",
+        "5": "Monetises the window (type-B pricing), plans for post-depletion, and names a risk."
+      }
+    }
+  }
+}

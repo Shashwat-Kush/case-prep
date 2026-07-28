@@ -1,0 +1,188 @@
+{
+  "meta": {
+    "id": "case-washing-machine-market-entry",
+    "title": "Semi-Automatic Washing Machine: Enter Haryana?",
+    "type": "market-entry",
+    "industry": "consumer-electronics",
+    "difficulty": "hard",
+    "est_minutes": 35,
+    "prerequisite_concepts": ["lesson-market-entry-framework"],
+    "diagnostic": false
+  },
+  "prompt": "The year is 1990. Your client, an electronics manufacturer, wants to enter the Haryana market with a patented semi-automatic (button-operated) washing machine. It already operates in Maharashtra. Should it enter Haryana?",
+  "clarifying": [
+    {"question_pattern": "decision metric", "answer": "Estimate the profit from entering, then benchmark it against the client's existing Maharashtra operation."},
+    {"question_pattern": "what product", "answer": "A single product: a patented semi-automatic washing machine, the only one of its kind; existing options are manual machines."},
+    {"question_pattern": "price and affordability", "answer": "Priced at Rs 4500, cheaper than any other machine (Rs 4000-5000 range), affordable by middle-income families and above. Running cost is Rs 500/year (higher power than existing machines)."},
+    {"question_pattern": "can we assume implementation works", "answer": "Yes, assume the value chain (setting up distribution) can be established; focus on whether entry is profitable."}
+  ],
+  "facts": {
+    "market_size_machines": 700000,
+    "year1_market_share": 0.1,
+    "price": 4500,
+    "manufacturing_cost": 4000,
+    "distribution_cost_retail": 650,
+    "distribution_cost_own": 100,
+    "retail_channel_share": 0.4,
+    "own_channel_share": 0.6,
+    "fixed_cost": 0,
+    "maharashtra_profit_cr": 40,
+    "maharashtra_units": 1000000,
+    "note": "Market size of ~0.7M machines comes from filtering Haryana population to middle-income-plus families needing a machine. Price cannot be raised (the client wants to keep its price advantage) and distribution costs are not negotiable."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_channel_economics",
+      "title": "Per-Unit Economics by Channel (Rs)",
+      "data": {
+        "columns": ["Player / channel", "Manufacturing", "Distribution", "Total cost", "Price", "Profit per unit"],
+        "rows": [
+          ["Client - retail (40%)", 4000, 650, 4650, 4500, -150],
+          ["Client - own store (60%)", 4000, 100, 4100, 4500, 400],
+          ["Competitor - retail (40%)", 4300, 650, 4950, 5000, 50],
+          ["Competitor - own store (60%)", 4300, 100, 4400, 5000, 600]
+        ]
+      },
+      "unlock_condition": "Candidate asks for the cost structure and distribution costs to compute profit per unit, or benchmarks channel economics against competitors.",
+      "so_what": "The client loses Rs 150 per unit through retail but makes Rs 400 through its own stores. Competitors survive retail only because their Rs 5000 price (vs the client's Rs 4500) offsets a higher internal cost. Since the client will not raise price, it should sell only through its own stores."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Do not volunteer numbers. Wait for the candidate to restate the entry decision and pick a metric (profit, benchmarked to Maharashtra).",
+      "coaching": {
+        "explain": "A market-entry case opens by fixing the success metric. A strong candidate proposes estimating entry profit and benchmarking it to the existing Maharashtra operation.",
+        "model_approach_for_phase": "Restate: 'We want to know if entering Haryana is worthwhile; I'll estimate the profit and benchmark it against our Maharashtra business.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate frames entry around estimated profit, benchmarked to Maharashtra."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask for the plan. Look for two parts: (1) economic sense, profit = market size x market share x profit per unit - investment; (2) whether the value chain can be established. Confirm implementation is assumed feasible so they focus on economics.",
+      "coaching": {
+        "explain": "Structure the entry as economic sense plus feasibility. Profit = market size x market share x profit per unit - investment. With implementation assumed feasible, the work is sizing the market, estimating share, and getting profit per unit right.",
+        "model_approach_for_phase": "Split into economic sense (size x share x profit per unit) and value-chain feasibility, then, given feasibility is assumed, focus on the three profit drivers."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate structures entry as economic-sense (size x share x profit/unit) plus feasibility."
+    },
+    {
+      "name": "market-sizing",
+      "interviewer_instructions": "Guide the candidate to size the machine market by filtering Haryana population to middle-income-plus households that would buy. Accept the ~0.7M market size and a 10% first-year share (people already use machines; awareness and new-device comfort limit share).",
+      "coaching": {
+        "explain": "Size the market by filtering population to households that can afford and would want a machine, reaching ~0.7M machines. First-year share is modest at 10%, because manual machines already exist and a new button-operated device needs awareness and comfort, so 0.7M x 10% = 70,000 units.",
+        "model_approach_for_phase": "Filter Haryana population to middle-income-plus buyers to get ~0.7M market size, take a 10% first-year share for 70,000 units."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate reaches ~0.7M market size and a defensible ~10% first-year share (70,000 units)."
+    },
+    {
+      "name": "unit-economics",
+      "interviewer_instructions": "Release ex1_channel_economics. Guide the candidate to see that retail loses Rs 150/unit while own stores make Rs 400/unit, that price cannot rise and distribution cost cannot be negotiated, and therefore to sell only through own stores. Verdicts on numbers come from the math checker.",
+      "coaching": {
+        "explain": "Per unit, retail costs 4000+650=4650 against a 4500 price, a Rs 150 loss; own stores cost 4000+100=4100 for a Rs 400 profit. Competitors survive retail only via a higher Rs 5000 price. Since the client will not raise price or renegotiate distribution, it should drop the loss-making retail channel and sell only through its own stores.",
+        "model_approach_for_phase": "Compute -Rs 150 retail and +Rs 400 own, note competitors offset cost with a higher price, and conclude: sell only through own stores."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate computes -Rs 150 retail and +Rs 400 own profit per unit and concludes the client should use only its own stores."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for the recommendation and the entry profit. Look for profit = 0.7M x (60% of 10%) x Rs 400 = Rs 1.68 Cr through own stores only, a clear 'enter', and a risk. Then pose the Maharashtra benchmark curveball.",
+      "coaching": {
+        "explain": "Selling only through own stores captures the 60% own-channel share of the 10% market share: profit = 0.7M x 0.10 x 0.60 x Rs 400 = Rs 1.68 Cr, which is positive, so enter. A strong candidate flags that dropping retail may actually retain more than 60% via product pull, making this conservative.",
+        "model_approach_for_phase": "'Enter Haryana, selling only through our own stores. Profit = 0.7M x (60% of 10%) x Rs 400 = Rs 1.68 Cr. Retail loses money at our price, so we drop it; product pull may even lift the own-store share above 60%. Risk: first-year share and awareness are assumptions worth piloting.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation is to enter via own stores only, with the Rs 1.68 Cr profit shown and a risk noted."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "4500 - (4000 + 650)",
+      "expected_value": -150,
+      "tolerance": 0,
+      "common_errors": ["Forgetting to add distribution cost to manufacturing cost", "Using the own-store distribution cost for the retail channel"]
+    },
+    {
+      "inputs": "4500 - (4000 + 100)",
+      "expected_value": 400,
+      "tolerance": 0,
+      "common_errors": ["Using retail distribution cost of 650 instead of 100", "Adding profit to cost"]
+    },
+    {
+      "inputs": "700000 * 0.10",
+      "expected_value": 70000,
+      "tolerance": 0,
+      "common_errors": ["Using 50% share instead of the agreed 10%", "Dropping a zero in the market size"]
+    },
+    {
+      "inputs": "700000 * 0.10 * 0.60 * 400",
+      "expected_value": 16800000,
+      "tolerance": 0,
+      "common_errors": ["Including the loss-making 40% retail share", "Using Rs 400 across all channels rather than only own stores"]
+    },
+    {
+      "inputs": "5000 - (4300 + 650)",
+      "expected_value": 50,
+      "tolerance": 0,
+      "common_errors": ["Assuming competitors also lose on retail; their higher Rs 5000 price offsets the higher internal cost"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "The client earns Rs 40 Cr in Maharashtra (1 million machines sold). Why is Haryana's profit so much smaller? (Strong answer: Maharashtra has a larger population, much cheaper electricity, lowering the running cost and lifting demand, and is a mature market where the client was an early mover with an established distribution network.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Entry profit = market size x market share x profit per unit - investment, with feasibility of the value chain assumed. Profit per unit must be computed per distribution channel, because the two channels have very different economics.",
+    "key_insights": [
+      "Market size is ~0.7M machines; a modest 10% first-year share gives 70,000 units.",
+      "Retail loses Rs 150 per unit while own stores make Rs 400; competitors survive retail only via a higher Rs 5000 price.",
+      "Since price cannot rise and distribution cost cannot be negotiated, the client should sell only through its own stores.",
+      "Own-store-only entry yields 0.7M x (60% of 10%) x Rs 400 = Rs 1.68 Cr, which is positive."
+    ],
+    "recommendation": "Enter Haryana, but sell only through the client's own stores, where each unit earns Rs 400; drop the loss-making retail channel since the client will not raise its Rs 4500 price. Expected profit is about Rs 1.68 Cr, and product pull may lift the own-store share above the assumed 60%. Pilot to test the first-year share and awareness assumptions.",
+    "walkthrough": "Frame entry as economic sense plus feasibility, size the market at ~0.7M with a 10% share, compute channel economics (retail -Rs 150, own +Rs 400), drop retail, and show own-store-only profit of Rs 1.68 Cr, then recommend entering."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No entry structure; jumps to a yes/no with no profit logic.",
+        "3": "Uses profit = size x share x profit per unit but treats profit per unit as a single number.",
+        "5": "Structures economic sense plus feasibility and computes profit per unit per channel."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute per-unit channel profit or the entry profit.",
+        "3": "Computes channel profits but includes the loss-making retail share in the total.",
+        "5": "Computes -Rs 150 retail, +Rs 400 own, and Rs 1.68 Cr for own-store-only entry cleanly."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Recommends selling through all channels despite retail losing money.",
+        "3": "Spots the retail loss but does not connect it to the fixed price and non-negotiable distribution.",
+        "5": "Drops retail because price is fixed, and notes product pull may raise the own-store share."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; cannot convey the channel logic.",
+        "3": "Explains steps but does not narrate why the channel split changes the decision.",
+        "5": "Clearly narrates the channel economics and the resulting own-store-only strategy."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or 'enter' with no profit or channel logic.",
+        "3": "Recommends entering but omits the own-store-only point or the profit figure.",
+        "5": "Recommends entering via own stores only, quantifies Rs 1.68 Cr, and names a risk."
+      }
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "id": "case-route-optimization-unconventional",
+    "title": "Fastest Route: Nariman Point to IIT Bombay",
+    "type": "unconventional",
+    "industry": "logistics",
+    "difficulty": "standard",
+    "est_minutes": 20,
+    "prerequisite_concepts": ["lesson-case-interview-basics"],
+    "diagnostic": false
+  },
+  "prompt": "A consulting firm at Nariman Point wants to reach IIT Bombay in Powai in the least possible time on a specific future date (the next placement season). Their fleet of cars travels by road. Figure out how they should think about the best route.",
+  "clarifying": [
+    {"question_pattern": "what is best", "answer": "Best means the route that takes the least time to reach the destination."},
+    {"question_pattern": "mode of transport", "answer": "Focus on travel by road; rail, air and water are out of scope."},
+    {"question_pattern": "resource constraints", "answer": "They will use their existing fleet of cars, and keep the same car for the whole journey (no switching modes mid-way)."},
+    {"question_pattern": "timing", "answer": "It is for a specific future date, so future road and traffic conditions on that date matter, not just today's."}
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Wait for the candidate to restate the objective (minimise travel time by road on a future date) and confirm constraints (same car, road only).",
+      "coaching": {
+        "explain": "An unconventional prompt still rewards a crisp objective and constraints. A strong candidate restates 'minimise door-to-door time by road, same car, on a specific future date' before structuring.",
+        "model_approach_for_phase": "Restate: 'We want the least-time road route on that date, using one car throughout; I'll break down what drives travel time.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate restates the least-time objective with its constraints before structuring."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Look for the candidate to reduce the objective to a simple equation: time = distance / speed, so minimising time means minimising distance and maximising average speed. Reward turning a fuzzy question into two clean sub-objectives.",
+      "coaching": {
+        "explain": "The elegant move is time = distance / speed, which splits the problem into two MECE sub-objectives: reduce the distance travelled and raise the average speed. Everything else becomes a driver of one of these two.",
+        "model_approach_for_phase": "Write time = distance / speed and declare two sub-objectives: minimise distance and maximise average speed, then find the factors under each."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate reduces travel time to distance / speed and sets minimise-distance and maximise-speed as the two branches."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "Have the candidate populate both branches. Distance: known routes versus new routes (shortcuts, any new road likely built by that date). Speed: internal factors (vehicle type, driver) and external factors (road quality, speed bumps, signals, tolls; traffic by time of day and day of week; accidents or strikes). Reward creative but MECE segmentation.",
+      "coaching": {
+        "explain": "Under distance, split known routes from new routes (shortcuts, and any freeway likely completed by the date). Under speed, split internal factors (car and driver) from external ones (road quality, signals, tolls, and traffic that varies by time of day and day of week). Adding thoughtful factors like number of signals or high-traffic junctions shows creativity.",
+        "model_approach_for_phase": "Distance = known vs new routes (shortcuts, new roads by the date). Speed = internal (vehicle, driver) plus external (road quality, signals, tolls; traffic by time and day; incidents)."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate fills both branches with MECE, sensible factors, including future-date-specific and time-of-day considerations."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask how the client should choose the route. Look for combining the shortest feasible distance with the highest achievable average speed for that specific date and departure time, and a concrete data-gathering step.",
+      "coaching": {
+        "explain": "Pick the route that jointly minimises distance and maximises average speed for that date and departure window: a slightly longer but faster-flowing freeway can beat a shorter, signal-heavy road. Recommend gathering the specific inputs (candidate routes, expected traffic by time, any new roads) and choosing the departure time that avoids peak congestion.",
+        "model_approach_for_phase": "'Shortlist routes by distance, then score each on expected average speed for that date and time (signals, tolls, traffic), and pick the best time-minimising combination, leaving early enough to avoid peak traffic.'"
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate recommends choosing the route and departure time that jointly minimise distance and maximise average speed for the specific date."
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "analysis",
+      "injected_fact": "A new, shorter freeway is expected to open just before the date. How does that change your thinking? (Strong answer: add it as a candidate 'new route', but weigh its unknown early traffic and finish risk against the proven known route.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Time = distance / speed, so minimise travel time by minimising distance and maximising average speed. Every factor is a driver of one of these two sub-objectives.",
+    "key_insights": [
+      "Reducing a fuzzy 'best route' question to distance / speed makes it structurable and MECE.",
+      "Distance splits into known routes and new routes (shortcuts, roads likely finished by the date).",
+      "Average speed splits into internal factors (vehicle, driver) and external ones (road quality, signals, tolls, and time- and day-dependent traffic).",
+      "Because the trip is on a specific future date, future road works and that day's traffic pattern matter, not just today's conditions."
+    ],
+    "recommendation": "Shortlist candidate routes by distance, then score each on the average speed achievable on that date and departure time (signals, tolls, expected traffic), and choose the combination that minimises total time, departing early enough to dodge peak congestion. Gather the specific route and traffic data before committing, and treat any new freeway as a candidate weighed against its early-traffic uncertainty.",
+    "walkthrough": "Restate the least-time objective, reduce it to distance / speed, populate distance (known vs new routes) and speed (internal vs external factors) branches, and recommend the route and departure time that jointly minimise time for the specific date."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "Lists random route ideas with no organising logic.",
+        "3": "Separates distance and speed but does not derive them from time = distance / speed or keep branches MECE.",
+        "5": "Derives time = distance / speed and builds clean, MECE distance and speed branches."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot express travel time in terms of distance and speed.",
+        "3": "States time = distance / speed but does not use it to drive the structure.",
+        "5": "Uses time = distance / speed as the backbone that generates both sub-objectives."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Ignores that the trip is on a future date and treats it as today.",
+        "3": "Considers current conditions but overlooks future roadworks or time-of-day traffic.",
+        "5": "Weighs future-date specifics (new roads, that day's traffic pattern, departure time) sensibly."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; the interviewer cannot follow the structure.",
+        "3": "Explains factors but does not narrate why each belongs under distance or speed.",
+        "5": "Clearly narrates the two-branch structure and places each factor deliberately."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation on how to choose the route.",
+        "3": "Says 'pick the fastest route' without combining distance, speed, date and timing.",
+        "5": "Recommends a route-and-time choice that jointly minimises distance and maximises speed for the date, with a data step."
+      }
+    }
+  }
+}

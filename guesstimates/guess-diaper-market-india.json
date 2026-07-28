@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "id": "guess-diaper-market-india",
+    "title": "Size of the diaper market in India",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "india"
+  },
+  "prompt": "Estimate the size of the diaper market in India (annual revenue).",
+  "clarifications": [
+    {"question_pattern": "who uses diapers", "answer": "Both infants (0-3) and adults who need them (mostly 60+, some 26-59); use a demand-side approach."},
+    {"question_pattern": "price and usage", "answer": "Assume Rs 10 per diaper, ~5 diapers/day for infants and ~2/day for adults, over 365 days."},
+    {"question_pattern": "how many infants", "answer": "With life expectancy ~70 and uniform ages, 0-3 is (140/70)*3 = 6 crore; split by income and affordability."},
+    {"question_pattern": "units of the answer", "answer": "Express the market size in crore rupees per year (infants ~40500 Cr + adults ~38000 Cr)."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "infant_market_cr",
+        "benchmark_refs": [],
+        "derivation": "(0.6 + 1.26 + 0.36) * 5 * 365 * 10",
+        "value": 40515,
+        "tolerance": 1
+      },
+      {
+        "segment": "adult_market_cr",
+        "benchmark_refs": [],
+        "derivation": "(1 * 2 + 4.2 * 2) * 365 * 10",
+        "value": 37960,
+        "tolerance": 1
+      },
+      {
+        "segment": "total_market_cr",
+        "benchmark_refs": [],
+        "derivation": "infant_market_cr + adult_market_cr",
+        "value": 78475,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 60000, "high": 100000},
+  "common_traps": [
+    "Counting only infants and ignoring adult (elderly / medical) diaper demand.",
+    "Applying diaper usage to everyone in an age band instead of only those who can afford or need them.",
+    "Dropping the 365-day and price factors, so a daily count is never turned into annual revenue."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a market size with no users-times-usage-times-price structure.",
+        "3": "Builds the structure for infants only, or omits the affordability/need filter.",
+        "5": "Covers infants and adults, filtering each by affordability or need, times daily usage, days and price."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "Treats one blanket user group.",
+        "3": "Splits infants and adults but with a single affordability rate.",
+        "5": "Segments infants by income affordability and adults by age-band need rates."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Loses the crore/annual conversions; lands orders of magnitude off.",
+        "3": "Reaches a number with a slip, landing just outside 60000-100000 crore.",
+        "5": "Carries the daily-to-annual and crore math cleanly, landing near 78000 crore (~780 billion)."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Back-checks per-household monthly spend (~Rs 720 among the ~25% of homes with a diaper user), which is believable."
+      }
+    }
+  }
+}

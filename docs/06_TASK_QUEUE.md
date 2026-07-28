@@ -326,21 +326,21 @@ Tests: formatting from fixture headers.
 
 ## Cross-cutting (schedule alongside phases as listed)
 
-**T-070 · Prompt regression suite** `[ ]` (with Phase 1 personas, extend each persona change)
+**T-070 · Prompt regression suite** `[x]` (with Phase 1 personas, extend each persona change)
 Goal: `scripts/run_regression.py` per 07_PROMPTS §6.
 Files: `scripts/run_regression.py`, `tests/regression/inputs/`.
 Depends: T-015, T-019.
 Accept: 10-15 canned inputs per persona; violation checks (leaked solution, invented numbers, broken character, coach answers-before-attempt); runnable against live Groq with daily-budget warning.
 Tests: violation detectors unit-tested against canned bad outputs.
 
-**T-071 · Chaos check procedure** `[ ]` (each phase gate from Phase 2)
+**T-071 · Chaos check procedure** `[x]` (each phase gate from Phase 2)
 Goal: documented, semi-automated Wi-Fi-kill test asserting graceful degradation.
 Files: `docs/chaos-check.md`, optional helper script.
 Depends: T-028.
 Accept: procedure executed and result noted at each gate tag.
 Tests: n/a (procedure); router degradation already covered by T-028 tests.
 
-**T-072 · app.db backup job** `[ ]` (any time after T-020)
+**T-072 · app.db backup job** `[x]` (any time after T-020)
 Goal: nightly launchd copy to iCloud Drive or external folder.
 Files: `scripts/backup_launchd.plist`, install notes in README.
 Depends: T-020.

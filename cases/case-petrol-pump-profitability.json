@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "id": "case-petrol-pump-profitability",
+    "title": "Highway Petrol Pump: Falling Profits",
+    "type": "profitability",
+    "industry": "fuel-retail",
+    "difficulty": "standard",
+    "est_minutes": 25,
+    "prerequisite_concepts": ["lesson-diagnosing-volume-problems"],
+    "diagnostic": false
+  },
+  "prompt": "Your client owns 50 petrol pumps. One of them, on the Delhi-Chandigarh highway, has been losing money for the past few years. What is going wrong, and what do you recommend?",
+  "clarifying": [
+    {"question_pattern": "how many pumps affected", "answer": "Of 50 pumps, this single one on the Delhi-Chandigarh highway has the problem."},
+    {"question_pattern": "industry-wide or company-specific", "answer": "Roughly all pumps in that area have seen reduced profits, so it is an area-wide issue, not specific to this owner."},
+    {"question_pattern": "which product", "answer": "The pump sells petrol and diesel. Diesel (mostly trucks) has stayed constant; petrol (mostly cars) has fallen."},
+    {"question_pattern": "since when", "answer": "It has been happening over the past few years, gradually, not overnight."}
+  ],
+  "facts": {
+    "total_pumps": 50,
+    "affected_pumps": 1,
+    "note": "Transactions = vehicles in/through the area x share filling petrol x market share. Diesel demand (trucks) is flat; petrol demand (cars) has dropped. The area-wide nature rules out a market-share problem."
+  },
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Reveal the area-wide nature only if asked. Wait for the candidate to restate the objective and note that an area-wide loss points away from a company-specific cause.",
+      "coaching": {
+        "explain": "A strong candidate establishes early that the loss is area-wide, which rules out a market-share or execution problem at this specific pump and points to a demand shift affecting everyone.",
+        "model_approach_for_phase": "Restate: 'One highway pump is losing money, but so are neighbouring pumps, so this looks like an area-wide demand shift rather than something we are doing wrong.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate frames the loss as area-wide and infers a demand-side cause over a company-specific one."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask how the candidate will find the driver. Look for revenue via transactions = vehicles in the area x share filling petrol x market share, and a plan to test each factor. The problem is fewer transactions.",
+      "coaching": {
+        "explain": "Decompose the pump's revenue into transactions x revenue per transaction, and transactions into vehicles passing through x share that fill petrol x market share. Because it is area-wide, market share is unlikely, so focus on vehicle volume and the fill rate.",
+        "model_approach_for_phase": "Write transactions = vehicles in the area x share filling petrol x market share, note market share is ruled out by the area-wide loss, and test vehicle volume and fill rate."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate structures transactions into vehicles x fill rate x market share and prioritises vehicle volume given the area-wide loss."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "Guide the candidate to isolate petrol (cars) versus diesel (trucks): diesel is flat, petrol is down, so car traffic has fallen. Rule out fill-rate (no two-wheelers on the highway) and market share (area-wide). Push toward why car traffic on this highway dropped.",
+      "coaching": {
+        "explain": "Split by product and vehicle: diesel (trucks) is constant while petrol (cars) has fallen, so the issue is fewer cars on this highway. It is not the fill rate (no two-wheelers allowed) and not market share (area-wide). So the question becomes: why are fewer cars using this route?",
+        "model_approach_for_phase": "Isolate that petrol/car volume fell while diesel/truck volume held, eliminate fill rate and market share, and reframe as 'why has car traffic on this highway declined?'"
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate isolates falling car (petrol) traffic as the driver and reframes the question as why highway car traffic dropped."
+    },
+    {
+      "name": "root-cause",
+      "interviewer_instructions": "Have the candidate test why car traffic fell: fewer people (unlikely short-term), less need to travel between the cities (unlikely), or a shift to alternative routes. Reveal the new air route (cuts 6 hours) and a coming shorter freeway that diverts traffic.",
+      "coaching": {
+        "explain": "Fewer people or a sudden drop in travel need are both implausible over a few years, which leaves substitution to alternative routes. Indeed, a new air route between the cities cuts travel time by six hours, and a new, shorter freeway will divert even more car traffic away from this highway.",
+        "model_approach_for_phase": "Rule out population and travel-need changes, hypothesise route substitution, and land on the new air route (and coming freeway) drawing car traffic off this highway."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate traces the fall to car traffic substituting to a new air route (and an upcoming freeway), not to population or travel-need changes."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for a recommendation given the cause is a structural, worsening traffic shift outside the client's control. Look for accepting that highway fuel volume will keep falling and pivoting the asset, plus a risk.",
+      "coaching": {
+        "explain": "The cause is structural and will worsen once the freeway opens, so trying to win back highway fuel volume is futile. The client should stop treating it as a fuel-volume problem and repurpose the site: capture the remaining truck/diesel traffic with add-on services (food, rest stop, servicing), or convert or divest the asset, and prioritise the 49 healthy pumps. Risk: the freeway timeline and residual traffic are uncertain.",
+        "model_approach_for_phase": "'This highway's car traffic has structurally shifted to air and will fall further with the new freeway, so we cannot recover fuel volume. I would repurpose the site around remaining diesel/truck traffic with services, or convert/divest it, rather than invest to chase lost car volume. Risk: freeway timing and residual traffic are uncertain, so validate before any big spend.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation accepts the structural demand loss and pivots the asset (services, convert, or divest) rather than chasing lost fuel volume, with a risk noted."
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose the client could add an EV charging station at this pump. Does that change the recommendation? (Strong answer: only if enough of the remaining or future traffic is EV and dwells long enough to charge; otherwise it does not fix a traffic-volume problem.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Revenue = transactions x revenue per transaction; transactions = vehicles through the area x share filling petrol x market share. An area-wide loss rules out market share, directing attention to vehicle volume and mix.",
+    "key_insights": [
+      "The loss is area-wide, so it is a demand shift, not a market-share or execution problem at this pump.",
+      "Diesel (trucks) is flat while petrol (cars) has fallen, so the driver is fewer cars on this highway.",
+      "Fewer people or less travel need are implausible over a few years, leaving route substitution as the cause.",
+      "A new air route (six hours faster) and a coming shorter freeway have diverted, and will keep diverting, car traffic away."
+    ],
+    "recommendation": "Accept that this highway's fuel volume has structurally shifted and will fall further with the freeway, so do not invest to chase it. Repurpose the site around remaining diesel/truck traffic (food, rest, servicing) or convert or divest it, and focus capital on the 49 healthy pumps. Validate the freeway timeline and residual traffic before committing spend.",
+    "walkthrough": "Establish the area-wide loss, decompose transactions, isolate falling car/petrol traffic, rule out population and travel-need changes to reach route substitution (air route and freeway), and recommend repurposing or divesting the asset rather than chasing lost volume."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No structure; guesses causes at random.",
+        "3": "Builds a transactions tree but does not use the area-wide clue to rule out market share.",
+        "5": "Decomposes transactions and uses the area-wide loss to focus on vehicle volume and mix."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot express revenue in terms of transactions and their drivers.",
+        "3": "States the transactions decomposition but does not use it to isolate the petrol/car driver.",
+        "5": "Uses the decomposition to isolate falling car/petrol volume from flat diesel/truck volume."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Blames the pump's own execution despite the area-wide loss.",
+        "3": "Reaches falling car traffic but does not identify route substitution as the cause.",
+        "5": "Rules out implausible causes and identifies the air route and freeway as the structural driver."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; the diagnosis cannot be followed.",
+        "3": "Explains steps but does not narrate the elimination logic.",
+        "5": "Clearly narrates the elimination of causes toward the structural traffic shift."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or 'advertise more' to win back traffic that is structurally gone.",
+        "3": "Recognises the shift but proposes chasing fuel volume anyway.",
+        "5": "Pivots the asset (services, convert, or divest) given the structural loss, with a risk noted."
+      }
+    }
+  }
+}

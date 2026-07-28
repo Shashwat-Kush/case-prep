@@ -34,6 +34,29 @@ every commit (blocks the commit if content is invalid or code is lint/format-dir
 git config core.hooksPath .githooks
 ```
 
+## Nightly backup (T-072)
+
+A launchd job snapshots `app.db` to iCloud Drive nightly at 02:00. The plist and
+its paths assume the repo is at `~/Desktop/PROJECTS/case-prep`; edit
+`scripts/backup_launchd.plist` if it lives elsewhere. Install once:
+
+```sh
+cp scripts/backup_launchd.plist ~/Library/LaunchAgents/com.caseprep.backup.plist
+launchctl load ~/Library/LaunchAgents/com.caseprep.backup.plist
+launchctl start com.caseprep.backup          # run once now to verify
+```
+
+**Verify (manual checklist):**
+
+- [ ] `launchctl list | grep com.caseprep.backup` shows the job.
+- [ ] After `launchctl start …`, a dated `app-YYYY-MM-DD.db` exists under
+      `~/Library/Mobile Documents/com~apple~CloudDocs/caseprep-backups/`.
+- [ ] `backup.log` in the repo root records the run with a timestamp.
+- [ ] `sqlite3 <that-file> 'PRAGMA integrity_check;'` prints `ok`.
+- [ ] After one overnight cycle, a fresh dated copy has appeared.
+
+Unload with `launchctl unload ~/Library/LaunchAgents/com.caseprep.backup.plist`.
+
 ## Docs
 
 Start with `docs/README.md`. Work items live in `docs/06_TASK_QUEUE.md`; coding

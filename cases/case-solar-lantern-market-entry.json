@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "id": "case-solar-lantern-market-entry",
+    "title": "Solar Lantern: Enter Rural India?",
+    "type": "market-entry",
+    "industry": "renewable-energy",
+    "difficulty": "hard",
+    "est_minutes": 35,
+    "prerequisite_concepts": ["lesson-market-entry-framework"],
+    "diagnostic": false
+  },
+  "prompt": "A German electronics company has developed a solar lantern (6 hours of sun gives 8 hours of light for a small room) and wants to know whether to enter the Indian market, mainly rural, and how to achieve the profits. It manufactures and uses third-party distribution. Its selling price is Rs 6000.",
+  "clarifying": [
+    {"question_pattern": "decision metric", "answer": "Profit: estimate the profit from entering and how to achieve it (price, production, distribution, marketing)."},
+    {"question_pattern": "geography", "answer": "Open to all of India but expecting to sell mainly in rural areas."},
+    {"question_pattern": "product and price", "answer": "6 hours of bright sun fully charges it for 8 hours of light; it lasts 2 years and is priced at Rs 6000, roughly Rs 300/month over its life (an EMI plan is assumed, at negligible extra cost)."},
+    {"question_pattern": "value chain", "answer": "The client manufactures and outsources distribution to third parties."}
+  ],
+  "facts": {
+    "price": 6000,
+    "life_years": 2,
+    "cost_share_manufacturing": 0.4,
+    "cost_share_logistics": 0.25,
+    "cost_share_distribution": 0.1,
+    "cost_share_marketing": 0.15,
+    "market_size_lanterns_mn": 30,
+    "producible_lanterns_mn": 15,
+    "note": "Market size ~30mn lanterns comes from filtering rural families by affordability: BPL cannot afford (Rs 300/month is ~10% of income against essential needs), ~50% of lower-middle can, and middle-class families average 1.2 lanterns each; ~20% is lost to cheap clones and ~20% of middle class use inverters/generators."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_affordability",
+      "title": "Affordability by Rural Income Segment",
+      "data": {
+        "columns": ["Segment", "Avg income/month", "Rs 300 as % of consumption", "Can afford?"],
+        "rows": [
+          ["Below poverty line", "Rs 3000", "~10% of income", "No (essentials first)"],
+          ["Lower middle", "Rs 10000", "~4%", "About 50%"],
+          ["Middle class", "Rs 20000", "~2%", "Yes; ~20% buy two (1.2 per family)"]
+        ]
+      },
+      "unlock_condition": "Candidate sizes the market by filtering rural families on affordability and asks for income segments.",
+      "so_what": "BPL families cannot afford the lantern because illumination competes with essential needs; roughly half of lower-middle and all of middle class can, with middle-class families averaging 1.2 lanterns. Affordability, not desire, sets the market."
+    },
+    {
+      "id": "ex2_cost_structure",
+      "title": "Cost as a Share of the Rs 6000 Price",
+      "data": {
+        "columns": ["Component", "Share of price", "Rs"],
+        "rows": [
+          ["Manufacturing", "40%", 2400],
+          ["Logistics", "25%", 1500],
+          ["Distribution", "10%", 600],
+          ["Marketing", "15%", 900],
+          ["Total cost", "90%", 5400],
+          ["Profit per unit", "10%", 600]
+        ]
+      },
+      "unlock_condition": "Candidate asks for the cost per unit or the breakdown of cost components to compute profit per unit.",
+      "so_what": "Costs total 90% of the Rs 6000 price (Rs 5400), leaving Rs 600 profit per lantern. That per-unit profit drives the entry economics."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Wait for the candidate to restate the entry decision and set profit as the metric, planning both the profit estimate and how to achieve it.",
+      "coaching": {
+        "explain": "A strong candidate frames two questions: what profit can we expect (size x share x profit per unit), and how do we achieve it (production, distribution, marketing, and whether a JV is needed).",
+        "model_approach_for_phase": "Restate: 'I'll estimate expected profit as market size x share x profit per unit, then work through production, distribution and marketing to see if we can actually achieve it.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate frames both the profit estimate and the how-to-achieve-it path."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask for the plan. Look for expected profit = market size x market share x profit per unit, plus a second branch on execution (production, distribution, marketing, JV/acquisition to fix constraints).",
+      "coaching": {
+        "explain": "Structure the case as economics (size x share x profit per unit) and execution (production, distribution, marketing). The execution branch is where constraints like limited production capacity will bite.",
+        "model_approach_for_phase": "Split into expected profit (size x share x profit per unit) and how to achieve it (production, distribution, marketing), and plan to test each."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate structures economics plus execution and lists the achievement levers."
+    },
+    {
+      "name": "market-sizing",
+      "interviewer_instructions": "Release ex1_affordability when the candidate filters rural families by affordability. Guide them: BPL cannot afford, ~50% of lower-middle can, middle class averages 1.2 lanterns. Accept the ~30mn market size.",
+      "coaching": {
+        "explain": "Size the market by filtering rural families on whether Rs 300/month is affordable. BPL cannot (essentials dominate income), about half of lower-middle can, and middle-class families average 1.2 lanterns (80% buy one, 20% buy two). This filtering yields a market of about 30mn lanterns.",
+        "model_approach_for_phase": "Filter rural families by income affordability, compute 1.2 lanterns per buying middle-class family, and reach ~30mn lanterns."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate filters rural families by affordability (excluding BPL) to reach ~30mn lanterns."
+    },
+    {
+      "name": "market-share",
+      "interviewer_instructions": "Have the candidate examine substitutes with no direct competitor: temporary ones (torches, candles) are dismissed; inverters/generators take ~20% of middle class; cheap clones (Rs 600, 6-month life) take share. Reward the point that differentiation limits, but does not erase, clone losses.",
+      "coaching": {
+        "explain": "There is no direct competitor, so map substitutes. Torches and candles are temporary and dismissed; inverters/generators serve ~20% of middle class; cheap clones (Rs 600, poor quality) are the real threat. Differentiation (hallmark, awareness, service) limits but does not erase clone losses, say a 20% share loss.",
+        "model_approach_for_phase": "Dismiss temporary substitutes, net out inverter users and a ~20% clone share loss after differentiation, to land on an achievable share."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate maps substitutes, dismisses the temporary ones, and nets clone and inverter losses to an achievable share."
+    },
+    {
+      "name": "math",
+      "interviewer_instructions": "Release ex2_cost_structure when asked for cost per unit. Guide: cost is 90% of Rs 6000 = Rs 5400, profit Rs 600/unit; expected profit 30mn x Rs 600 = Rs 1800 Cr; but production is capped at half, so profit caps at Rs 900 Cr. Verdicts come from the math checker.",
+      "coaching": {
+        "explain": "Cost components sum to 90% of the Rs 6000 price = Rs 5400, so profit is Rs 600/unit. At 30mn lanterns that is Rs 1800 Cr. But the client can only produce half (15mn), so profit is capped at 15mn x Rs 600 = Rs 900 Cr. Since production, not competition, is the binding constraint, clones actually matter less.",
+        "model_approach_for_phase": "Compute Rs 600 profit per unit, Rs 1800 Cr uncapped, then apply the production cap to Rs 900 Cr and note production is the binding constraint."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate computes Rs 600/unit, Rs 1800 Cr uncapped, and the Rs 900 Cr production-capped profit."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for the recommendation. Look for: enter, expect ~Rs 900 Cr limited by production (so consider expanding capacity or a JV), piggyback distribution on torch/electronics channels, differentiate from clones with local sales and service, and a risk.",
+      "coaching": {
+        "explain": "Enter: even production-capped, profit is ~Rs 900 Cr. The binding constraint is capacity, so the real lever is expanding production (or a JV/acquisition), not fighting clones. Piggyback distribution on existing torch and basic-electronics channels, and use local salesmen for awareness, differentiation, and replacements so the lantern is not a 'risky' buy. Risk: clone share loss and affordability assumptions are subjective, so pilot.",
+        "model_approach_for_phase": "'Enter: profit is ~Rs 900 Cr even at half capacity, and since production is the binding constraint, expanding capacity or partnering matters more than clones. Distribute via existing torch/electronics channels and use local sales and service to differentiate. Risk: the clone and affordability assumptions are soft, so pilot a region first.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation is to enter, names production as the binding constraint (expand/JV), sorts distribution and differentiation, and notes a risk."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "40 + 25 + 10 + 15",
+      "expected_value": 90,
+      "tolerance": 0,
+      "common_errors": ["Missing a cost component", "Assuming the shares should sum to 100% including profit"]
+    },
+    {
+      "inputs": "6000 * 0.90",
+      "expected_value": 5400,
+      "tolerance": 0,
+      "common_errors": ["Applying the 10% profit share as cost", "Arithmetic slip on the percentage"]
+    },
+    {
+      "inputs": "6000 - 5400",
+      "expected_value": 600,
+      "tolerance": 0,
+      "common_errors": ["Taking 10% of cost rather than of price", "Confusing margin with markup"]
+    },
+    {
+      "inputs": "0.8 * 1 + 0.2 * 2",
+      "expected_value": 1.2,
+      "tolerance": 0.001,
+      "common_errors": ["Averaging 1 and 2 to 1.5 instead of weighting 80/20", "Assuming every family buys two"]
+    },
+    {
+      "inputs": "30000000 * 600",
+      "expected_value": 18000000000,
+      "tolerance": 0,
+      "common_errors": ["Dropping a zero converting to crores", "Using the capped 15mn volume here"]
+    },
+    {
+      "inputs": "(30000000 / 2) * 600",
+      "expected_value": 9000000000,
+      "tolerance": 0,
+      "common_errors": ["Forgetting the production cap and using 30mn", "Halving the profit per unit instead of the volume"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose a local partner could double your production capacity through a joint venture, but would take 30% of the profit. Is it worth it? (Strong answer: doubling capacity lifts uncapped profit toward Rs 1800 Cr; even giving up 30% leaves ~Rs 1260 Cr, well above the Rs 900 Cr solo cap, so yes, subject to partner reliability.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Expected profit = market size x market share x profit per unit, paired with an execution branch (production, distribution, marketing). Market size is an affordability-filtered rural estimate; profit per unit comes from the cost structure; production capacity is the binding constraint.",
+    "key_insights": [
+      "Affordability, not desire, sizes the market: BPL cannot afford it, ~50% of lower-middle and all middle class can, giving ~30mn lanterns.",
+      "There is no direct competitor; cheap clones are the real share threat, limited but not erased by differentiation.",
+      "Cost is 90% of the Rs 6000 price, leaving Rs 600 profit per unit, so 30mn lanterns imply Rs 1800 Cr.",
+      "Production is capped at 15mn, so profit caps at Rs 900 Cr, making capacity, not competition, the binding constraint."
+    ],
+    "recommendation": "Enter: even production-capped profit is about Rs 900 Cr. Because capacity is the binding constraint, prioritise expanding production or a JV over fighting clones; distribute by piggybacking on existing torch and electronics channels; and use local salesmen for awareness, differentiation and replacements so the lantern is a safe purchase. Pilot a region first, since the clone and affordability assumptions are soft.",
+    "walkthrough": "Frame economics plus execution, size the market by rural affordability to ~30mn, net substitutes and clones to an achievable share, compute Rs 600/unit and Rs 1800 Cr uncapped, apply the production cap to Rs 900 Cr, and recommend entering with capacity expansion as the priority."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No entry structure; a yes/no with no profit or execution logic.",
+        "3": "Uses size x share x profit per unit but omits the execution/constraint branch.",
+        "5": "Structures economics plus execution and anticipates the production constraint."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute profit per unit or apply the production cap.",
+        "3": "Computes profit per unit and uncapped profit but misses the production cap.",
+        "5": "Computes Rs 600/unit, Rs 1800 Cr uncapped, and the Rs 900 Cr production cap cleanly."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Sizes the market on desire, ignoring affordability, or ignores clones entirely.",
+        "3": "Handles affordability or substitutes but not the insight that production is the binding constraint.",
+        "5": "Sizes by affordability, nets clones sensibly, and sees capacity (not clones) as the real constraint."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; cannot convey the layered filtering.",
+        "3": "Explains steps but does not narrate the affordability and substitute logic.",
+        "5": "Clearly narrates affordability sizing, substitute netting, and the capacity insight."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or 'enter' with no constraint or execution plan.",
+        "3": "Recommends entering but omits the capacity constraint or the distribution/differentiation plan.",
+        "5": "Recommends entering, prioritises capacity expansion, sorts distribution and differentiation, and names a risk."
+      }
+    }
+  }
+}

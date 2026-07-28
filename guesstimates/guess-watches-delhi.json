@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "id": "guess-watches-delhi",
+    "title": "Number of watches in use in Delhi",
+    "difficulty": "medium",
+    "est_minutes": 12,
+    "region": "india"
+  },
+  "prompt": "Estimate the number of watches currently in use in Delhi.",
+  "clarifications": [
+    {"question_pattern": "watches per person", "answer": "Assume a person owns at most one watch at any time."},
+    {"question_pattern": "working condition", "answer": "Watches are cheaply repaired or replaced, so treat every owned watch as in working condition."},
+    {"question_pattern": "population of Delhi", "answer": "Take Delhi's population as about 3 crore; the ~2% rural share can be ignored for simplicity."},
+    {"question_pattern": "which split to use", "answer": "An income-wise split works well: ownership rises with income."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "upper_income_watches",
+        "benchmark_refs": ["delhi_population", "income_urban_upper_share"],
+        "derivation": "delhi_population * income_urban_upper_share * 0.75",
+        "value": 4500000,
+        "tolerance": 1
+      },
+      {
+        "segment": "middle_income_watches",
+        "benchmark_refs": ["delhi_population", "income_urban_middle_share"],
+        "derivation": "delhi_population * income_urban_middle_share * 0.50",
+        "value": 6000000,
+        "tolerance": 1
+      },
+      {
+        "segment": "lower_income_watches",
+        "benchmark_refs": ["delhi_population", "income_urban_lower_share"],
+        "derivation": "delhi_population * income_urban_lower_share * 0.25",
+        "value": 3000000,
+        "tolerance": 1
+      },
+      {
+        "segment": "total_watches",
+        "benchmark_refs": [],
+        "derivation": "upper_income_watches + middle_income_watches + lower_income_watches",
+        "value": 13500000,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 10000000, "high": 18000000},
+  "common_traps": [
+    "Multiplying the whole population by one flat ownership rate instead of splitting by income.",
+    "Assuming everyone owns a watch, ignoring that ownership rises with income.",
+    "Counting watches per household rather than per person, which understates the total."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number, or multiplies population by a single ownership rate with no reasoning.",
+        "3": "Uses a population-times-ownership chain but with one blanket ownership rate.",
+        "5": "Chooses an income-wise split and ties ownership rate to income band explicitly."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No segmentation; one rate for all of Delhi.",
+        "3": "Segments income bands but with ownership rates not clearly tied to income.",
+        "5": "Splits into upper/middle/lower income with rising ownership rates (e.g. 75/50/25%)."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Botches crore/lakh conversions or lands far outside a plausible range.",
+        "3": "Reaches a number with a conversion slip, or lands just outside 1-1.8 crore.",
+        "5": "Carries crore conversions cleanly and lands near 1.35 crore (1-1.8 crore)."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "States the number as final with no check.",
+        "3": "Mentions a check but does not carry it through.",
+        "5": "Validates the blended ownership rate (~45%) against everyday experience of who wears a watch."
+      }
+    }
+  }
+}

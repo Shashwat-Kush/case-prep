@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "id": "guess-chewing-gum-india",
+    "title": "Size of the chewing gum market in India",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "india"
+  },
+  "prompt": "Estimate the size of the chewing gum market in India (annual revenue).",
+  "clarifications": [
+    {"question_pattern": "who consumes gum", "answer": "Assume consumption below 15 and above 50 is negligible, and ignore the lower-income half of the population."},
+    {"question_pattern": "price and pack size", "answer": "A packet holds four units of gum and costs about Rs 5; assume 50 buying-weeks in a year."},
+    {"question_pattern": "which split", "answer": "Use an age-wise split, and within each age band split consumers by frequency (packets per week)."},
+    {"question_pattern": "units of the answer", "answer": "Express the market size in crore rupees per year."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "revenue_15_17_cr",
+        "benchmark_refs": [],
+        "derivation": "(1.5 * 50 + 5.5 * 25) * 5",
+        "value": 1062.5,
+        "tolerance": 1
+      },
+      {
+        "segment": "revenue_18_24_cr",
+        "benchmark_refs": [],
+        "derivation": "(4 * 100 + 2 * 50 + 1 * 25) * 5",
+        "value": 2625,
+        "tolerance": 1
+      },
+      {
+        "segment": "revenue_25_35_cr",
+        "benchmark_refs": [],
+        "derivation": "(0.5 * 100 + 6.5 * 50 + 4 * 25) * 5",
+        "value": 2375,
+        "tolerance": 1
+      },
+      {
+        "segment": "revenue_35_50_cr",
+        "benchmark_refs": [],
+        "derivation": "(4.5 * 50 + 6.5 * 25) * 5",
+        "value": 1937.5,
+        "tolerance": 1
+      },
+      {
+        "segment": "total_market_cr",
+        "benchmark_refs": [],
+        "derivation": "revenue_15_17_cr + revenue_18_24_cr + revenue_25_35_cr + revenue_35_50_cr",
+        "value": 8000,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 6000, "high": 10000},
+  "common_traps": [
+    "Treating the whole population as consumers instead of restricting to ages 15-50 and the upper half of income.",
+    "Using one flat consumption rate rather than splitting each age band by frequency (heavy/medium/light).",
+    "Mixing up packets and units, or forgetting to convert weekly consumption into a 50-week year."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a market size with no consumer-times-frequency-times-price structure.",
+        "3": "Uses consumers x packets x price but with one blanket consumption rate.",
+        "5": "Builds consumers x packets-per-year x price and derives packets-per-year from an age-and-frequency split."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "No segmentation of consumers.",
+        "3": "Segments by age only, with a single consumption rate per band.",
+        "5": "Segments by age and, within each band, by frequency of consumption."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Loses track of crore conversions or lands far from any plausible figure.",
+        "3": "Reaches a number with a slip, landing just outside 6000-10000 crore.",
+        "5": "Carries the weekly-to-yearly and crore math cleanly, landing near 8000 crore."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "States the number as final with no check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks per-capita spend: ~8000 crore over ~35 crore consumers is a plausible few-rupees-per-week habit."
+      }
+    }
+  }
+}

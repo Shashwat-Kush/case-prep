@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "id": "guess-shampoo-bottles-world",
+    "title": "Hotel mini shampoo bottles sold per year (world)",
+    "difficulty": "hard",
+    "est_minutes": 15,
+    "region": "global"
+  },
+  "prompt": "How many hotel-sized mini bottles of shampoo are sold worldwide every year?",
+  "clarifications": [
+    {"question_pattern": "supply or demand side", "answer": "Use a supply-side approach: hotels stocking bottles, occupancy, and per-room usage."},
+    {"question_pattern": "how many hotels", "answer": "Assume about 4000 major cities worldwide, ~15 hotels each of which ~10 provide shampoo bottles, ~50 rooms per hotel."},
+    {"question_pattern": "occupancy", "answer": "Assume 100% occupancy for 25% of the year and 50% for the rest, i.e. about 62.5% average occupancy."},
+    {"question_pattern": "usage per room", "answer": "Rooms split 30% studio / 40% suite (1 bottle per 2-day stay) and 30% family (2 bottles per 2-day stay)."}
+  ],
+  "approach": {
+    "recommended": "top_down",
+    "tree": [
+      {
+        "segment": "occupied_rooms_daily",
+        "benchmark_refs": [],
+        "derivation": "4000 * 10 * 0.625 * 50",
+        "value": 1250000,
+        "tolerance": 1
+      },
+      {
+        "segment": "bottles_per_day",
+        "benchmark_refs": [],
+        "derivation": "occupied_rooms_daily * ((0.7 * 0.5) + (0.3 * 1))",
+        "value": 812500,
+        "tolerance": 1
+      },
+      {
+        "segment": "bottles_per_year",
+        "benchmark_refs": [],
+        "derivation": "bottles_per_day * 365",
+        "value": 296562500,
+        "tolerance": 1
+      }
+    ]
+  },
+  "answer_range": {"low": 200000000, "high": 400000000},
+  "common_traps": [
+    "Assuming full occupancy year-round instead of blending peak and off-peak into an average.",
+    "Charging one bottle per room-night instead of accounting for multi-day stays (half a bottle per day).",
+    "Forgetting that only a fraction of hotels provide shampoo bottles at all."
+  ],
+  "rubric": {
+    "approach": {
+      "anchors": {
+        "1": "Guesses a number with no hotels-times-occupancy-times-usage chain.",
+        "3": "Builds a supply chain but omits occupancy or the per-day usage conversion.",
+        "5": "Derives occupied rooms per day and converts multi-day usage into bottles per day, then per year."
+      }
+    },
+    "segmentation": {
+      "anchors": {
+        "1": "One flat usage rate for all rooms.",
+        "3": "Splits rooms but with usage not tied to stay length.",
+        "5": "Splits rooms by type with distinct bottles-per-stay, converted to a per-day rate."
+      }
+    },
+    "arithmetic": {
+      "anchors": {
+        "1": "Loses track of the daily-to-yearly scaling; lands orders of magnitude off.",
+        "3": "Reaches a number with a slip, landing just outside 20-40 crore.",
+        "5": "Carries the occupancy and per-day math cleanly, landing near 30 crore bottles."
+      }
+    },
+    "sanity_check": {
+      "anchors": {
+        "1": "No sanity check.",
+        "3": "Mentions a check but does not complete it.",
+        "5": "Cross-checks against ~1.25 million occupied rooms daily worldwide, which is a plausible major-city hotel base."
+      }
+    }
+  }
+}

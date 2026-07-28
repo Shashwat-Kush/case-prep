@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "id": "case-mumbai-hotel-pricing",
+    "title": "Mumbai Hotel: Room Rate Increase",
+    "type": "pricing",
+    "industry": "hospitality",
+    "difficulty": "standard",
+    "est_minutes": 25,
+    "prerequisite_concepts": [],
+    "diagnostic": false
+  },
+  "prompt": "Your client owns a business-district hotel in Mumbai with a single uniform room rate. Management is considering raising the room rate from $160 to $180 a night to lift profits, and wants your recommendation on whether to do it.",
+  "clarifying": [
+    {"question_pattern": "why price, why now", "answer": "There is no special trigger; management is simply exploring a price increase as one lever to raise profits."},
+    {"question_pattern": "uniform rate or average", "answer": "All rooms are similar and carry the same uniform rate; $160 is the actual rate, not an average."},
+    {"question_pattern": "who are the customers", "answer": "About 80% are business travellers and 20% are tourists."},
+    {"question_pattern": "who pays for business guests", "answer": "Business guests bill their company; companies also cover extras. Employees may stay anywhere priced under a $220-per-night cap, with no cap on extras."},
+    {"question_pattern": "competition nearby", "answer": "One nearby hotel charges about $160, but the client has a stronger business centre that corporate guests rely on for meetings."}
+  ],
+  "facts": {
+    "current_rate_usd": 160,
+    "proposed_rate_usd": 180,
+    "corporate_cap_usd": 220,
+    "business_share": 0.8,
+    "tourist_share": 0.2,
+    "note": "Business guests are effectively price-inelastic up to the $220 corporate cap and are anchored by the business centre; tourists pay out of pocket and are price-elastic."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_customer_mix",
+      "title": "Customer Mix and Corporate Travel Policy",
+      "data": {
+        "columns": ["Segment", "Share", "Who pays", "Price sensitivity"],
+        "rows": [
+          ["Business", "80%", "Company (cap $220/night)", "Low up to the cap"],
+          ["Tourist", "20%", "Self", "High"]
+        ]
+      },
+      "unlock_condition": "Candidate asks who the customers are and how price-sensitive each type is, or asks to segment demand before judging the price move.",
+      "so_what": "80% of guests are business travellers who are insensitive to the rate up to a $220 cap and are anchored by the business centre. Only the 20% tourist segment is genuinely price-elastic."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Do not volunteer the customer mix or the corporate cap. Wait for the candidate to restate the decision and begin clarifying.",
+      "coaching": {
+        "explain": "A pricing decision hinges on customer price elasticity. A strong candidate restates the decision and signals that the answer depends on how customers react to the higher rate.",
+        "model_approach_for_phase": "Restate: 'We want to know whether raising the room rate from $160 to $180 increases profit, which depends on how our customers respond.' Then clarify."
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate restates the pricing decision and frames it around customer response."
+    },
+    {
+      "name": "structuring",
+      "interviewer_instructions": "Ask how the candidate will decide. Look for: change in profit = change in revenue - change in cost, with revenue depending on occupancy (elasticity), extras, and any added room cost. Do not accept 'just raise it'.",
+      "coaching": {
+        "explain": "The clean structure is: new profit vs status quo. Revenue depends on how occupancy and extras respond to the higher rate; cost rises only if you must spend to justify the rate. So the crux is elasticity by customer type.",
+        "model_approach_for_phase": "Lay out profit impact = change in revenue (occupancy x rate + extras) - change in cost, and pre-commit to analysing elasticity separately for business and tourist guests."
+      },
+      "time_budget": 4,
+      "pass_criteria": "Candidate frames the decision as an incremental profit calculation driven by segment elasticity."
+    },
+    {
+      "name": "analysis",
+      "interviewer_instructions": "When the candidate asks about customer types and who pays, release exhibit ex1_customer_mix. Guide them to test the $220 corporate cap and the business-centre lock-in for the 80% business segment, then the elastic 20% tourist segment.",
+      "coaching": {
+        "explain": "The insight is that 80% of demand is business travel billed to companies that allow up to $220 a night, and those guests are anchored by the business centre the nearby competitor lacks. So a move to $180 barely touches them. The elastic risk sits only in the 20% tourist segment.",
+        "model_approach_for_phase": "Establish that business guests are inelastic up to $220 and sticky due to the business centre, so occupancy and extras hold for 80% of demand. Then isolate tourists as the only segment likely to drop."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate isolates the inelastic business segment (with the $220 cap and business-centre lock-in) from the elastic tourist segment."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for a recommendation. Look for: raise the rate, exploit the headroom to the cap, and handle tourists via segmentation rather than forgoing the increase. Reward naming a risk.",
+      "coaching": {
+        "explain": "A strong close raises the rate (business demand holds), notes headroom to push toward the $220 cap, and protects the tourist segment through price differentiation, e.g. 'executive' rooms for business at a higher rate and 'regular' rooms for tourists, rather than a blanket increase that risks tourist volume.",
+        "model_approach_for_phase": "'Raise the rate: 80% of demand is inelastic up to a $220 cap and anchored by our business centre, so $180 is safe and there is headroom toward $220. To protect the price-elastic 20% tourists, differentiate: an executive room for business guests and a regular room for tourists. Risk: if the competitor adds a comparable business centre, business stickiness weakens.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation raises the rate, uses the cap headroom, and protects tourists via segmentation with a risk acknowledged."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "180 - 160",
+      "expected_value": 20,
+      "tolerance": 0,
+      "common_errors": ["Confusing the rate change with the cap headroom"]
+    },
+    {
+      "inputs": "(180 - 160) / 160 * 100",
+      "expected_value": 12.5,
+      "tolerance": 0.1,
+      "common_errors": ["Dividing by the proposed rate instead of the current rate"]
+    },
+    {
+      "inputs": "220 - 180",
+      "expected_value": 40,
+      "tolerance": 0,
+      "common_errors": ["Forgetting there is still headroom to the $220 cap after moving to $180"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose the nearby competitor announces it is building a business centre of its own. Does your recommendation change? (Strong answer: business stickiness weakens, so lean harder on differentiation and service quality, and be more cautious about pushing toward the $220 cap.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Incremental profit = change in revenue (occupancy x rate + extras) - change in cost. Revenue response is governed by price elasticity, which differs sharply by customer segment.",
+    "key_insights": [
+      "80% of demand is business travel billed to companies that permit up to $220 a night, so it is inelastic well past $180.",
+      "The business centre anchors corporate guests, who the $160 competitor cannot serve as well.",
+      "Only the 20% tourist segment is genuinely price-elastic and at risk from a blanket increase.",
+      "There is headroom of $40 between $180 and the $220 corporate cap to capture further."
+    ],
+    "recommendation": "Raise the rate. Business demand (80%) is inelastic to $220 and anchored by the business centre, so a move to $180 lifts revenue with negligible occupancy loss and room to push higher. Protect the elastic tourist 20% with price differentiation (executive vs regular rooms) rather than skipping the increase. Watch for the competitor closing the business-centre gap.",
+    "walkthrough": "Frame incremental profit, segment demand into business (80%, inelastic to the $220 cap, sticky on the business centre) and tourists (20%, elastic), conclude the increase is safe for business demand with headroom, and differentiate to shield tourists."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No structure; asserts 'raise it' or 'do not' without a profit or elasticity frame.",
+        "3": "Frames incremental profit but does not split elasticity by customer type.",
+        "5": "Frames incremental profit and pre-commits to analysing elasticity per segment."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute the rate change or the headroom to the cap.",
+        "3": "Computes the $20 increase but not the percentage change or the cap headroom.",
+        "5": "Computes the increase, the 12.5% change, and the $40 headroom to the $220 cap."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Treats all customers as equally price-sensitive.",
+        "3": "Recognises business inelasticity but overlooks the business-centre lock-in or the tourist risk.",
+        "5": "Ties business inelasticity to who pays and the $220 cap, and isolates tourists as the only real risk."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; does not explain why each question is asked.",
+        "3": "Explains steps but does not narrate the segment-by-segment reasoning.",
+        "5": "States priorities and walks through the elasticity logic per segment clearly."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No recommendation, or a blanket 'raise the price'.",
+        "3": "Recommends the increase but omits the cap headroom or the tourist segmentation.",
+        "5": "Raises the rate, exploits the cap headroom, differentiates to protect tourists, and names a risk."
+      }
+    }
+  }
+}

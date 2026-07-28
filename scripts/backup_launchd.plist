@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Nightly app.db backup (T-072). Install per the README notes; edit the paths
+     below if the repo is not at ~/Desktop/PROJECTS/case-prep. Runs daily at
+     02:00; if the Mac is asleep, launchd runs it at the next wake. -->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.caseprep.backup</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string>/Users/shashwatkushwaha/Desktop/PROJECTS/case-prep/scripts/backup_db.sh</string>
+        <string>/Users/shashwatkushwaha/Desktop/PROJECTS/case-prep/app.db</string>
+        <string>/Users/shashwatkushwaha/Library/Mobile Documents/com~apple~CloudDocs/caseprep-backups</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>2</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/shashwatkushwaha/Desktop/PROJECTS/case-prep/backup.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/shashwatkushwaha/Desktop/PROJECTS/case-prep/backup.log</string>
+</dict>
+</plist>

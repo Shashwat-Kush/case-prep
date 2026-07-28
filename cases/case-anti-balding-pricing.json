@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "id": "case-anti-balding-pricing",
+    "title": "Anti-Balding Pill: What Price?",
+    "type": "pricing",
+    "industry": "pharmaceuticals",
+    "difficulty": "hard",
+    "est_minutes": 30,
+    "prerequisite_concepts": ["lesson-pricing-framework"],
+    "diagnostic": false
+  },
+  "prompt": "Your client, a large US pharmaceutical company, has invented a prescription pill that regrows hair to teenage thickness within three months, taken daily to maintain. Estimate the US market size, then decide what price to sell it at.",
+  "clarifying": [
+    {"question_pattern": "prescription or OTC", "answer": "It is a prescription drug, so access is gated by a doctor, not bought off the shelf."},
+    {"question_pattern": "unisex and side effects", "answer": "Unisex, but it causes minor, non-permanent sexual dysfunction in 2% and can cause birth defects, so women who may have children (conservatively, all women under 40) should not take it."},
+    {"question_pattern": "pricing goal", "answer": "The goal is to maximize profit (not share capture or a fixed payback), which shapes the pricing choice."},
+    {"question_pattern": "product cost", "answer": "The pill costs $1 to make; fixed costs (R&D) are negligible for this case."}
+  ],
+  "facts": {
+    "cost_per_pill": 1,
+    "course_days": 90,
+    "competitor_a_course_price": 450,
+    "competitor_b_course_price": 540,
+    "note": "Competitors A and B split the market evenly, similar on effectiveness, brand and accessibility. B is priced higher but sells as much (no side effects, shampoo-based, which customers mildly prefer). The client's pill is more effective and faster than both, with only minor side effects."
+  },
+  "exhibits": [
+    {
+      "id": "ex1_competitor_pricing",
+      "title": "Competitor Products (3-month course)",
+      "data": {
+        "columns": ["Product", "Form", "Course price", "Side effects", "Effectiveness"],
+        "rows": [
+          ["Competitor A", "Pill", "$450", "Some", "Standard"],
+          ["Competitor B", "Shampoo", "$540", "None", "Standard"],
+          ["Client", "Pill", "to decide", "Minor (2%)", "Higher, faster"]
+        ]
+      },
+      "unlock_condition": "Candidate benchmarks against competitors and asks for their prices and product characteristics.",
+      "so_what": "A charges $450 and B charges $540; both are only standard in effectiveness. The client's pill is more effective and faster, so it can price at least at A's $450 and still undercut B's $540, letting effectiveness plus a lower total price win share."
+    }
+  ],
+  "phases": [
+    {
+      "name": "opening",
+      "interviewer_instructions": "State the prompt. Note the pricing goal (maximize profit) only if asked. Wait for the candidate to plan sizing then pricing.",
+      "coaching": {
+        "explain": "A pricing case should first pin the goal (maximize profit here, not share or payback) because it changes the answer. A strong candidate plans to size the market, then price via cost, competitor and value lenses.",
+        "model_approach_for_phase": "Restate: 'I'll first size the US market of people who need and can access the cure, then price it using cost, competitor and value-to-customer lenses, aiming to maximize profit.'"
+      },
+      "time_budget": 2,
+      "pass_criteria": "Candidate fixes the pricing goal and plans to size then price via multiple lenses."
+    },
+    {
+      "name": "market-sizing",
+      "interviewer_instructions": "Guide the candidate to filter the US population to balding people who would treat it and can access a prescription, excluding women under 40 (birth-defect risk). Accept an intermediate market size; note affordability depends on the yet-to-be-set price.",
+      "coaching": {
+        "explain": "Size the market by filtering to people with meaningful balding who would seek treatment and can get a prescription, excluding women under 40 for safety. Affordability is left open because it depends on the price still to be set. The minor 2% side effect will not deter balding men who want the cure.",
+        "model_approach_for_phase": "Filter US population to balding adults who would treat it and can access a doctor, exclude women under 40, and leave the affordability filter until the price is set."
+      },
+      "time_budget": 6,
+      "pass_criteria": "Candidate builds a filtered market size (excluding women under 40) and defers the affordability filter until pricing."
+    },
+    {
+      "name": "pricing-analysis",
+      "interviewer_instructions": "Release ex1_competitor_pricing when the candidate benchmarks competitors. Guide them through cost floor ($1 x 90 = $90), competitor benchmark (price at least A's $450, still under B's $540), and a value range. Verdicts on numbers come from the math checker.",
+      "coaching": {
+        "explain": "Triangulate three lenses. Cost floor: $1 x 90 days = $90, the minimum. Competitor: the client beats A on every count, so price at least A's $450 (= $150/month) and it still undercuts B's $540. Value: bracket the price with comparables, e.g. a lower cap like Starbucks coffee for three months (~$270) and an upper cap like dental braces. The three lenses converge on a band well above cost.",
+        "model_approach_for_phase": "Set the $90 cost floor, price at A's $450 course ($150/month) since the client is superior yet still under B's $540, and sanity-check against value comparables."
+      },
+      "time_budget": 8,
+      "pass_criteria": "Candidate sets the cost floor, benchmarks to competitors to reach ~$150/month, and brackets it with value comparables."
+    },
+    {
+      "name": "synthesis",
+      "interviewer_instructions": "Ask for the price recommendation and the reasoning. Look for ~$150/month with penetrate-then-raise logic, the profit per month, and awareness that the reasoning matters more than the exact figure.",
+      "coaching": {
+        "explain": "Recommend about $150/month: it matches A's course price while beating both rivals on effectiveness and undercutting B's total, so it wins share, and it earns a healthy $120/month over the $30 monthly cost. Start competitive to gain share, then raise price once positive reviews build. The exact number matters less than this reasoning.",
+        "model_approach_for_phase": "'Price at ~$150/month ($450/course): superior to both rivals yet cheaper than B, earning ~$120/month margin. Enter competitively to capture share, then raise price as reviews build. Risk: if share is slow, we can drop toward $100/month, since cost is only $30.'"
+      },
+      "time_budget": 5,
+      "pass_criteria": "Recommendation lands near $150/month with penetrate-then-raise logic and the margin quantified."
+    }
+  ],
+  "math_checkpoints": [
+    {
+      "inputs": "1 * 90",
+      "expected_value": 90,
+      "tolerance": 0,
+      "common_errors": ["Using a monthly rather than a 3-month course for the cost floor", "Forgetting the pill is taken daily"]
+    },
+    {
+      "inputs": "450 / 3",
+      "expected_value": 150,
+      "tolerance": 0,
+      "common_errors": ["Dividing by 90 days instead of 3 months when a monthly price is wanted", "Using competitor B's $540"]
+    },
+    {
+      "inputs": "150 - 1 * 30",
+      "expected_value": 120,
+      "tolerance": 0,
+      "common_errors": ["Using the 3-month cost against a 1-month price", "Forgetting monthly cost is 30 pills"]
+    },
+    {
+      "inputs": "540 - 450",
+      "expected_value": 90,
+      "tolerance": 0,
+      "common_errors": ["Assuming the client must match B's higher price rather than undercut it"]
+    },
+    {
+      "inputs": "3 * 90",
+      "expected_value": 270,
+      "tolerance": 0,
+      "common_errors": ["Using a monthly coffee spend rather than the full 3-month comparable for the value lower-cap"]
+    }
+  ],
+  "curveballs": [
+    {
+      "trigger_phase": "synthesis",
+      "injected_fact": "Suppose a generic competitor is expected to launch a similar pill in a year. Does your pricing change? (Strong answer: harvest the monopoly window with a higher price now, or price to build loyalty and brand before the generic arrives, depending on how sticky prescriptions are.)"
+    }
+  ],
+  "model_answer": {
+    "framework": "Size the market by filtering the population to people who need, would take, can access and can afford the cure, then price by triangulating cost-based (floor), competitor-based (market anchor) and value-based (ceiling), against a profit-maximising goal.",
+    "key_insights": [
+      "The cost floor is just $1 x 90 = $90 per course, far below what customers will pay, so cost-plus badly underprices.",
+      "The client beats competitor A on every dimension, so it can price at least A's $450 course ($150/month) and still undercut B's $540.",
+      "Value comparables (coffee as a lower cap, braces as an upper cap) confirm a price band well above cost.",
+      "At $150/month the margin is $120, leaving room to drop toward $100 to accelerate share if needed."
+    ],
+    "recommendation": "Price at about $150/month ($450 per course): superior to both rivals yet cheaper than B, so it wins share while earning ~$120/month margin. Launch competitively to build share and reviews, then raise price as the product's reputation grows. If share is slow, there is room to cut toward $100/month given the trivial $30 monthly cost.",
+    "walkthrough": "Fix the profit-maximising goal, size the filtered market (excluding women under 40), set the $90 cost floor, benchmark to competitors for a ~$150/month anchor, bracket with value comparables, and recommend a penetrate-then-raise price."
+  },
+  "rubric": {
+    "structure": {
+      "anchors": {
+        "1": "No structure; picks a price with no lenses or sizing.",
+        "3": "Uses one pricing lens or sizes without pricing method.",
+        "5": "Sizes the filtered market and prices via cost, competitor and value lenses toward the stated goal."
+      }
+    },
+    "math": {
+      "anchors": {
+        "1": "Cannot compute the cost floor or convert a course price to monthly.",
+        "3": "Computes the floor but not the margin or the value comparables.",
+        "5": "Computes the $90 floor, the $150/month anchor, and the $120 margin cleanly."
+      }
+    },
+    "judgment": {
+      "anchors": {
+        "1": "Defaults to cost-plus despite value far exceeding cost.",
+        "3": "Benchmarks competitors but ignores the client's superiority or the value ceiling.",
+        "5": "Prices off the client's superiority versus rivals and confirms with a value range."
+      }
+    },
+    "communication": {
+      "anchors": {
+        "1": "Rambling or silent; cannot justify the price.",
+        "3": "States a price but does not narrate the three-lens reasoning.",
+        "5": "Clearly narrates cost, competitor and value reasoning and why the number follows."
+      }
+    },
+    "synthesis": {
+      "anchors": {
+        "1": "No price, or a number with no reasoning.",
+        "3": "Gives a price but omits the penetrate-then-raise logic or the margin.",
+        "5": "Recommends ~$150/month with penetrate-then-raise logic, the margin, and a risk."
+      }
+    }
+  }
+}
